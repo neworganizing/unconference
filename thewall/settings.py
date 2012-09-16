@@ -144,3 +144,9 @@ LOGGING = {
         },
     }
 }
+
+# Import from localsettings
+try:
+    from thewall.localsettings import *
+except ImportError:
+    pass
