@@ -113,6 +113,10 @@ INSTALLED_APPS = (
 
 	# Heroku Specific Apps Here
 	'gunicorn',
+	
+	# 3rd Party Apps We Need
+	'djangorestframework',
+
 
 )
 

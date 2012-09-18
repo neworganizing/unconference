@@ -1,6 +1,9 @@
 Django==1.4.1
+URLObject==2.0.2
 dj-database-url==0.2.1
+djangorestframework==0.4.0
 gunicorn==0.14.6
 ipython==0.13
 psycopg2==2.4.5
+readline==6.2.2
 wsgiref==0.1.2
