@@ -113,6 +113,13 @@ INSTALLED_APPS = (
 
 	# Heroku Specific Apps Here
 	'gunicorn',
+	
+	# 3rd Party Apps We Need
+	'djangorestframework',
+	
+	# Our Apps
+	'thewall.session',
+	'thewall.participants',
 
 )
 
