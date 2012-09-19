@@ -116,6 +116,7 @@ INSTALLED_APPS = (
 	
 	# 3rd Party Apps We Need
 	'djangorestframework',
+	'south',
 	
 	# Our Apps
 	'thewall.session',

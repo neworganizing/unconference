@@ -1,4 +1,5 @@
 Django==1.4.1
+South==0.7.6
 URLObject==2.0.2
 dj-database-url==0.2.1
 djangorestframework==0.4.0
