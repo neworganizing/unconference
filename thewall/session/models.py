@@ -82,6 +82,8 @@ class Session(models.Model):
 	slot = models.ForeignKey(Slot)
 	room = models.ForeignKey(Room)
 	difficulty = models.CharField(max_length=30,choices=(('B', 'Beginner'),('I','Intermediate'),('A','Advanced')),default='Beginner')
+	created = models.DateTimeField(auto_now_add=True)
+	modified = models.DateTimeField(auto_now=True, auto_now_add=True)
 
 	class Admin:
 		list_display = ('',)
