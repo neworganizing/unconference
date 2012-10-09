@@ -5,6 +5,18 @@ from thewall.session.models import Session
 
 class MyResource(ModelResource):
 	model = Session
+	fields = {
+	    'id',
+	    'title',
+	    'description',
+	    'presenters',
+	    'tags',
+	    'slot',
+	    'room',
+	    'difficulty',
+	    'created',
+	    'modified',
+	}
 
 urlpatterns = patterns('',
 	url(r'^restframework', include('djangorestframework.urls', namespace='djangorestframework')),
