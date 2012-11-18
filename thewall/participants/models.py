@@ -23,7 +23,7 @@ class Participant(models.Model):
 		search_fields = ('',)
 
 	def __unicode__(self):
-		return self.name + " (" + self.organization.name + ")"
+		return self.name + " (" + self.organization + ")"
 
 admin.site.register(Organization)
 admin.site.register(Participant)
