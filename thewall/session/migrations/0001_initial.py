@@ -19,7 +19,7 @@ class Migration(SchemaMigration):
         db.create_table('session_day', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('day', self.gf('django.db.models.fields.DateField')(default=datetime.datetime(2012, 9, 18, 0, 0))),
+            ('day', self.gf('django.db.models.fields.DateField')(default=datetime.datetime(2012, 11, 18, 0, 0))),
         ))
         db.send_create_signal('session', ['Day'])
 
@@ -62,6 +62,8 @@ class Migration(SchemaMigration):
             ('slot', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['session.Slot'])),
             ('room', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['session.Room'])),
             ('difficulty', self.gf('django.db.models.fields.CharField')(default='Beginner', max_length=30)),
+            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('modified', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, auto_now_add=True, blank=True)),
         ))
         db.send_create_signal('session', ['Session'])
 
@@ -109,21 +111,16 @@ class Migration(SchemaMigration):
 
 
     models = {
-        'participants.organization': {
-            'Meta': {'object_name': 'Organization'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
         'participants.participant': {
             'Meta': {'object_name': 'Participant'},
             'attendeenumber': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'organization': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['participants.Organization']"})
+            'organization': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
         'session.day': {
             'Meta': {'object_name': 'Day'},
-            'day': ('django.db.models.fields.DateField', [], {'default': 'datetime.datetime(2012, 9, 18, 0, 0)'}),
+            'day': ('django.db.models.fields.DateField', [], {'default': 'datetime.datetime(2012, 11, 18, 0, 0)'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
@@ -136,9 +133,11 @@ class Migration(SchemaMigration):
         },
         'session.session': {
             'Meta': {'object_name': 'Session'},
+            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'description': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'difficulty': ('django.db.models.fields.CharField', [], {'default': "'Beginner'", 'max_length': '30'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'auto_now_add': 'True', 'blank': 'True'}),
             'presenters': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['participants.Participant']", 'symmetrical': 'False'}),
             'room': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['session.Room']"}),
             'slot': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['session.Slot']"}),

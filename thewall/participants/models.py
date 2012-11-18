@@ -15,7 +15,7 @@ class Organization(models.Model):
 class Participant(models.Model):
 	"""Presenter Information"""
 	name = models.CharField(max_length=100)
-	organization = models.ForeignKey(Organization)
+	organization = models.CharField(max_length=100)
 	attendeenumber = models.IntegerField(blank=True, null=True)
 
 	class Admin:

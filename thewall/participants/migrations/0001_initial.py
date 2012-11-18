@@ -19,7 +19,7 @@ class Migration(SchemaMigration):
         db.create_table('participants_participant', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('organization', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['participants.Organization'])),
+            ('organization', self.gf('django.db.models.fields.CharField')(max_length=100)),
             ('attendeenumber', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
         ))
         db.send_create_signal('participants', ['Participant'])
@@ -44,7 +44,7 @@ class Migration(SchemaMigration):
             'attendeenumber': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'organization': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['participants.Organization']"})
+            'organization': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         }
     }
 
