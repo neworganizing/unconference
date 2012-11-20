@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
+from optparse import make_option
 from eventbrite import EventbriteClient
 
 from thewall.settings import EB_USERKEY, EB_APPKEY, EB_OAUTHKEY, EB_EVENTID
@@ -8,6 +9,15 @@ from thewall.participants.models import Participant
 class Command(BaseCommand):
     """Pull all the attendees from Eventbrite"""
     help = "Pull all attendees from Eventbrite"
+
+    option_list = BaseCommand.option_list + (
+        make_option('--list',
+            '-l',
+            action='store_true',
+            dest='list',
+            default=False,
+            help='List all attendees'),
+    )
 
     def handle(self, *args, **options):
         # Try to start a connection with eventbrite, this will work with both the EventBrite OAuth2 method and a app/user key
@@ -29,10 +39,11 @@ class Command(BaseCommand):
 
         # Setup our counters
         handled = 0
-        created = 0
+        numcreated = 0
         modified = 0
 
         # Loop over all our attendees
+        print "Adding/Updating Attendee Database"
         for x in attendees:
 
             # EB returns a dictionary with all attendee data under 'attendee', lets just assign the value of that dictionary to a variable
@@ -67,11 +78,12 @@ class Command(BaseCommand):
 
             # As get_or_create returns a touple, lets test to see if a new object is created and increase our counter
             if created == True:
-                created += 1
+                numcreated += 1
 
             # Lets print out some basic information for the individual running the sync
-            print "%s %s %s" % (name, org, number)
+            if options['list']:
+                print '%s %s %s' % (name, org, number)
             handled += 1
 
         # Some final stats
-        return("\n%i Attendees\n%i Added to Database\n%i Modified\n" % (handled, created, modified))
+        return("\n%i Attendees\n%i Added to Database\n%i Modified\n" % (handled, numcreated, modified))
