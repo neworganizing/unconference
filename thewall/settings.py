@@ -1,6 +1,18 @@
 import dj_database_url
+from os import environ
+from sys import exc_info
 
-DEBUG = True
+# Helper lambda for gracefully degrading env variables. Taken from http://rdegges.com/devops-django-part-3-the-heroku-way
+env = lambda e, d: environ[e] if environ.has_key(e) else d
+
+# EventBrite API Info
+EB_APPKEY = env('EB_APPKEY', None)
+EB_USERKEY = env('EB_USERKEY', None)
+EB_OAUTHKEY = env('EB_OAUTHKEY', None)
+EB_EVENTID = env('EB_EVENTID', None)
+
+
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
