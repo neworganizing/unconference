@@ -9,3 +9,6 @@ psycopg2==2.4.5
 readline==6.2.2
 wsgiref==0.1.2
 eventbrite==0.45
+unipath==0.2.1
+django-storages==1.1.5
+boto==2.6.0

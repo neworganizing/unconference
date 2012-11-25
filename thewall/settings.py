@@ -2,6 +2,8 @@ import dj_database_url
 from os import environ
 from sys import exc_info
 
+from unipath import FSPath as Path
+
 # Helper lambda for gracefully degrading env variables. Taken from http://rdegges.com/devops-django-part-3-the-heroku-way
 env = lambda e, d: environ[e] if environ.has_key(e) else d
 
@@ -11,6 +13,8 @@ EB_USERKEY = env('EB_USERKEY', None)
 EB_OAUTHKEY = env('EB_OAUTHKEY', None)
 EB_EVENTID = env('EB_EVENTID', None)
 
+BASE = Path(__file__).absolute().ancestor(2)
+APP = Path(__file__).absolute().ancestor(1)
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -46,42 +50,35 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
-# Absolute filesystem path to the directory that will hold user-uploaded files.
-# Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = ''
 
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash.
-# Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = '/media/'
 
-# Absolute path to the directory static files should be collected to.
-# Don't put anything in this directory yourself; store your static files
-# in apps' "static/" subdirectories and in STATICFILES_DIRS.
-# Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = ''
+if environ.has_key('AWS_STORAGE_BUCKET'):
+    AWS_STORAGE_BUCKET_NAME = environ['AWS_STORAGE_BUCKET']
+    AWS_ACCESS_KEY_ID = environ['AWS_ACCESS_KEY_ID']
+    AWS_SECRET_ACCESS_KEY = environ['AWS_SECRET_ACCESS_KEY']
+    STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+    S3_URL = 'http://%s.s3.amazonaws.com/' % AWS_STORAGE_BUCKET_NAME
+    STATIC_URL = S3_URL
+    ADMIN_MEDIA_PREFIX = STATIC_URL + 'admin/'
+else:
+    STATIC_URL = '/static/'
 
-# URL prefix for static files.
-# Example: "http://media.lawrence.com/static/"
-STATIC_URL = '/static/'
 
-# Additional locations of static files
+MEDIA_ROOT = BASE.child('media')
+STATIC_ROOT = BASE.child('static')
 STATICFILES_DIRS = (
-    # Put strings here, like "/home/html/static" or "C:/www/django/static".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
+    BASE.child('design'),
 )
-
-# List of finder classes that know how to find static files in
-# various locations.
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = 'lo7i8ko)i00be5!%45*l2i6_1$5ylbkv-w1nk87#ge9f^)(cv@'
+# Make this unique, and don't share it with anybody. 
+SECRET_KEY = env('SECRET_KEY', 'lo7i8ko)i00be5!%45*l2i6_1$5ylbkv-w1nk87#ge9f^)(cv@')
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -129,6 +126,8 @@ INSTALLED_APPS = (
 	# 3rd Party Apps We Need
 	'djangorestframework',
 	'south',
+    'storages',
+    'boto',
 	
 	# Our Apps
 	'thewall.session',
