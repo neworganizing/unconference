@@ -6,7 +6,7 @@
                     <select id="time-dropdown" name="time">
                         <option value="all">All Timeslots</option>
                         {% for day in days %}
-                        <option value="{{day.name|slugify}},d{{ day.id }}">All Day {{ day.name }}</option>
+                        <option value="{{day.name|slugify}},d{{ day.id }}">All {{ day.name }} Timeslots</option>
                         {% endfor %}
                         {% for slot in slots %}
                         <option value="{{ slot.day.name|slugify }}-{{ slot.start_time|date:"gi"|slugify }},s{{ slot.id }}">{{ slot.day.name }} {{ slot.start_time }} - {{ slot.end_time }}</option>
