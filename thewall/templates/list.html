@@ -1,0 +1,43 @@
+{% extends "wrapper.html" %}
+{% block content %}
+{% for session in currentsessions %}
+{% if forloop.first %}
+<div class="row"><div class="span12"><h2>Upcoming Sessions</h2></div></div>
+{% endif %}
+{% ifchanged session.slot %}
+<div class="row"><div class="span12"><h4>{{ session.slot.day }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</h4></div></div>
+{% endifchanged %}
+<div class="row event sessioninfo">
+    <div class="row"><div class="span3 time-location">
+    <ul>
+        <li class="time">{{ session.slot.day }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</li>
+        <li class="location">Room {{ session.room.name }}</li>
+    </ul>
+    </div>
+    <div class="lastspan9">
+        <a href="#">{{ session.title }}</a>
+    </div></div>
+    </div>
+
+{% endfor %}
+{% for session in pastsessions %}
+{% if forloop.first %}
+<div class="row"><div class="span12"><h2>Upcoming Sessions</h2></div></div>
+{% endif %}
+{% ifchanged session.slot %}
+<div class="row"><div class="span12"><h4>{{ session.slot.day }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</h4></div></div>
+{% endifchanged %}
+<div class="row event sessioninfo">
+    <div class="row"><div class="span3 time-location">
+    <ul>
+        <li class="time">{{ session.slot.day }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</li>
+        <li class="location">Room {{ session.room.name }}</li>
+    </ul>
+    </div>
+    <div class="lastspan9">
+        <a href="#">{{ session.title }}</a>
+    </div></div>
+    </div>
+
+{% endfor %}
+{% endblock content %}
