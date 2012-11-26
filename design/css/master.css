@@ -1872,7 +1872,9 @@ legend + .control-group {
   border-radius: 4px;
 }
 .dropdowns button {
-  background: #ddd;
+  margin-top: 37px;
+  background: #6F6F6F;
+  color: white;
   height: 40px;
 }
 .event {

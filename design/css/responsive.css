@@ -298,6 +298,9 @@ Modified from Bootstrap 2.2.1
     margin-top: 10px;
     margin-bottom: 10px;
   }
+  .dropdowns button {
+    margin-top: inherit;
+  }
   .below-filter {
     display: none;
   }
