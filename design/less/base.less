@@ -53,14 +53,14 @@
     a {
         display: block;
         width: 100%;
+        min-height: 40px;
         color: @textColor;
         text-decoration: none;
-        .details:before {
-            content: " - ";
-        }
         .details {
-
             color: @linkColor;
+            &:before {
+                content: " - ";
+            }
         }
     }
     .time-location {

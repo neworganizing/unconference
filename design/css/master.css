@@ -1894,14 +1894,15 @@ legend + .control-group {
 .event a {
   display: block;
   width: 100%;
+  min-height: 40px;
   color: #000000;
   text-decoration: none;
 }
-.event a .details:before {
-  content: " - ";
-}
 .event a .details {
   color: #0088cc;
+}
+.event a .details:before {
+  content: " - ";
 }
 .event .time-location ul {
   list-style-type: none;

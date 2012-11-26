@@ -275,8 +275,11 @@ Modified from Bootstrap 2.2.1
   .time-location li {
     display: inline;
   }
-  .time-location .location:before {
-    content: " - ";
+  .time-location .datetime {
+    font-size: 0.75em;
+  }
+  .time-location .location {
+    font-weight: bold;
   }
   .event {
     width: inherit;
@@ -284,6 +287,9 @@ Modified from Bootstrap 2.2.1
   }
   .event .span12 {
     width: inherit;
+  }
+  .event a {
+    min-height: inherit;
   }
   .dropdowns label {
     display: none;
