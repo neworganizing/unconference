@@ -25,5 +25,4 @@ class Participant(models.Model):
 	def __unicode__(self):
 		return self.name + " (" + self.organization + ")"
 
-admin.site.register(Organization)
 admin.site.register(Participant)
