@@ -8,6 +8,6 @@ def general(request):
 def session_times(request):
     # Return all available session days, slots and rooms
     day = Day.objects.all().order_by('day')
-    slots = Slot.objects.filter(day=day[0]).order_by('start_time')
+    slots = Slot.objects.all().order_by('day__day','start_time')
     room = Room.objects.select_related().all().order_by('floor','name')
     return {'days': day, 'slots': slots, 'rooms': room}

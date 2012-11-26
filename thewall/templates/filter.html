@@ -1,22 +1,15 @@
         <div class="row dropdowns">
-            <div class="span3">
-                <label for="day-dropdown">Day</label>
-                <div class="styled-select">
-                    <select id="day-dropdown">
-                        <option>All Days</option>
-                        {% for day in days %}
-                            <option>{{ day.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            <div class="span3">
+            <form action="/filter" method="post">
+                <div class="span6">
                 <label for="time-dropdown">Time</label>
                 <div class="styled-select">
-                    <select id="time-dropdown">
-                        <option>All Timeslots</option>
+                    <select id="time-dropdown" name="time">
+                        <option value="all">All Timeslots</option>
+                        {% for day in days %}
+                        <option value="{{day.name|slugify}},d{{ day.id }}">All Day {{ day.name }}</option>
+                        {% endfor %}
                         {% for slot in slots %}
-                        <option>{{ slot.start_time }} - {{ slot.end_time }}</option>
+                        <option value="{{ slot.day.name|slugify }}-{{ slot.start_time|date:"gi"|slugify }},s{{ slot.id }}">{{ slot.day.name }} {{ slot.start_time }} - {{ slot.end_time }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -24,10 +17,10 @@
             <div class="span3">
                 <label for="room-dropdown">Room</label>
                 <div class="styled-select">
-                    <select id="room-dropdown">
-                        <option>All Rooms</option>
+                    <select id="room-dropdown" name="room">
+                        <option value="all">All Rooms</option>
                         {% for room in rooms %}
-                        <option>{{ room.name }}</option>
+                        <option value="{{ room.name|slugify }},{{ room.id }}">{{ room.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -36,5 +29,7 @@
                 <label>Submit</label>
                 <button type="submit">Find</button>
             </div>
+            {% csrf_token %}
+            </form>
         </div>
         <hr class="below-filter">
