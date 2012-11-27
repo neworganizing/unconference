@@ -10,4 +10,5 @@ def session_times(request):
     day = Day.objects.all().order_by('day')
     slots = Slot.objects.all().order_by('day__day','start_time')
     room = Room.objects.select_related().all().order_by('floor','name')
-    return {'days': day, 'slots': slots, 'rooms': room}
+    tag = SessionTag.objects.all()
+    return {'days': day, 'slots': slots, 'rooms': room, 'tags': tag}

@@ -1,6 +1,6 @@
         <div class="row dropdowns">
             <form action="/filter" method="post">
-                <div class="span6">
+                <div class="span5">
                 <label for="time-dropdown">Slot</label>
                 <div class="styled-select">
                     <select id="time-dropdown" name="time">
@@ -14,7 +14,18 @@
                     </select>
                 </div>
             </div>
-            <div class="span4">
+            <div class="span3">
+                <label for="room-dropdown">Tag</label>
+                <div class="styled-select">
+                    <select id="room-dropdown" name="room">
+                        <option value="all">All Tags</option>
+                        {% for tag in tags %}
+                        <option value="{{ tag.tag|slugify }},{{ tag.id }}">{{ tag.tag }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="span2">
                 <label for="room-dropdown">Room</label>
                 <div class="styled-select">
                     <select id="room-dropdown" name="room">
