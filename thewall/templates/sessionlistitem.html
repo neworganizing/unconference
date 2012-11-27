@@ -16,18 +16,17 @@
     <div class="lastspan9">
         {{ session.title }} <a href="#" class="sessionlink" data-session_id="{{ session.id }}"><span class="details session{{ session.id}}-detailslink">More Details</span></a>
     </div></div>
-    <div class="row session{{ session.id }}-details" style="display: none">
-        <div class="span6">
-            <hr />
-            Presented By
+    <div class="row sessioninfo session{{ session.id }}-details" style="display: none">
+        <div class="row" class="description-row"><hr /><div class="span12 description-span"><h5>Description</h5>{{ session.description }}</div></div>
+        <div class="row"><div class="span6">
+            <h5>Presented By</h5>
             <ul class="presenter-list session{{ session.id }}-presenterlist">
             </ul>
         </div>
         <div class="lastspan6">
-            <hr />
-            Tags
+            <h5>Tags</h5>
             <ul class="presenter-list session{{ session.id }}-taglist">
             </ul>
-        </div>
+        </div></div>
     </div>
     </div>

@@ -308,6 +308,13 @@ Modified from Bootstrap 2.2.1
     margin-top: 5px;
     margin-bottom: 5px;
   }
+  .sessioninfo h5 {
+    margin: ;
+    padding-top: 5px;
+  }
+  .sessioninfo .description-span {
+    padding: 0;
+  }
 }
 @media (max-width: 480px) {
   input[type="checkbox"],
