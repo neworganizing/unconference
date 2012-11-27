@@ -1894,9 +1894,6 @@ legend + .control-group {
   margin: 0;
 }
 .event a {
-  display: block;
-  width: 100%;
-  min-height: 40px;
   color: #000000;
   text-decoration: none;
 }

@@ -64,7 +64,7 @@
             </div>
         </div>
         <hr class="below-filter">
-<!--<div class="row"><div class="span12 eventlist-heading"><h2>Day 1 Sessions</h2></div></div>
+<div class="row"><div class="span12 eventlist-heading"><h2>Day 1 Sessions</h2></div></div>
 <div class="row"><div class="span12 eventlist-heading"><h4>Block 2: 1:00 - 1:50PM</h4></div></div>
 <div class="row event">
     <div class="span3 time-location">
@@ -79,18 +79,25 @@
     </div>
 </div>
 <div class="row event">
-    <div class="span3 time-location">
-        <ul>
-            <li class="time">Friday 1:00 - 1:50PM</li>
-            <li class="location">Room 141B</li>
-        </ul>
+<div class="span3 time-location">
+    <ul class="">
+        <li class="datetime">
+            <div>
+            <ul>
+                <li class="day">Friday</li>
+                <li class="time">12:00PM - 1:01PM</li>
+            </ul>
+        </div>
+        </li>
+        <li class="location">Room 102A</li>
+    </ul>
     </div>
     <div class="lastspan9">
         <a href="#">#WalmartStrikers: Staff, allies and OUR Walmart members debrief the first-ever strike of Walmart workers in Walmart's 50-year history
         <span class="details">More Details</a>
     </div>
 </div>
-<hr>-->
+<hr>
 <div class="row event sessioninfo">
     <div class="row">
         <div class="span3 time-location">
@@ -110,7 +117,9 @@
             <hr />
             Presented By
             <ul>
-                <li class="presenters">Nick Catalano</li>
+            {% for presenter in session.presenters.all %}
+                <li class="presenters">{{ presenter.name }} ({{ presenter.organization }})</li>
+            {% endfor %}
             </ul>
             
         </div>

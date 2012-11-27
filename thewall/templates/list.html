@@ -7,53 +7,20 @@
 {% ifchanged session.slot %}
 <div class="row"><div class="span12"><h4>{{ session.slot.day }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</h4></div></div>
 {% endifchanged %}
-<div class="row event sessioninfo">
-    <div class="row">
-        <div class="span3 time-location">
-    <ul class="">
-        <li class="datetime">
-            <div>
-            <ul>
-                <li class="day">{{ session.slot.day }}</li>
-                <li class="time">{{ session.slot.start_time }} - {{ session.slot.end_time }}</li>
-            </ul>
-        </div>
-        </li>
-        <li class="location">Room {{ session.room.name }}</li>
-    </ul>
-    </div>
-    <div class="lastspan9">
-        <a href="/{{ session.slot.day.name|slugify }}-{{ session.slot.start_time|date:"gi"|slugify }},s{{ session.slot.id }}/{{ session.room.name|slugify }},{{ session.room.id }}/">{{ session.title }} <span class="details">More Details</span></a>
-    </div></div>
-    </div>
-
+{% include "sessionlistitem.html" %}
 {% endfor %}
+
 {% for session in pastsessions %}
 {% if forloop.first %}
-<div class="row"><div class="span12"><h2>Upcoming Sessions</h2></div></div>
+<div class="row"><div class="span12"><h2>Past Sessions</h2></div></div>
 {% endif %}
 {% ifchanged session.slot %}
 <div class="row"><div class="span12"><h4>{{ session.slot.day }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</h4></div></div>
 {% endifchanged %}
-<div class="row event sessioninfo">
-    <div class="row">
-        <div class="span3 time-location">
-    <ul class="">
-        <li class="datetime">
-            <div>
-            <ul>
-                <li class="day">{{ session.slot.day }}</li>
-                <li class="time">{{ session.slot.start_time }} - {{ session.slot.end_time }}</li>
-            </ul>
-        </div>
-        </li>
-        <li class="location">Room {{ session.room.name }}</li>
-    </ul>
-    </div>
-    <div class="lastspan9">
-        <a href="/{{ session.slot.day.name|slugify }}-{{ session.slot.start_time|date:"gi"|slugify }},s{{ session.slot.id }}/{{ session.room.name|slugify }},{{ session.room.id }}/">{{ session.title }}</a>
-    </div></div>
-    </div>
+{% include "sessionlistitem.html" %}
 
 {% endfor %}
+<div class=".result">
+
+</div>
 {% endblock content %}

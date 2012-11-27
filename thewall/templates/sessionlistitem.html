@@ -1,0 +1,33 @@
+<div class="row event sessioninfo">
+    <div class="row">
+        <div class="span3 time-location">
+    <ul class="">
+        <li class="datetime">
+            <div>
+            <ul>
+                <li class="day">{{ session.slot.day }}</li>
+                <li class="time">{{ session.slot.start_time }} - {{ session.slot.end_time }}</li>
+            </ul>
+        </div>
+        </li>
+        <li class="location">Room {{ session.room.name }}</li>
+    </ul>
+    </div>
+    <div class="lastspan9">
+        {{ session.title }} <a href="#" class="sessionlink" data-session_id="{{ session.id }}"><span class="details session{{ session.id}}-detailslink">More Details</span></a>
+    </div></div>
+    <div class="row session{{ session.id }}-details" style="display: none">
+        <div class="span6">
+            <hr />
+            Presented By
+            <ul class="presenter-list session{{ session.id }}-presenterlist">
+            </ul>
+        </div>
+        <div class="lastspan6">
+            <hr />
+            Tags
+            <ul class="presenter-list session{{ session.id }}-taglist">
+            </ul>
+        </div>
+    </div>
+    </div>
