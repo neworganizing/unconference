@@ -1,9 +1,10 @@
 from thewall.session.models import *
 from django.contrib.sites.models import get_current_site
+from thewall.settings import GA_ID, GA_DOMAIN
 
 def general(request):
     current_site = get_current_site(request)
-    return {'sitename': current_site.name}
+    return {'sitename': current_site.name, 'GA_ID': GA_ID,'GA_DOMAIN': GA_DOMAIN}
 
 def session_times(request):
     # Return all available session days, slots and rooms
