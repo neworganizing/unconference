@@ -40,7 +40,6 @@ class Command(BaseCommand):
         # Setup our counters
         handled = 0
         numcreated = 0
-        modified = 0
 
         # Loop over all our attendees
         print "Adding/Updating Attendee Database"
@@ -68,14 +67,6 @@ class Command(BaseCommand):
             # get_or_create is a nice helper function here. It will run a SELECT statement for each attendee, so it isn't optimal, but 2000 select queries won't kill the database
             obj, created = Participant.objects.get_or_create(attendeenumber=number, defaults={ 'name': name, 'organization': org })
 
-            # We'll check here to see if the Name and Company data Eventbrite gave us is different from our records. If so, we'll save the updated result
-            if created == False and (obj.name != name or obj.organization != org):
-                obj.name = name
-                obj.organization = org
-                obj.save()
-                # Increment our 'modified' counter by one
-                modified += 1
-
             # As get_or_create returns a touple, lets test to see if a new object is created and increase our counter
             if created == True:
                 numcreated += 1
@@ -86,4 +77,4 @@ class Command(BaseCommand):
             handled += 1
 
         # Some final stats
-        return("\n%i Attendees\n%i Added to Database\n%i Modified\n" % (handled, numcreated, modified))
+        return("\n%i Attendees\n%i Added to Database\n" % (handled, numcreated))
