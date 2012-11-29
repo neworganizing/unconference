@@ -1946,6 +1946,16 @@ legend + .control-group {
 .sessioninfo .title {
   margin-bottom: 15px;
 }
+header a {
+  color: black;
+}
+header a:hover {
+  color: black;
+  text-decoration: none;
+}
+.noresults {
+  text-align: center;
+}
 .pull-right {
   float: right;
 }
