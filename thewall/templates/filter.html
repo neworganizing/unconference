@@ -9,7 +9,7 @@
                         <option value="day-{{ day.id }}">All Day {{ day.name }}</option>
                         {% endfor %}
                         {% for slot in slots %}
-                        <option value="{{ slot.id }}"{% if slot.id|slugify == time_id %} selected="selected"{% endif %}>{{ slot.day.name }} {{ slot.start_time }} - {{ slot.end_time }}</option>
+                        <option value="{{ slot.id }}"{% if slot.id|slugify == time_id %} selected="selected"{% endif %}>{{ slot.day.name }} {{ slot.name }} {{ slot.start_time }} - {{ slot.end_time }}</option>
                         {% endfor %}
                     </select>
                 </div>
