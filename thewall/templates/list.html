@@ -8,7 +8,7 @@
 		{% endif %}
 
 		{% ifchanged session.slot %}
-			<div class="row"><div class="span12"><h4>{{ session.slot.day }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</h4></div></div>
+			<div class="row"><div class="span12"><h4>{{ session.slot.day }} {{ session.slot.name }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</h4></div></div>
 		{% endifchanged %}
 
 		{% include "sessionlistitem.html" %}
@@ -20,7 +20,7 @@
 		{% endif %}
 
 		{% ifchanged session.slot %}
-			<div class="row"><div class="span12"><h4>{{ session.slot.day }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</h4></div></div>
+			<div class="row"><div class="span12"><h4>{{ session.slot.day }} {{ session.slot.name }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</h4></div></div>
 		{% endifchanged %}
 		
 		{% include "sessionlistitem.html" %}
