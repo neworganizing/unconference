@@ -18,11 +18,5 @@ class Participant(models.Model):
 	organization = models.CharField(max_length=100)
 	attendeenumber = models.IntegerField(blank=True, null=True)
 
-	class Admin:
-		list_display = ('name','organization',)
-		search_fields = ('name','attedneenumber',)
-
 	def __unicode__(self):
 		return self.name + " (" + self.organization + ")"
-
-admin.site.register(Participant)

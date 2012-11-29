@@ -42,6 +42,9 @@ class Slot(models.Model):
 		list_filter = ('day')
 		search_fields = ('',)
 
+	class Meta:
+		ordering = ('day__day','start_time',)
+
 	def __unicode__(self):
 		return self.day.name + " " + self.name + " (" + datetime.time.strftime(self.start_time,"%I:%M %p") + " - " + datetime.time.strftime(self.end_time,"%I:%M %p") + ")"
 
