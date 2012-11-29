@@ -139,12 +139,25 @@ INSTALLED_APPS = (
 	'south',
     'storages',
     'boto',
-	
+	'ajax_select',
+
 	# Our Apps
 	'thewall.session',
 	'thewall.participants',
 
 )
+
+# Third party configuration
+
+# define the lookup channels in use on the site
+AJAX_LOOKUP_CHANNELS = {
+    #   pass a dict with the model and the field to search against
+    'participant'  : {'model':'participants.participant', 'search_field':'name'}
+}
+
+# magically include jqueryUI/js/css
+AJAX_SELECT_BOOTSTRAP = True
+AJAX_SELECT_INLINES = 'inline'
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to

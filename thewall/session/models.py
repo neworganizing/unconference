@@ -85,9 +85,9 @@ class Session(models.Model):
 	created = models.DateTimeField(auto_now_add=True)
 	modified = models.DateTimeField(auto_now=True, auto_now_add=True)
 
-	class Admin:
-		list_display = ('',)
-		search_fields = ('',)
+	#class Admin:
+	#	list_display = ('',)
+	#	search_fields = ('',)
 
 	def __unicode__(self):
 		return self.title
@@ -98,4 +98,4 @@ admin.site.register(Day)
 admin.site.register(Room)
 admin.site.register(Venue)
 admin.site.register(SessionTag)
-admin.site.register(Session)
+#admin.site.register(Session)

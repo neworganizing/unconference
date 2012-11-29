@@ -12,3 +12,4 @@ eventbrite==0.45
 unipath==0.2.1
 django-storages==1.1.5
 boto==2.6.0
+django-ajax-selects==1.2.5
