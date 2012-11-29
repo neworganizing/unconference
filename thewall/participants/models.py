@@ -19,8 +19,8 @@ class Participant(models.Model):
 	attendeenumber = models.IntegerField(blank=True, null=True)
 
 	class Admin:
-		list_display = ('',)
-		search_fields = ('',)
+		list_display = ('name','organization',)
+		search_fields = ('name','attedneenumber',)
 
 	def __unicode__(self):
 		return self.name + " (" + self.organization + ")"

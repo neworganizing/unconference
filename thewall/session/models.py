@@ -40,7 +40,7 @@ class Slot(models.Model):
 		search_fields = ('',)
 
 	def __unicode__(self):
-		return "Day: " + self.day.name + " Session: " + self.name
+		return self.day.name + " " + self.name + " (" + datetime.time.strftime(self.start_time,"%I:%M %p") + " - " + datetime.time.strftime(self.end_time,"%I:%M %p") + ")"
 
 class Venue(models.Model):
 	"""Venue Location"""
@@ -70,7 +70,7 @@ class Room(models.Model):
 		search_fields = ('',)
 
 	def __unicode__(self):
-		return self.name + " in " + self.venue.name
+		return self.name
 
 
 class Session(models.Model):
