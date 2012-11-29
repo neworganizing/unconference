@@ -26,6 +26,9 @@ class Day(models.Model):
 	def __unicode__(self):
 		return self.name
 
+	def day_slug(self):
+		return "day-%s" % self.pk
+
 
 class Slot(models.Model):
 	"""Timeslots"""
