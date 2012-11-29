@@ -1903,6 +1903,9 @@ legend + .control-group {
 .event a .details:before {
   content: " - ";
 }
+.event .editlink a {
+  color: #0088cc;
+}
 .event .time-location ul {
   list-style-type: none;
   padding: 0;

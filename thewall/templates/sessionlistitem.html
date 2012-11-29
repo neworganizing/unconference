@@ -11,6 +11,7 @@
         </div>
         </li>
         <li class="location">Room {{ session.room.name }}</li>
+        {% if user.is_staff %}<li class="editlink"><a href="{% url admin:session_session_change session.id %}">Edit This Entry</a></li>{% endif %}
     </ul>
     </div>
     <div class="lastspan9">
