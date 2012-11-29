@@ -1,6 +1,7 @@
 from django.http import Http404
 from django.shortcuts import redirect, render_to_response
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 
 from thewall.session.models import Session, Room, Venue, Slot, Day, SessionTag
 
@@ -8,11 +9,16 @@ from thewall.utility.decorators import render_to
 
 import datetime
 
+current_sessions_filter = (Q(slot__day__day__gt=datetime.datetime.today) | (Q(slot__day__day=datetime.datetime.today) & Q(slot__start_time__gte=datetime.datetime.now)))
+past_sessions_filter = (Q(slot__day__day__lt=datetime.datetime.today) | (Q(slot__day__day=datetime.datetime.today) & Q(slot__start_time__lte=datetime.datetime.now)))
+
+
 @render_to()
 def home(request):
+
     return { 
-        'currentsessions': Session.objects.select_related().filter(slot__day__day__gte=datetime.datetime.today).order_by('slot__day','slot__start_time'),
-        'pastsessions': Session.objects.select_related().filter(slot__day__day__lt=datetime.datetime.today).order_by('slot__day','slot__start_time'),
+        'currentsessions': Session.objects.select_related().filter(current_sessions_filter).order_by('slot__day','slot__start_time'),
+        'pastsessions': Session.objects.select_related().filter(past_sessions_filter).order_by('slot__day','slot__start_time'),
         'template': 'list.html'
     }
 
@@ -22,8 +28,8 @@ def results(request):
         return redirect('/')
 
     context = dict(
-        currentsessions = Session.objects.select_related().filter(slot__day__day__gte=datetime.datetime.today).order_by('slot__day','slot__start_time'),
-        pastsessions = Session.objects.select_related().filter(slot__day__day__lt=datetime.datetime.today).order_by('slot__day','slot__start_time'),
+        currentsessions = Session.objects.select_related().filter(current_sessions_filter).order_by('slot__day','slot__start_time'),
+        pastsessions = Session.objects.select_related().filter(past_sessions_filter).order_by('slot__day','slot__start_time'),
         time_id = request.session['time'],
         tag_id = request.session['tag'],
         room_id = request.session['room'],
