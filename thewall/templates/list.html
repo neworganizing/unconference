@@ -1,26 +1,32 @@
 {% extends "wrapper.html" %}
+
 {% block content %}
-{% for session in currentsessions %}
-{% if forloop.first %}
-<div class="row"><div class="span12"><h2>Upcoming Sessions</h2></div></div>
-{% endif %}
-{% ifchanged session.slot %}
-<div class="row"><div class="span12"><h4>{{ session.slot.day }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</h4></div></div>
-{% endifchanged %}
-{% include "sessionlistitem.html" %}
-{% endfor %}
+	{% for session in currentsessions %}
+		{% if forloop.first %}
+			<div class="row"><div class="span12"><h2>Upcoming Sessions</h2></div></div>
+		{% endif %}
 
-{% for session in pastsessions %}
-{% if forloop.first %}
-<div class="row"><div class="span12"><h2>Past Sessions</h2></div></div>
-{% endif %}
-{% ifchanged session.slot %}
-<div class="row"><div class="span12"><h4>{{ session.slot.day }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</h4></div></div>
-{% endifchanged %}
-{% include "sessionlistitem.html" %}
+		{% ifchanged session.slot %}
+			<div class="row"><div class="span12"><h4>{{ session.slot.day }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</h4></div></div>
+		{% endifchanged %}
 
-{% endfor %}
-<div class=".result">
+		{% include "sessionlistitem.html" %}
+	{% endfor %}
 
-</div>
+	{% for session in pastsessions %}
+		{% if forloop.first %}
+			<div class="row"><div class="span12"><h2>Past Sessions</h2></div></div>
+		{% endif %}
+
+		{% ifchanged session.slot %}
+			<div class="row"><div class="span12"><h4>{{ session.slot.day }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</h4></div></div>
+		{% endifchanged %}
+		
+		{% include "sessionlistitem.html" %}
+
+	{% endfor %}
+
+	<div class=".result">
+
+	</div>
 {% endblock content %}

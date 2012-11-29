@@ -6,10 +6,11 @@
                     <select id="time-dropdown" name="time">
                         <option value="all">All Timeslots</option>
                         {% for day in days %}
-                        <option value="day-{{ day.id }}">All Day {{ day.name }}</option>
+                            <option value="day-{{ day.id }}"{% if day.day_slug == time_id %} selected="selected"{% endif %}>All Day {{ day.name }}</option>
                         {% endfor %}
+                        
                         {% for slot in slots %}
-                        <option value="{{ slot.id }}"{% if slot.id|slugify == time_id %} selected="selected"{% endif %}>{{ slot.day.name }} {{ slot.name }} {{ slot.start_time }} - {{ slot.end_time }}</option>
+                            <option value="{{ slot.id }}"{% if slot.id|slugify == time_id %} selected="selected"{% endif %}>{{ slot.day.name }} {{ slot.name }} {{ slot.start_time }} - {{ slot.end_time }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -20,7 +21,7 @@
                     <select id="room-dropdown" name="tag">
                         <option value="all">All Tags</option>
                         {% for tag in tags %}
-                        <option value="{{ tag.id }}"{% if tag.id|slugify == tag_id %} selected="selected"{% endif %}>{{ tag.tag }}</option>
+                            <option value="{{ tag.id }}"{% if tag.id|slugify == tag_id %} selected="selected"{% endif %}>{{ tag.tag }}</option>
                         {% endfor %}
                     </select>
                 </div>
