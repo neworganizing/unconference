@@ -22,7 +22,8 @@ def results(request):
         return redirect('/')
 
     return {
-        'awesome': request.session['time'],
+        'currentsessions': Session.objects.select_related().filter(slot__day__day__gte=datetime.datetime.today).order_by('slot__day','slot__start_time'),
+        'pastsessions': Session.objects.select_related().filter(slot__day__day__lt=datetime.datetime.today).order_by('slot__day','slot__start_time'),
         'time_id': request.session['time'],
         'tag_id': request.session['tag'],
         'room_id': request.session['room'],
