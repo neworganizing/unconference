@@ -1,5 +1,6 @@
 from django.http import Http404
 from django.shortcuts import redirect, render_to_response
+from django.core.urlresolvers import reverse
 
 from thewall.session.models import Session, Room, Venue, Slot, Day, SessionTag
 
@@ -15,9 +16,25 @@ def home(request):
         'template': 'list.html'
     }
 
+@render_to()
+def results(request):
+    if 'time' not in request.session:
+        return redirect('/')
+
+    return {
+        'awesome': request.session['time'],
+        'time_id': request.session['time'],
+        'tag_id': request.session['tag'],
+        'room_id': request.session['room'],
+        'template': 'list.html'
+    }
 
 def filter(request):
-    if request.method == 'GET':
+    if not request.POST['time']:
         raise Http404
 
-    return redirect("/%s/%s/" % (request.POST['time'],request.POST['room']))
+    request.session['time'] = request.POST['time']
+    request.session['tag'] = request.POST['tag']
+    request.session['room'] = request.POST['room']
+
+    return redirect(reverse('results'))

@@ -6,10 +6,10 @@
                     <select id="time-dropdown" name="time">
                         <option value="all">All Timeslots</option>
                         {% for day in days %}
-                        <option value="{{day.name|slugify}},d{{ day.id }}">All Day {{ day.name }}</option>
+                        <option value="day-{{ day.id }}">All Day {{ day.name }}</option>
                         {% endfor %}
                         {% for slot in slots %}
-                        <option value="{{ slot.day.name|slugify }}-{{ slot.start_time|date:"g"|slugify }},s{{ slot.id }}">{{ slot.day.name }} {{ slot.start_time }} - {{ slot.end_time }}</option>
+                        <option value="{{ slot.id }}"{% if slot.id|slugify == time_id %} selected="selected"{% endif %}>{{ slot.day.name }} {{ slot.start_time }} - {{ slot.end_time }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -17,10 +17,10 @@
             <div class="span3">
                 <label for="room-dropdown">Tag</label>
                 <div class="styled-select">
-                    <select id="room-dropdown" name="room">
+                    <select id="room-dropdown" name="tag">
                         <option value="all">All Tags</option>
                         {% for tag in tags %}
-                        <option value="{{ tag.tag|slugify }},{{ tag.id }}">{{ tag.tag }}</option>
+                        <option value="{{ tag.id }}"{% if tag.id|slugify == tag_id %} selected="selected"{% endif %}>{{ tag.tag }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -31,7 +31,7 @@
                     <select id="room-dropdown" name="room">
                         <option value="all">All Rooms</option>
                         {% for room in rooms %}
-                        <option value="{{ room.name|slugify }},{{ room.id }}">{{ room.name }}</option>
+                        <option value="{{ room.id }}"{% if room.id|slugify == room_id %} selected="selected"{% endif %}>{{ room.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
