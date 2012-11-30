@@ -10,7 +10,7 @@ from thewall.participants.models import Participant
 class SessionAdmin(AjaxSelectAdmin):
     list_filter = ('slot','tags','room',)
     list_display = ('title','room','slot','description',)
-    search_fields = ('title','presenter__name',)
+    search_fields = ('title','presenters__name',)
 
     form = make_ajax_form(Session, {'presenters': 'participant'})
     formfield_overrides = { models.ManyToManyField: {'widget': SelectMultiple(attrs={'size':'15'})}, }
