@@ -81,7 +81,7 @@ class Room(models.Model):
 
 class Session(models.Model):
 	"""Actual Sessions"""
-	title = models.CharField(max_length=120)
+	title = models.TextField()
 	description = models.TextField()
 	presenters = models.ManyToManyField(Participant)
 	tags = models.ManyToManyField(SessionTag)
