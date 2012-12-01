@@ -18,7 +18,7 @@ def home(request):
 
     return { 
         'currentsessions': Session.objects.select_related().filter(current_sessions_filter).order_by('slot__day','slot__start_time'),
-        'pastsessions': Session.objects.select_related().filter(past_sessions_filter).order_by('slot__day','slot__start_time'),
+        'pastsessions': Session.objects.select_related().filter(past_sessions_filter).order_by('-slot__day','-slot__start_time'),
         'template': 'list.html'
     }
 
@@ -29,7 +29,7 @@ def results(request):
 
     context = dict(
         currentsessions = Session.objects.select_related().filter(current_sessions_filter).order_by('slot__day','slot__start_time'),
-        pastsessions = Session.objects.select_related().filter(past_sessions_filter).order_by('slot__day','slot__start_time'),
+        pastsessions = Session.objects.select_related().filter(past_sessions_filter).order_by('-slot__day','-slot__start_time'),
         time_id = request.session['time'],
         tag_id = request.session['tag'],
         room_id = request.session['room'],
