@@ -1,7 +1,7 @@
 {% extends "wrapper.html" %}
 
 {% block content %}
-{% if currentsessions %}
+{% if currentsessions or pastsessions %}
 	{% for session in currentsessions %}
 		{% if forloop.first %}
 			<div class="row"><div class="span12"><h2>Upcoming Sessions</h2></div></div>
