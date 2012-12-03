@@ -14,8 +14,8 @@ EB_OAUTHKEY = env('EB_OAUTHKEY', None)
 EB_EVENTID = env('EB_EVENTID', None)
 
 # Google Aanalytics Information
-GA_ID = env('GA_ID', 'UA-252971-12')
-GA_DOMAIN = env('SITE_DOMAIN', 'rootscamp.org')
+GA_ID = env('GA_ID', None)
+GA_DOMAIN = env('SITE_DOMAIN', None)
 
 BASE = Path(__file__).absolute().ancestor(2)
 APP = Path(__file__).absolute().ancestor(1)
