@@ -136,7 +136,6 @@ INSTALLED_APPS = (
 	
 	# 3rd Party Apps We Need
 	'djangorestframework',
-	'south',
     'storages',
     'boto',
 	'ajax_select',
