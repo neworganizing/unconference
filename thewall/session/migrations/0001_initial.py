@@ -19,7 +19,7 @@ class Migration(SchemaMigration):
         db.create_table('session_day', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('day', self.gf('django.db.models.fields.DateField')(default=datetime.datetime(2012, 11, 18, 0, 0))),
+            ('day', self.gf('django.db.models.fields.DateField')(default=datetime.datetime(2012, 12, 2, 0, 0))),
         ))
         db.send_create_signal('session', ['Day'])
 
@@ -57,8 +57,8 @@ class Migration(SchemaMigration):
         # Adding model 'Session'
         db.create_table('session_session', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=120)),
-            ('description', self.gf('django.db.models.fields.CharField')(max_length=100)),
+            ('title', self.gf('django.db.models.fields.TextField')()),
+            ('description', self.gf('django.db.models.fields.TextField')()),
             ('slot', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['session.Slot'])),
             ('room', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['session.Room'])),
             ('difficulty', self.gf('django.db.models.fields.CharField')(default='Beginner', max_length=30)),
@@ -120,7 +120,7 @@ class Migration(SchemaMigration):
         },
         'session.day': {
             'Meta': {'object_name': 'Day'},
-            'day': ('django.db.models.fields.DateField', [], {'default': 'datetime.datetime(2012, 11, 18, 0, 0)'}),
+            'day': ('django.db.models.fields.DateField', [], {'default': 'datetime.datetime(2012, 12, 2, 0, 0)'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
@@ -134,7 +134,7 @@ class Migration(SchemaMigration):
         'session.session': {
             'Meta': {'object_name': 'Session'},
             'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'description': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
+            'description': ('django.db.models.fields.TextField', [], {}),
             'difficulty': ('django.db.models.fields.CharField', [], {'default': "'Beginner'", 'max_length': '30'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'auto_now_add': 'True', 'blank': 'True'}),
@@ -142,7 +142,7 @@ class Migration(SchemaMigration):
             'room': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['session.Room']"}),
             'slot': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['session.Slot']"}),
             'tags': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['session.SessionTag']", 'symmetrical': 'False'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '120'})
+            'title': ('django.db.models.fields.TextField', [], {})
         },
         'session.sessiontag': {
             'Meta': {'object_name': 'SessionTag'},
@@ -150,7 +150,7 @@ class Migration(SchemaMigration):
             'tag': ('django.db.models.fields.CharField', [], {'max_length': '20'})
         },
         'session.slot': {
-            'Meta': {'object_name': 'Slot'},
+            'Meta': {'ordering': "('day__day', 'start_time')", 'object_name': 'Slot'},
             'day': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['session.Day']"}),
             'end_time': ('django.db.models.fields.TimeField', [], {}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
