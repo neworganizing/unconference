@@ -21,5 +21,5 @@ class MyResource(ModelResource):
 urlpatterns = patterns('',
 	url(r'^restframework', include('djangorestframework.urls', namespace='djangorestframework')),
 	url(r'^$', ListModelView.as_view(resource=MyResource)),
-	url(r'^(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=MyResource)),
+	url(r'^(?P<pk>[^/]+)/$', ListModelView.as_view(resource=MyResource)),
 )
