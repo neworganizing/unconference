@@ -11,7 +11,7 @@ $('.sessionlink').click(function () {
     var session_id = $(this).attr("data-session_id");
 
     $.ajax({
-        url: '/api/' + session_id,
+        url: '/api/' + session_id + '/',
         data: {
             'format': 'json'
         }
@@ -19,7 +19,7 @@ $('.sessionlink').click(function () {
 
         // Handle presenters
         var presenter_list = "";
-        $.each(result['presenters'], function() {
+        $.each(result[0]['presenters'], function() {
             var name = $(this)[0]['name'];
             var org = $(this)[0]['organization'];
             presenter_list += '<li class="presenters">' + name + ' (' + org + ')</li>';
@@ -28,7 +28,7 @@ $('.sessionlink').click(function () {
 
         // Handle Tags
         var tag_list = "";
-        $.each(result['tags'], function() {
+        $.each(result[0]['tags'], function() {
             console.log($(this));
             var tag = $(this)[0]['tag'];
             tag_list += '<li class="tags">' + tag + '</li>'
