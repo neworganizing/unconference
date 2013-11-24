@@ -1,9 +1,11 @@
+"""Views for session app"""
+
 from django.http import Http404
-from django.shortcuts import redirect, render_to_response
+from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 
-from thewall.session.models import Session, Room, Venue, Slot, Day, SessionTag
+from thewall.session.models import Session
 
 from thewall.utility.decorators import render_to
 

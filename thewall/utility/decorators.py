@@ -1,6 +1,7 @@
+"""Decorators for Unconference Project"""
+
 from django.shortcuts import render_to_response
 from django.conf import settings
-from django import forms
 from django.template import RequestContext
 from django.http import HttpResponse
 from django.utils import simplejson
@@ -17,9 +18,9 @@ def render_to(template=None, mimetype="text/html", ajax=False):
             ajax_please = output.pop('ajax', ajax)
             if ajax_please:
                 if settings.DEBUG == True:
-                    return HttpResponse(simplejson.dumps(output,indent=4),mimetype='text/javascript')
+                    return HttpResponse(simplejson.dumps(output, indent=4), mimetype='text/javascript')
                 else:
-                    return HttpResponse(simplejson.dumps(output),mimetype='text/javascript')
+                    return HttpResponse(simplejson.dumps(output), mimetype='text/javascript')
             else:
                 return render_to_response(tmpl, output, context_instance=RequestContext(request), mimetype=mimetype)
         return wrapper

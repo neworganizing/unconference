@@ -1,6 +1,7 @@
+"""Unconference Project Settings"""
+
 import dj_database_url
 from os import environ
-from sys import exc_info
 
 from unipath import FSPath as Path
 
@@ -81,7 +82,7 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-# Make this unique, and don't share it with anybody. 
+# Make this unique, and don't share it with anybody.
 SECRET_KEY = env('SECRET_KEY', 'lo7i8ko)i00be5!%45*l2i6_1$5ylbkv-w1nk87#ge9f^)(cv@')
 
 # List of callables that know how to import templates from various sources.
@@ -133,7 +134,7 @@ INSTALLED_APPS = (
 
 	# Heroku Specific Apps Here
 	'gunicorn',
-	
+
 	# 3rd Party Apps We Need
 	'djangorestframework',
     'storages',
