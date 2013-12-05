@@ -56,11 +56,11 @@ def extract_session(session_data):
 
     # check if room exists, create if not
     room_text = str(session_data['location'])
-    venue = Venue.objects.get(name="Convention Center")
 
     try:
         output['room'] = Room.objects.get(name=room_text)
     except Room.DoesNotExist:
+        venue = Venue.objects.get(name="Convention Center")
         output['room'] = Room.objects.create(name=room_text,floor='',venue=venue)
         output['room'].save()
 
@@ -121,7 +121,7 @@ def refresh(request):
 
     print session_data
 
-    # Loop over existing sessions, removing matches from JSON object and removing sesssions
+    # Loop over existing sessions, removing matches from session data and removing sesssions
     # that no longer exist
     sessions = Session.objects.all()
 
@@ -129,7 +129,6 @@ def refresh(request):
         if not str(session.pk) in session_data:
             # session not found, delete it
             session.delete()
-
         else:
             # session found, update it and remove from list
             fields = extract_session(session_data[str(session.pk)])
@@ -137,8 +136,7 @@ def refresh(request):
             del session_data[str(session.pk)]
 
 
-    # Loop over remaining JSON objects and create new sessions
-
+    # Loop over remaining session data and create new sessions
     for key, session in session_data.iteritems():
         fields = extract_session(session)
         new_session, created = Session.objects.get_or_create(**fields)
