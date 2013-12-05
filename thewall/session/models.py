@@ -17,7 +17,6 @@ class SessionTag(models.Model):
     def __unicode__(self):
         return self.tag
 
-
 class Day(models.Model):
     """Day of Unconference"""
     name = models.CharField(max_length=100)
@@ -31,7 +30,6 @@ class Day(models.Model):
 
     def day_slug(self):
         return "day-%s" % self.pk
-
 
 class Slot(models.Model):
     """Timeslots"""
