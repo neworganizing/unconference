@@ -66,6 +66,7 @@ def extract_session(session_data):
 
     # create session
     output['title'] = str(session_data['name'])
+    output['description'] = session_data['description'].encode('utf-8')
 
     return output
 
@@ -118,6 +119,11 @@ def refresh(request):
                 session_data[id]['location'] = session_tag.find('div', class_='schedule-location').contents[0]
             except IndexError:
                 session_data[id]['location'] = None
+
+            try:
+                session_data[id]['description'] = session_tag.find('div', class_='sched-detail-description').contents[0]
+            except IndexError:
+                session_data[id]['description'] = None
 
     print session_data
 
