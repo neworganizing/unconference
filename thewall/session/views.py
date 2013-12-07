@@ -67,6 +67,7 @@ def extract_session(session_data):
     # create session
     output['title'] = str(session_data['name'])
     output['description'] = session_data['description'].encode('utf-8')
+    output['headline'] = session_data['headline'].encode('utf-8')
 
     return output
 
@@ -113,7 +114,7 @@ def refresh(request):
             try:
                 session_data[id]['headline'] = session_tag.find('div', class_='activity-headline').contents[0]
             except IndexError:
-                session_data[id]['headline'] = None
+                session_data[id]['headline'] = ''
 
             try:
                 session_data[id]['location'] = session_tag.find('div', class_='schedule-location').contents[0]

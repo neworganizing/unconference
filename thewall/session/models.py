@@ -75,6 +75,7 @@ class Session(models.Model):
     """Actual Sessions"""
     title = models.TextField()
     description = models.TextField()
+    headline = models.TextField()
     presenters = models.ManyToManyField(Participant)
     tags = models.ManyToManyField(SessionTag)
     slot = models.ForeignKey(Slot)
