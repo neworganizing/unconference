@@ -65,7 +65,7 @@ def extract_session(session_data):
         output['room'].save()
 
     # create session
-    output['title'] = str(session_data['name'])
+    output['title'] = session_data['name'].encode('utf-8')
     output['description'] = session_data['description'].encode('utf-8')
     output['headline'] = session_data['headline'].encode('utf-8')
 
