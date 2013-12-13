@@ -39,7 +39,7 @@ def extract_session(session_data):
     # check if timeslot exists, create if not
     slot_start = str(session_data['time'])
 
-    if slot_start:
+    if slot_start and slot_start != 'None':
         slot_start = time.strptime(slot_start, "%I:%M %p")
 
     try:
