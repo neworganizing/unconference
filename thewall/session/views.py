@@ -110,7 +110,7 @@ def refresh(request):
 
             try:
                 session_data[id]['name'] = session_tag.find('div', class_='activity-name').contents[0]
-            except IndexError, AttributeError:
+            except (IndexError, AttributeError):
                 session_data[id]['name'] = None
 
             try:
