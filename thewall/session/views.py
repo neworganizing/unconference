@@ -125,7 +125,7 @@ def refresh(request):
 
             try:
                 session_data[id]['time'] = list(session_tag.children)[3].contents[0]
-            except (IndexError, AttributeError):
+            except IndexError:
                 session_data[id]['time'] = None
 
             try:
