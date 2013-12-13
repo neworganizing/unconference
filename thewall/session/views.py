@@ -38,7 +38,9 @@ def extract_session(session_data):
 
     # check if timeslot exists, create if not
     slot_start = str(session_data['time'])
-    slot_start = time.strptime(slot_start, "%I:%M %p")
+
+    if slot_start:
+        slot_start = time.strptime(slot_start, "%I:%M %p")
 
     try:
         output['slot'] = Slot.objects.get(day=day, start_time=time.strftime("%H:%M", slot_start))
