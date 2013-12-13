@@ -38,12 +38,14 @@ def extract_session(session_data):
 
     # check if timeslot exists, create if not
     slot_start = str(session_data['time'])
+    start_time = None
 
     if slot_start and slot_start != 'None':
         slot_start = time.strptime(slot_start, "%I:%M %p")
+        start_time = time.strftime("%H:%M", slot_start)
 
     try:
-        output['slot'] = Slot.objects.get(day=day, start_time=time.strftime("%H:%M", slot_start))
+        output['slot'] = Slot.objects.get(day=day, start_time=start_time)
     except Slot.DoesNotExist:
         slot_end = list(slot_start)
         slot_end[3] = (slot_end[3] + 1)%23
