@@ -47,16 +47,23 @@ def extract_session(session_data):
     try:
         output['slot'] = Slot.objects.get(day=day, start_time=start_time)
     except Slot.DoesNotExist:
-        slot_end = list(slot_start)
-        slot_end[3] = (slot_end[3] + 1)%23
-        slot_end = time.struct_time(tuple(slot_end))
 
-        output['slot'] = Slot.objects.create(day=day,
-                                   start_time=time.strftime("%H:%M", slot_start),
-                                   end_time=time.strftime("%H:%M", slot_end),
-                                   name=''
-        )
-        output['slot'].save()
+        if slot_start != 'None':
+            slot_end = list(slot_start)
+            slot_end[3] = (slot_end[3] + 1)%23
+            slot_end = time.struct_time(tuple(slot_end))
+
+            slot_end = time.strftime("%H:%M", slot_end)
+            slot_start = time.strftime("%H:%M", slot_start)
+
+            output['slot'] = Slot.objects.create(day=day,
+                                       start_time=start_time,
+                                       end_time=slot_end,
+                                       name=''
+            )
+            output['slot'].save()
+        else:
+            output['slot'] = None
 
     # check if room exists, create if not
     room_text = str(session_data['location'])
