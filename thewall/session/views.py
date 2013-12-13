@@ -66,8 +66,10 @@ def extract_session(session_data):
 
     # create session
     output['title'] = session_data['name'].encode('utf-8')
-    output['description'] = session_data['description'].encode('utf-8')
     output['headline'] = session_data['headline'].encode('utf-8')
+
+    if session_data['description']:
+        output['description'] = session_data['description'].encode('utf-8')
 
     return output
 
@@ -121,8 +123,21 @@ def refresh(request):
             except IndexError:
                 session_data[id]['location'] = None
 
+            # Get detail page
+            session_url = 'https://www.smartcrowdz.com/roots13/schedule_detail/{0}'.format(id)
+
             try:
-                session_data[id]['description'] = session_tag.find('div', class_='sched-detail-description').contents[0]
+                session_detail_text = BeautifulSoup(requests.get(session_url).text, "lxml")
+            except:
+                raise
+
+            session_detail_text = session_detail_text.find(id='sub-event-detail-body').p
+
+            if session_detail_text:
+                session_detail_text = session_detail_text.contents[0]
+
+            try:
+                session_data[id]['description'] = session_detail_text
             except IndexError:
                 session_data[id]['description'] = None
 
