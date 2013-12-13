@@ -63,7 +63,13 @@ def extract_session(session_data):
             )
             output['slot'].save()
         else:
-            output['slot'] = None
+            output['slot'] = Slot.objects.create(day=day,
+                start_time=None,
+                end_time=None,
+                name=''
+            )
+
+            output['slot'].save()
 
     # check if room exists, create if not
     room_text = str(session_data['location'])
