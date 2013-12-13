@@ -100,12 +100,12 @@ def refresh(request):
             session_data[id] = dict()
             try:
                 session_data[id]['date'] = list(session_tag.children)[1].contents[0]
-            except IndexError:
+            except (IndexError, AttributeError):
                 session_data[id]['date'] = None
 
             try:
                 session_data[id]['time'] = list(session_tag.children)[3].contents[0]
-            except IndexError:
+            except (IndexError, AttributeError):
                 session_data[id]['time'] = None
 
             try:
@@ -115,12 +115,12 @@ def refresh(request):
 
             try:
                 session_data[id]['headline'] = session_tag.find('div', class_='activity-headline').contents[0]
-            except IndexError:
+            except (IndexError, AttributeError):
                 session_data[id]['headline'] = ''
 
             try:
                 session_data[id]['location'] = session_tag.find('div', class_='schedule-location').contents[0]
-            except IndexError:
+            except (IndexError, AttributeError):
                 session_data[id]['location'] = None
 
             # Get detail page
@@ -131,14 +131,17 @@ def refresh(request):
             except:
                 raise
 
-            session_detail_text = session_detail_text.find(id='sub-event-detail-body').p
+            session_detail_text = session_detail_text.find(id='sub-event-detail-body')
 
             if session_detail_text:
-                session_detail_text = session_detail_text.contents[0]
+                session_detail_text = session_detail_text.p
+
+                if session_detail_text:
+                    session_detail_text = session_detail_text.contents[0]
 
             try:
                 session_data[id]['description'] = session_detail_text
-            except IndexError:
+            except (IndexError, AttributeError):
                 session_data[id]['description'] = None
 
     print session_data
