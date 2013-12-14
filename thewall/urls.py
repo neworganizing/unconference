@@ -15,7 +15,7 @@ urlpatterns = patterns('',
 	url(r'^api/', include('thewall.api.urls')),
     url(r'^results/', 'thewall.session.views.results', name='results'),
     url(r'^filter', 'thewall.session.views.filter', name='filter'),
-    url(r'^refresh/', 'thewall.session.views.refresh', name='refresh'),
+    #url(r'^refresh/', 'thewall.session.views.refresh', name='refresh'),
     url(r'^$', 'thewall.session.views.home', name='home'),
 )
 
