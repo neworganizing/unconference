@@ -1,19 +1,24 @@
 """Views for session app"""
+import datetime
+import time
+import requests
+
+from bs4 import BeautifulSoup
 
 from django.http import Http404
 from django.shortcuts import redirect
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 
-from thewall.session.models import Session, Day, Slot, Venue, Room
+from rest_framework import viewsets
 
+from thewall.session.models import Session, Day, Slot, Venue, Room
+from thewall.session.serializers import SessionSerializer
 from thewall.utility.decorators import render_to
 
-import datetime
-import time
-import requests
-
-from bs4 import BeautifulSoup
+class SessionViewSet(viewsets.ModelViewSet):
+    queryset = Session.objects.all()
+    serializer_class = SessionSerializer
 
 current_sessions_filter = (Q(slot__day__day__gt=datetime.datetime.today) | (Q(slot__day__day=datetime.datetime.today) & Q(slot__start_time__gte=datetime.datetime.now)))
 past_sessions_filter = (Q(slot__day__day__lt=datetime.datetime.today) | (Q(slot__day__day=datetime.datetime.today) & Q(slot__start_time__lte=datetime.datetime.now)))
