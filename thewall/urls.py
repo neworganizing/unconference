@@ -7,7 +7,7 @@ from django.conf.urls import patterns, include, url
 from ajax_select import urls as ajax_select_urls
 from rest_framework import routers
 
-from thewall.session import views
+from thewall import views
 
 #admin.autodiscover()
 
@@ -18,11 +18,12 @@ urlpatterns = patterns('',
 	url(r'^lookups/', include(ajax_select_urls)),
     #url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     #url(r'^admin/', include(admin.site.urls)),
-    url(r'^$', views.home, name='home'),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-	url(r'^api/', include(router.urls)),
+    url(r'^sessions/new/$', views.new, name='new_session'),
+    url(r'^schedule/$', views.schedule, name='schedule'),
     url(r'^results$', views.results, name='results'),
     url(r'^filter$', views.filter, name='filter'),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+	url(r'^api/', include(router.urls)),
     #url(r'^refresh/', 'thewall.session.views.refresh', name='refresh'),
 )
 

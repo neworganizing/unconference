@@ -1,6 +1,8 @@
 {% extends "wall-wrapper.html" %}
 
 {% block content %}
+{% include "filter.html" %}
+
 {% if currentsessions or pastsessions %}
 	{% for session in currentsessions %}
 		{% if forloop.first %}

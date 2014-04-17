@@ -6,8 +6,14 @@ from django.forms import SelectMultiple
 from ajax_select import make_ajax_form
 from ajax_select.admin import AjaxSelectAdmin
 
-from thewall.session.models import *
+from thewall.models import *
 
+class ParticipantAdmin(admin.ModelAdmin):
+    """Admin area for managing participants"""
+    list_display = ('name', 'organization','attendeenumber')
+    search_fields = ('name', 'attendeenumber')
+
+admin.site.register(Participant, ParticipantAdmin)
 
 class SessionAdmin(AjaxSelectAdmin):
     list_filter = ('slot', 'tags', 'room',)

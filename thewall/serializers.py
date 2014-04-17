@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from thewall.session.models import Session
+from thewall.models import Session
 
 class SessionSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:

@@ -12,9 +12,10 @@ from django.db.models import Q
 
 from rest_framework import viewsets
 
-from thewall.session.models import Session, Day, Slot, Venue, Room
-from thewall.session.serializers import SessionSerializer
-from thewall.utility.decorators import render_to
+from thewall.models import Session, Day, Slot, Venue, Room
+from thewall.serializers import SessionSerializer
+from thewall.forms import NewSessionForm
+from thewall.decorators import render_to
 
 class SessionViewSet(viewsets.ModelViewSet):
     queryset = Session.objects.all()
@@ -100,13 +101,29 @@ def extract_session(session_data):
 
 # View functions
 @render_to()
-def home(request):
+def schedule(request):
 
     return { 
         'currentsessions': Session.objects.select_related().filter(current_sessions_filter).order_by('slot__day','slot__start_time'),
         'pastsessions': Session.objects.select_related().filter(past_sessions_filter).order_by('-slot__day','-slot__start_time'),
         'template': 'list.html'
     }
+
+@render_to()
+def new(request):
+    context = dict()
+
+    if request.POST:
+        context['form'] = NewSessionForm(request.POST)
+
+        if context['form'].is_valid():
+            session = context['form'].save()
+            return redirect('/wall/sessions/{0}'.format(session.id))
+    else:
+        context['form'] = NewSessionForm()
+        
+    context['template'] = 'new.html'
+    return context
 
 def refresh(request):
 

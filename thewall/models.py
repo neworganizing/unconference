@@ -2,9 +2,21 @@
 
 from django.db import models
 from django.contrib import admin
-from thewall.participants.models import Participant
 import datetime
 
+"""Models for Participants"""
+
+class Participant(models.Model):
+    """Presenter Information"""
+    name = models.CharField(max_length=100)
+    organization = models.CharField(max_length=100)
+    attendeenumber = models.IntegerField(blank=True, null=True)
+
+    def __unicode__(self):
+        """Unicode representation of participant"""
+        return self.name + " (" + self.organization + ")"
+
+"""Models for Sessions"""
 
 class SessionTag(models.Model):
     """Session Tags"""

@@ -3,8 +3,7 @@ from optparse import make_option
 from eventbrite import EventbriteClient
 
 from thewall.settings import EB_USERKEY, EB_APPKEY, EB_OAUTHKEY, EB_EVENTID
-
-from thewall.participants.models import Participant
+from thewall.models import Participant
 
 class Command(BaseCommand):
     """Pull all the attendees from Eventbrite"""

@@ -142,8 +142,7 @@ INSTALLED_APPS = (
 	'ajax_select',
 
 	# Our Apps
-	'thewall.session',
-	'thewall.participants',
+	'thewall',
 
 )
 
