@@ -1,9 +1,9 @@
 {% extends "wall-wrapper.html" %}
 
 {% block content %}
-{% include "filter.html" %}
+{% include "session/_filter.html" %}
 
-{% if currentsessions or pastsessions %}
+{% if currentsessions|length > 0 or pastsessions|length > 0 %}
 	{% for session in currentsessions %}
 		{% if forloop.first %}
 			<div class="row"><div class="span12"><h2>Upcoming Sessions</h2></div></div>
@@ -13,7 +13,7 @@
 			<div class="row"><div class="span12"><h4>{{ session.slot.day }} {{ session.slot.name }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</h4></div></div>
 		{% endifchanged %}
 
-		{% include "sessionlistitem.html" %}
+		{% include "session/_list_item.html" %}
 	{% endfor %}
 
 	{% for session in pastsessions %}
@@ -25,14 +25,14 @@
 			<div class="row"><div class="span12"><h4>{{ session.slot.day }} {{ session.slot.name }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</h4></div></div>
 		{% endifchanged %}
 		
-		{% include "sessionlistitem.html" %}
+		{% include "session/_list_item.html" %}
 
 	{% endfor %}
 
 	<div class=".result">
 
 	</div>
-    {% else %}
+{% else %}
     <div class="row"><div class="span12 noresults"><h3>No Results Found</h3></div></div>
     {% endif %}
 {% endblock content %}

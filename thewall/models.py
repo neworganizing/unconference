@@ -2,19 +2,22 @@
 
 from django.db import models
 from django.contrib import admin
+from django.conf import settings
 import datetime
 
 """Models for Participants"""
 
 class Participant(models.Model):
     """Presenter Information"""
-    name = models.CharField(max_length=100)
+
+    user = models.OneToOneField(settings.AUTH_USER_MODEL)
+    #name = models.CharField(max_length=100)
     organization = models.CharField(max_length=100)
     attendeenumber = models.IntegerField(blank=True, null=True)
 
     def __unicode__(self):
         """Unicode representation of participant"""
-        return self.name + " (" + self.organization + ")"
+        return self.user.first_name + " " + self.user.last_name + " (" + self.organization + ")"
 
 """Models for Sessions"""
 
@@ -90,8 +93,8 @@ class Session(models.Model):
     headline = models.TextField()
     presenters = models.ManyToManyField(Participant)
     tags = models.ManyToManyField(SessionTag)
-    slot = models.ForeignKey(Slot)
-    room = models.ForeignKey(Room)
+    slot = models.ForeignKey(Slot, null=True, blank=True)
+    room = models.ForeignKey(Room, null=True, blank=True)
     difficulty = models.CharField(max_length=30, choices=(('B', 'Beginner'), ('I','Intermediate'), ('A','Advanced')), default='Beginner')
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True, auto_now_add=True)

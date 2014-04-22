@@ -1,0 +1,15 @@
+{% extends "wall-wrapper.html" %}
+
+{% block content %}
+<div class="offset2 span7">
+<h1>Edit Session</h1>
+<form action="./" method="post" id="session-form">
+	{% csrf_token %}
+	{% include "session/_form.html" %}
+
+	<p>
+		<button type="submit">Save Session</button>
+	</p>
+</form>
+</div>
+{% endblock %}

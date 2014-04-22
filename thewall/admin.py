@@ -10,15 +10,15 @@ from thewall.models import *
 
 class ParticipantAdmin(admin.ModelAdmin):
     """Admin area for managing participants"""
-    list_display = ('name', 'organization','attendeenumber')
-    search_fields = ('name', 'attendeenumber')
+    list_display = ('user', 'organization','attendeenumber')
+    search_fields = ('user', 'attendeenumber')
 
 admin.site.register(Participant, ParticipantAdmin)
 
 class SessionAdmin(AjaxSelectAdmin):
     list_filter = ('slot', 'tags', 'room',)
     list_display = ('title', 'room', 'slot', 'description')
-    search_fields = ('title', 'presenters__name')
+    search_fields = ('title', 'presenters__user')
 
     form = make_ajax_form(Session, {'presenters': 'participant'})
     formfield_overrides = { models.ManyToManyField: {'widget': SelectMultiple(attrs={'size':'15'})}}
