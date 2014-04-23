@@ -4,5 +4,4 @@
 local_settings.py
 localsettings.py
 .DS_Store
-static
 media

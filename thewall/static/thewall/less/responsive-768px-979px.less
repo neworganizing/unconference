@@ -1,0 +1,25 @@
+//
+// Responsive: Tablet to desktop
+// --------------------------------------------------
+
+
+@media (min-width: 768px) and (max-width: 979px) {
+
+  // Fixed grid
+  #grid > .core(@gridColumnWidth768, @gridGutterWidth768);
+  
+  .event {
+    width: @eventRowWidth768;
+    margin-left: 0;
+    padding: 15px;
+    .span12 {
+      width: inherit;
+    }
+  }
+
+  hr {
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+
+}
