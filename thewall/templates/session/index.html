@@ -1,36 +1,50 @@
 {% extends "wall-wrapper.html" %}
 
 {% block content %}
+{% csrf_token %}
 {% for session in sessions %}
 	<div class="clearfix">
 		<div class="row">
-			<div class="span6">
+			<div class="span9">
 				<h2>
-					{{ session.title }} 
+					{{ session.title }}
 					{% if request.user.participant in session.presenters.all %}
 						(<a href="{% url "session" id=session.pk action="edit" %}">Edit</a>)
 					{% endif %}
 				</h2>
 				<h3>{{ session.headline }}</h3>
 			</div>
-			<div class="span5">
-				<div style="float: right;">
-					<p>Tags:
-					{% for tag in session.tags.all %}
-						{{ tag|title }}{% if not forloop.last %}, {% endif %}
-					{% endfor %}
-					</p>
-
-					<p>Presenters:
-					{% for presenter in session.presenters.all %}
-						{{ presenter }}{% if not forloop.last %}, {% endif %}
-					{% endfor %}
-					</p>
-				</div>
+			<div class="span2">
+				<p>Tags:
+				{% for tag in session.tags.all %}
+					{{ tag|title }}{% if not forloop.last %}, {% endif %}
+				{% endfor %}
+				</p>
 			</div>
 		</div>
-		<div class="row span10" >
-			<p>{{ session.description|linebreaks }}</p>
+		<div class="row">
+			<div class="span11">
+				{{ session.description|linebreaks }}
+			</div>
+
+			<div class="span9">
+				<p><strong>Presenters:</strong>
+				{% for presenter in session.presenters.all %}
+					{{ presenter }}{% if not forloop.last %}, {% endif %}
+				{% endfor %}
+				</p>
+			</div>
+
+			<div class="span2">
+				<div>
+					<div class="vote-container">
+						<div class="vote-total" style="width: {{ session.vote_width }}px;">
+						</div>
+					</div>
+					<a class="button vote-link" id="vote-up-{{ session.id }}" href="{% url "vote" id=session.id %}" data-value="1">+1</a>
+					<a class="button vote-link" id="vote-down-{{ session.id }}" href="{% url "vote" id=session.id %}" data-value="-1">-1</a>
+				</div>
+			</div>
 		</div>
 	</div>
 	<hr >

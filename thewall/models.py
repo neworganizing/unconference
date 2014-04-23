@@ -1,6 +1,7 @@
 """Models for Session App"""
 
 from django.db import models
+from django.db.models import Sum
 from django.contrib import admin
 from django.conf import settings
 import datetime
@@ -12,7 +13,7 @@ class Participant(models.Model):
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL)
     #name = models.CharField(max_length=100)
-    organization = models.CharField(max_length=100)
+    organization = models.CharField(max_length=100, blank=True)
     attendeenumber = models.IntegerField(blank=True, null=True)
 
     def __unicode__(self):
@@ -103,8 +104,36 @@ class Session(models.Model):
         return self.title
 
 
+    def vote_width(self):
+        # votes / highest votes * 100
+        annotated_sessions = Session.objects.annotate(total_votes=Sum('votes__value')).order_by('total_votes')
+        for session in annotated_sessions:
+            print session, session.total_votes
+        highest_votes = annotated_sessions[0]
+        print highest_votes, highest_votes.total_votes
+        return (self.votes.count() / float(highest_votes.total_votes)) * 100.0
+
+VALUES = (
+    (u'+1', +1),
+    (u'-1', -1)
+)
+
+class Vote(models.Model):
+    session = models.ForeignKey(Session, related_name="votes")
+    participant = models.ForeignKey(Participant, related_name="votes")
+    value = models.SmallIntegerField(choices=VALUES)
+
+    class Meta:
+        unique_together = (('participant', 'session'),)
+
+    def __unicode__(self):
+        return u"{0} voted {1} on {2}".format(self.participant.user, self.value, self.session)
+
 admin.site.register(Slot)
 admin.site.register(Day)
 admin.site.register(Room)
 admin.site.register(Venue)
 admin.site.register(SessionTag)
+# Session?
+# Participant?
+# Vote?

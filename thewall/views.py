@@ -5,17 +5,18 @@ import requests
 
 from bs4 import BeautifulSoup
 
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.views.generic import TemplateView, CreateView
+from django.views.generic import View, TemplateView, CreateView, UpdateView
+from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 
 from rest_framework import viewsets
 
-from thewall.models import Session, Day, Slot, Venue, Room, Participant
+from thewall.models import Session, Day, Slot, Venue, Room, Participant, Vote
 from thewall.serializers import SessionSerializer
 from thewall.forms import SessionForm
 from thewall.decorators import render_to
@@ -103,11 +104,64 @@ def extract_session(session_data):
 current_sessions_filter = (~Q(slot=None) & (Q(slot__day__day__gt=datetime.datetime.today) | (Q(slot__day__day=datetime.datetime.today) & Q(slot__start_time__gte=datetime.datetime.now))))
 past_sessions_filter = (~Q(slot=None) & (Q(slot__day__day__lt=datetime.datetime.today) | (Q(slot__day__day=datetime.datetime.today) & Q(slot__start_time__lte=datetime.datetime.now))))
 
+### VIEWS USING CUSTOM CBV's ###
+
+# designed for ajax
+# pattern is r'^sessions/(?P<id>[0-9]+)/vote/?$'
+class VoteView(View):
+    def post(self, request, *args, **kwargs):
+        try:
+            participant = request.user.participant
+        except Participant.DoesNotExist:
+            pass # Return redirect request
+
+        session_id = kwargs.get('id', None)
+        value = request.POST.get('value', None)
+
+        if session_id and value:
+            vote = Vote(participant=participant,session_id=session_id,value=value)
+            vote.save()
+
+        # no response data is necessary
+        return HttpResponse()
+
 ### VIEWS USING DJANGO GENERIC VIEWS ###
 
-# Create participant for current user, or any user if staff
+# Create participant for current user
 class CreateParticipantView(CreateView):
-    pass
+    model = Participant
+    fields = ['organization']
+    template_name = "participant/form.html"
+
+    @method_decorator(login_required(login_url='/users/login'))
+    def get(self, request, *args, **kwargs):
+        return super(CreateParticipantView, self).get(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super(CreateParticipantView, self).form_valid(form)
+
+    def get_success_url(self, form):
+        return reverse("session")
+
+# Update participant for current user
+class UpdateParticipantView(UpdateView):
+    model = Participant
+    fields = ['organization']
+    template_name = "participant/form.html"
+
+    @method_decorator(login_required(login_url='/users/login'))
+    def get(self, request, *args, **kwargs):
+        return super(UpdateParticipantView, self).get(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse("session")
+
+    def get_object(self):
+        try:
+            return self.request.user.participant
+        except Participant.DoesNotExist:
+            raise Http404
 
 ### CRAZY VIEW THAT DOES EVERYTHING BASE ON RAILS MODEL ###
 class SessionView(TemplateView):
@@ -118,7 +172,7 @@ class SessionView(TemplateView):
         context = self.get_context_data(*args, **kwargs)
 
         if not context['action']:
-            if context['session']:
+            if context.get('session', None):
                     context['action'] = 'show'
             elif context['id']:
                 context['action'] = context['id']
@@ -176,7 +230,7 @@ class SessionView(TemplateView):
         try:
             participant = self.request.user.participant
         except Participant.DoesNotExist:
-            return HttpResponseRedirect('/participants/new')
+            return HttpResponseRedirect(reverse('create_participant'))
 
         if not context.get('form', None):
             context['form'] = SessionForm(initial=dict(presenters=[self.request.user.participant,]))
@@ -190,7 +244,7 @@ class SessionView(TemplateView):
         if context['form'].is_valid():
             context['session'] = context['form'].save()
             return HttpResponseRedirect(
-                reverse('session', kwargs={'id': context['session'].pk})
+                reverse('session')
             )
         else:
             return self.new(context)
@@ -210,7 +264,7 @@ class SessionView(TemplateView):
         if context['form'].is_valid():
             context['session'] = context['form'].save()
             return HttpResponseRedirect(
-                reverse('session', kwargs={'id': context['session'].pk})
+                reverse('session')
             )
         else:
             return self.edit(context)
