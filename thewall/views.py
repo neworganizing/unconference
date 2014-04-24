@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.core.urlresolvers import reverse
-from django.db.models import Q
+from django.db.models import Q, Sum
 from django.views.generic import View, TemplateView, CreateView, UpdateView
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -249,6 +249,7 @@ class SessionView(TemplateView):
             context['pastsessions'] =  context['sessions'].filter(past_sessions_filter).order_by('-slot__day','-slot__start_time')
             self.template_name = 'session/list.html'
         else:
+            context['sessions'] = context['sessions'].annotate(total_votes=Sum('votes__value')).order_by('-total_votes')
             self.template_name = "session/index.html"
         return self.render_to_response(context)
 
