@@ -1993,15 +1993,39 @@ header a:hover {
   background: #EFEFEF;
   border-radius: 3px;
   width: 100px;
-  height: 2em;
+  height: 30px;
   position: relative;
 }
 
 .vote-total {
   display: inline-block;
   background: #6BF;
-  height: 2em;
+  height: 30px;
   border-radius: 3px;
   position: absolute;
   right: 0;
+}
+
+a.vote-link {
+  display: inline-block;
+  border: 1px solid #6BF;
+  border-radius: 3px;
+  height: 30px;
+  width: 30px;
+  font-size: 20pt;
+  text-align: center;
+  line-height: 100%;
+}
+
+a.vote-link:hover {
+  background: #CEF;
+  text-decoration: none;
+}
+
+a.vote-link.inactive {
+  pointer-events: none;
+  cursor: default;
+  background: #CEF;
+  border: 1px solid #9BC;
+  color: #9BC;
 }

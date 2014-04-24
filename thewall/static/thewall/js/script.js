@@ -71,7 +71,18 @@ $(document).ready(function($) {
                 'csrfmiddlewaretoken': getCookie('csrftoken')
             }
         }).done(function(result) {
+            if(vote_value > 0) {
+                $('#vote-up-'+result.session_id).addClass('inactive');
+                $('#vote-down-'+result.session_id).removeClass('inactive');
+            }
+            else {
+                $('#vote-down-'+result.session_id).addClass('inactive');
+                $('#vote-up-'+result.session_id).removeClass('inactive');   
+            }
 
+            $('#vote-total-'+result.session_id).css('width', result.vote_width);
+
+            alert(result.vote_width);
         });
         return false;
     });

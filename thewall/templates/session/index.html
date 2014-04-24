@@ -27,7 +27,7 @@
 				{{ session.description|linebreaks }}
 			</div>
 
-			<div class="span9">
+			<div class="span8">
 				<p><strong>Presenters:</strong>
 				{% for presenter in session.presenters.all %}
 					{{ presenter }}{% if not forloop.last %}, {% endif %}
@@ -35,14 +35,15 @@
 				</p>
 			</div>
 
-			<div class="span2">
+			<div class="span3">
+				Votes: {{ session.votes.count }}
 				<div>
 					<div class="vote-container">
-						<div class="vote-total" style="width: {{ session.vote_width }}px;">
+						<div class="vote-total" id="vote-total-{{ session.id }}" style="width: {{ session.vote_width }}px;">
 						</div>
 					</div>
-					<a class="button vote-link" id="vote-up-{{ session.id }}" href="{% url "vote" id=session.id %}" data-value="1">+1</a>
-					<a class="button vote-link" id="vote-down-{{ session.id }}" href="{% url "vote" id=session.id %}" data-value="-1">-1</a>
+					<a class="button vote-link {% if session.id in request.user.participant.get_up_votes %}inactive{% endif %}" id="vote-up-{{ session.id }}" href="{% url "vote" id=session.id %}" data-value="1">+</a>
+					<a class="button vote-link {% if session.id in request.user.participant.get_down_votes %}inactive{% endif %}" id="vote-down-{{ session.id }}" href="{% url "vote" id=session.id %}" data-value="-1">-</a>
 				</div>
 			</div>
 		</div>

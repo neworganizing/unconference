@@ -20,6 +20,19 @@ class Participant(models.Model):
         """Unicode representation of participant"""
         return self.user.first_name + " " + self.user.last_name + " (" + self.organization + ")"
 
+    def get_up_votes(self):
+        if not hasattr(self, '_up_votes'):
+            self._up_votes = self.votes.filter(
+                value=1).values_list('session_id', flat=True)
+        return self._up_votes
+
+    def get_down_votes(self):
+        if not hasattr(self, '_down_votes'):
+            self._down_votes = self.votes.filter(
+                value=-1).values_list('session_id', flat=True)
+        return self._down_votes
+
+
 """Models for Sessions"""
 
 class SessionTag(models.Model):
@@ -106,14 +119,24 @@ class Session(models.Model):
 
     def vote_width(self):
         # votes / highest votes * 100
-        annotated_sessions = Session.objects.annotate(total_votes=Sum('votes__value')).order_by('total_votes')
-        for session in annotated_sessions:
-            print session, session.total_votes
+        annotated_sessions = Session.objects.annotate(total_votes=Sum('votes__value')).order_by('-total_votes')
         highest_votes = annotated_sessions[0]
-        print highest_votes, highest_votes.total_votes
-        return (self.votes.count() / float(highest_votes.total_votes)) * 100.0
+        print highest_votes.total_votes
+        if highest_votes.total_votes < 1:
+            if self.votes.count() > 0:
+                return 100
+            else:
+                return 0
+
+        vote_width = (self.votes.count() / float(highest_votes.total_votes)) * 100.0
+
+        if vote_width < 0:
+            vote_width = 0
+
+        return vote_width
 
 VALUES = (
+    (u'0', 0),
     (u'+1', +1),
     (u'-1', -1)
 )
@@ -121,7 +144,7 @@ VALUES = (
 class Vote(models.Model):
     session = models.ForeignKey(Session, related_name="votes")
     participant = models.ForeignKey(Participant, related_name="votes")
-    value = models.SmallIntegerField(choices=VALUES)
+    value = models.SmallIntegerField(choices=VALUES, default=0)
 
     class Meta:
         unique_together = (('participant', 'session'),)

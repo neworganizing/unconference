@@ -2,6 +2,7 @@
 import datetime
 import time
 import requests
+import json
 
 from bs4 import BeautifulSoup
 
@@ -119,11 +120,18 @@ class VoteView(View):
         value = request.POST.get('value', None)
 
         if session_id and value:
-            vote = Vote(participant=participant,session_id=session_id,value=value)
+            vote, created = Vote.objects.get_or_create(participant=participant,session_id=session_id)
+            vote.value = value
             vote.save()
 
+        session = Session.objects.get(pk=session_id)
+        response_data = dict(
+            vote_width=session.vote_width(),
+            session_id=session.pk
+        )
+
         # no response data is necessary
-        return HttpResponse()
+        return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 ### VIEWS USING DJANGO GENERIC VIEWS ###
 
