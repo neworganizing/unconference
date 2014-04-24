@@ -6,11 +6,19 @@
 {% if currentsessions|length > 0 or pastsessions|length > 0 %}
 	{% for session in currentsessions %}
 		{% if forloop.first %}
-			<div class="row"><div class="span12"><h2>Upcoming Sessions</h2></div></div>
+			<div class="row">
+				<div class="span12">
+					<h1>Upcoming Sessions</h1>
+				</div>
+			</div>
 		{% endif %}
 
 		{% ifchanged session.slot %}
-			<div class="row"><div class="span12"><h4>{{ session.slot.day }} {{ session.slot.name }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</h4></div></div>
+			<div class="row">
+				<div class="span12">
+					<h3><strong>{{ session.slot.day }}, {{ session.slot.name }}: {{ session.slot.start_time }} - {{ session.slot.end_time }}</strong></h3>
+				</div>
+			</div>
 		{% endifchanged %}
 
 		{% include "session/_list_item.html" %}
@@ -18,21 +26,32 @@
 
 	{% for session in pastsessions %}
 		{% if forloop.first %}
-			<div class="row"><div class="span12"><h2>Past Sessions</h2></div></div>
+			<div class="row">
+				<div class="span12">
+					<h2>Past Sessions</h2>
+				</div>
+			</div>
 		{% endif %}
 
 		{% ifchanged session.slot %}
-			<div class="row"><div class="span12"><h4>{{ session.slot.day }} {{ session.slot.name }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</h4></div></div>
+			<div class="row">
+				<div class="span12">
+					<h3>{{ session.slot.day }} {{ session.slot.name }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</h3>
+				</div>
+			</div>
 		{% endifchanged %}
 		
 		{% include "session/_list_item.html" %}
-
 	{% endfor %}
 
-	<div class=".result">
+	<div class="result">
 
 	</div>
 {% else %}
-    <div class="row"><div class="span12 noresults"><h3>No Results Found</h3></div></div>
+    <div class="row">
+    	<div class="span12 noresults">
+    		<h3>No Results Found</h3>
+    	</div>
+    </div>
     {% endif %}
 {% endblock content %}

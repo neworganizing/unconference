@@ -17,9 +17,9 @@ from django.contrib.auth.decorators import login_required
 
 from rest_framework import viewsets
 
-from thewall.models import Session, Day, Slot, Venue, Room, Participant, Vote
+from thewall.models import Session, Day, Slot, Venue, Room, Participant, Vote, SessionTag
 from thewall.serializers import SessionSerializer
-from thewall.forms import SessionForm
+from thewall.forms import SessionForm, SessionScheduleForm
 from thewall.decorators import render_to
 
 class SessionViewSet(viewsets.ModelViewSet):
@@ -212,8 +212,28 @@ class SessionView(TemplateView):
                 context['session'] = get_object_or_404(Session, pk=context['id'])
             except ValueError:
                 context['session'] = None
-        else:
-            context['sessions'] = Session.objects.all()
+        else: # A listing of all sessions, check for filters
+            time = self.request.GET.get("time", "all")
+            tag = self.request.GET.get("tag", "all")
+            room = self.request.GET.get("room", "all")
+
+            filter = dict()
+
+            if time != "all":
+                filter_param = time.split('-')
+                context['time_id'] = time
+                if filter_param[0] == 'day':
+                    filter['slot__day'] = filter_param[1]
+                else:
+                    filter['slot'] = time
+
+            if tag != "all":
+                context['tag_id'] = filter['tags__pk'] = tag
+
+            if room != "all":
+                context['room_id'] = filter['room'] = room
+
+            context['sessions'] = Session.objects.filter(**filter).select_related()
 
         return context
 
@@ -221,8 +241,12 @@ class SessionView(TemplateView):
     def index(self, request, context):
         context['view'] = self.request.GET.get('view', None)
         if context['view'] == 'schedule':
-            context['currentsessions'] = Session.objects.select_related().filter(current_sessions_filter).order_by('slot__day','slot__start_time')
-            context['pastsessions'] =  Session.objects.select_related().filter(past_sessions_filter).order_by('-slot__day','-slot__start_time')
+            context['days'] = Day.objects.all()
+            context['slots'] = Slot.objects.all()
+            context['tags'] = SessionTag.objects.all()
+            context['rooms'] = Room.objects.all()
+            context['currentsessions'] = context['sessions'].filter(current_sessions_filter).order_by('slot__day','slot__start_time')
+            context['pastsessions'] =  context['sessions'].filter(past_sessions_filter).order_by('-slot__day','-slot__start_time')
             self.template_name = 'session/list.html'
         else:
             self.template_name = "session/index.html"
@@ -259,15 +283,27 @@ class SessionView(TemplateView):
 
     @method_decorator(login_required(login_url='/users/login'))
     def edit(self, request, context):
+        if not (request.user.is_staff or request.user.participant in context['session'].presenters.all()):
+            raise Http404
+
         if not context.get('form', None):
-            context['form'] = SessionForm(instance=context['session'])
+            if request.user.is_staff:
+                context['form'] = SessionScheduleForm(instance=context['session'])
+            else:
+                context['form'] = SessionForm(instance=context['session'])
         self.template_name = "session/edit.html"
         return self.render_to_response(context)
 
 
     @method_decorator(login_required(login_url='/users/login'))
     def update(self, request, context):
-        context['form'] = SessionForm(self.request.POST, instance=context['session'])
+        if not (request.user.is_staff or request.user.participant in context['session'].presenters.all()):
+            raise Http404
+
+        if request.user.is_staff:
+            context['form'] = SessionScheduleForm(self.request.POST, instance=context['session'])
+        else:    
+            context['form'] = SessionForm(self.request.POST, instance=context['session'])
 
         if context['form'].is_valid():
             context['session'] = context['form'].save()

@@ -123,17 +123,22 @@ class Session(models.Model):
         highest_votes = annotated_sessions[0]
         print highest_votes.total_votes
         if highest_votes.total_votes < 1:
-            if self.votes.count() > 0:
+            if self.total_vote() > 0:
                 return 100
             else:
                 return 0
 
-        vote_width = (self.votes.count() / float(highest_votes.total_votes)) * 100.0
+        vote_width = (self.total_vote() / float(highest_votes.total_votes)) * 100.0
 
         if vote_width < 0:
             vote_width = 0
 
         return vote_width
+
+    def total_vote(self):
+        if not hasattr(self, '_total_vote'):
+            self._total_vote = self.votes.aggregate(Sum('value'))['value__sum']
+        return self._total_vote
 
 VALUES = (
     (u'0', 0),

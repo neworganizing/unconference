@@ -23,7 +23,7 @@ function getCookie(name) {
 }
 
 $(document).ready(function($) {
-    $('.sessionlink').click(function () {
+    /*$('.session-link').click(function () {
         var session_id = $(this).attr("data-session_id");
 
         $.ajax({
@@ -57,6 +57,11 @@ $(document).ready(function($) {
         });
 
         return false;
+    });*/
+
+    $('.session-link').click(function() {
+        var session_id = $(this).attr("data-session_id");
+        $('.session-'+session_id+'-details').slideToggle();
     });
 
     $('a.vote-link').click(function() {

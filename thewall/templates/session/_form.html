@@ -38,3 +38,25 @@
 	<label>{{ form.difficulty.label }}</label>
 	{{ form.difficulty }}
 </p>
+
+{% if request.user.is_staff %}
+
+<h1>Schedule Session</h1>
+
+<div class="span3">
+<p>
+	{{ form.slot.errors }}
+	<label>{{ form.slot.label }}</label>
+	{{ form.slot }}
+</p>
+</div>
+
+<div class="span3">
+<p>
+	{{ form.room.errors }}
+	<label>{{ form.room.label }}</label>
+	{{ form.room }}
+</p>
+</div>
+
+{% endif %}

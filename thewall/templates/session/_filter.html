@@ -1,46 +1,53 @@
-        <div class="row dropdowns">
-            <form action="/filter" method="post">
-                <div class="span5">
-                <label for="time-dropdown">Slot</label>
-                <div class="styled-select">
-                    <select id="time-dropdown" name="time">
-                        <option value="all">All Timeslots</option>
-                        {% for day in days %}
-                            <option value="day-{{ day.id }}"{% if day.day_slug == time_id %} selected="selected"{% endif %}>All Day {{ day.name }}</option>
-                        {% endfor %}
-                        
-                        {% for slot in slots %}
-                            <option value="{{ slot.id }}"{% if slot.id|slugify == time_id %} selected="selected"{% endif %}>{{ slot.day.name }} {{ slot.name }} {{ slot.start_time }} - {{ slot.end_time }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+<div class="row dropdowns">
+    <form action="{% url "session" %}" method="get">
+        <input type="hidden" name="view" value="schedule" />
+        <div class="span5">
+            <label for="time-dropdown">Slot</label>
+            <div class="styled-select">
+                <select id="time-dropdown" name="time">
+                    <option value="all">All Timeslots</option>
+                    {% for day in days %}
+                        <option value="day-{{ day.id }}"{% if day.day_slug == time_id %} selected="selected"{% endif %}>
+                            All Day {{ day.name }}
+                        </option>
+                    {% endfor %}
+                    
+                    {% for slot in slots %}
+                        <option value="{{ slot.id }}"{% if slot.id|slugify == time_id %} selected="selected"{% endif %}>{{ slot.day.name }} {{ slot.name }} {{ slot.start_time }} - {{ slot.end_time }}</option>
+                    {% endfor %}
+                </select>
             </div>
-            <div class="span3">
-                <label for="room-dropdown">Tag</label>
-                <div class="styled-select">
-                    <select id="room-dropdown" name="tag">
-                        <option value="all">All Tags</option>
-                        {% for tag in tags %}
-                            <option value="{{ tag.id }}"{% if tag.id|slugify == tag_id %} selected="selected"{% endif %}>{{ tag.tag }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            <div class="span2">
-                <label for="room-dropdown">Room</label>
-                <div class="styled-select">
-                    <select id="room-dropdown" name="room">
-                        <option value="all">All Rooms</option>
-                        {% for room in rooms %}
-                        <option value="{{ room.id }}"{% if room.id|slugify == room_id %} selected="selected"{% endif %}>{{ room.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </div>
-            <div class="span2">
-                <button type="submit">Submit</button>
-            </div>
-            {% csrf_token %}
-            </form>
         </div>
-        <hr class="below-filter">
+        <div class="span3">
+            <label for="room-dropdown">Tag</label>
+            <div class="styled-select">
+                <select id="room-dropdown" name="tag">
+                    <option value="all">All Tags</option>
+                    {% for tag in tags %}
+                        <option value="{{ tag.id }}"{% if tag.id|slugify == tag_id %} selected="selected"{% endif %}>{{ tag.tag|title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="span3">
+            <label for="room-dropdown">Room</label>
+            <div class="styled-select">
+                <select id="room-dropdown" name="room">
+                    <option value="all">All Rooms</option>
+                    {% for room in rooms %}
+                    <option value="{{ room.id }}"{% if room.id|slugify == room_id %} selected="selected"{% endif %}>{{ room.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="firstspan span10" style="padding-top: 1em;">
+            <div class="span2">
+                <button type="submit">Search</button>
+            </div>
+            <div class="span2">
+                <a class="search-link" href="{% url "session" %}?view=schedule">Clear Search</a>
+            </div>
+        </div>
+    </form>
+</div>
+<hr class="below-filter">

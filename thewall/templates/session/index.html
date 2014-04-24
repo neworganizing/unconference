@@ -8,7 +8,7 @@
 			<div class="span9">
 				<h2>
 					{{ session.title }}
-					{% if request.user.participant in session.presenters.all %}
+					{% if request.user.participant in session.presenters.all or request.user.is_staff %}
 						(<a href="{% url "session" id=session.pk action="edit" %}">Edit</a>)
 					{% endif %}
 				</h2>
@@ -36,8 +36,7 @@
 			</div>
 
 			<div class="span3">
-				Votes: {{ session.votes.count }}
-				<div>
+				<div class="vote-widget">
 					<div class="vote-container">
 						<div class="vote-total" id="vote-total-{{ session.id }}" style="width: {{ session.vote_width }}px;">
 						</div>
