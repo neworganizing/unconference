@@ -86,8 +86,6 @@ $(document).ready(function($) {
             }
 
             $('#vote-total-'+result.session_id).css('width', result.vote_width);
-
-            alert(result.vote_width);
         });
         return false;
     });
