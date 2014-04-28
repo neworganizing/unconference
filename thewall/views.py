@@ -203,6 +203,7 @@ class SessionView(TemplateView):
     get_actions = ['new', 'edit', 'show', 'index', 'delete']
     post_actions = ['create', 'update']
 
+    @method_decorator(login_required(login_url='/users/login'))
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(*args, **kwargs)
 
@@ -217,6 +218,7 @@ class SessionView(TemplateView):
         if context['action'] in self.get_actions:
             return getattr(self, context['action'])(request, context)
 
+    @method_decorator(login_required(login_url='/users/login'))
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(*args, **kwargs)
 
@@ -240,7 +242,7 @@ class SessionView(TemplateView):
         if unconference.slug != 'testcamp':
             try:
                 participant = self.request.user.participant
-            except Partcipant.DoesNotExist:
+            except Participant.DoesNotExist:
                 raise Http404
 
             if not participant in unconference.participants.all():
