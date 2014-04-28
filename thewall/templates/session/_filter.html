@@ -1,5 +1,5 @@
 <div class="row dropdowns">
-    <form action="{% url "session" %}" method="get">
+    <form action="{% url "session" unconf=unconf %}" method="get">
         <input type="hidden" name="view" value="schedule" />
         <div class="span5">
             <label for="time-dropdown">Slot</label>
@@ -45,7 +45,7 @@
                 <button type="submit">Search</button>
             </div>
             <div class="span2">
-                <a class="search-link" href="{% url "session" %}?view=schedule">Clear Search</a>
+                <a class="search-link" href="{% url "session" unconf=unconf %}?view=schedule">Clear Search</a>
             </div>
         </div>
     </form>

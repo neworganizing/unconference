@@ -71,7 +71,7 @@ class Day(models.Model):
         list_display = ('name',)
 
     def __unicode__(self):
-        return self.name
+        return u'{0} - {1}'.format(self.name, self.day)
 
     def day_slug(self):
         return "day-%s" % self.pk
@@ -115,9 +115,18 @@ class Room(models.Model):
     def __unicode__(self):
         return self.name
 
+class Unconference(models.Model):
+    slug = models.SlugField(max_length=127)
+    name = models.CharField(max_length=127)
+    venue = models.ForeignKey(Venue)
+    days = models.ManyToManyField(Day)
+
+    def __unicode__(self):
+        return self.name
 
 class Session(models.Model):
     """Actual Sessions"""
+    unconference = models.ForeignKey(Unconference, null=True, blank=True)
     title = models.TextField()
     description = models.TextField()
     headline = models.TextField()
@@ -131,6 +140,9 @@ class Session(models.Model):
 
     def __unicode__(self):
         return self.title
+
+    class Meta:
+        unique_together = (('unconference', 'slot', 'room'),)
 
 
     def vote_width(self):

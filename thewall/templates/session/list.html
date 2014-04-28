@@ -16,7 +16,7 @@
 		{% ifchanged session.slot %}
 			<div class="row">
 				<div class="span12">
-					<h3><strong>{{ session.slot.day }}, {{ session.slot.name }}: {{ session.slot.start_time }} - {{ session.slot.end_time }}</strong></h3>
+					<h3><strong>{{ session.slot.day.name }}, {{ session.slot.name }}: {{ session.slot.start_time }} - {{ session.slot.end_time }}</strong></h3>
 				</div>
 			</div>
 		{% endifchanged %}
@@ -36,7 +36,7 @@
 		{% ifchanged session.slot %}
 			<div class="row">
 				<div class="span12">
-					<h3>{{ session.slot.day }} {{ session.slot.name }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</h3>
+					<h3>{{ session.slot.day.name }} {{ session.slot.name }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</h3>
 				</div>
 			</div>
 		{% endifchanged %}

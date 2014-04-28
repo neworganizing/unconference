@@ -17,7 +17,7 @@ from django.contrib.auth.decorators import login_required
 
 from rest_framework import viewsets
 
-from thewall.models import Session, Day, Slot, Venue, Room, Participant, Vote, SessionTag
+from thewall.models import Session, Day, Slot, Venue, Room, Participant, Vote, SessionTag, Unconference
 from thewall.serializers import SessionSerializer
 from thewall.forms import SessionForm, SessionScheduleForm, CreateParticipantForm
 from thewall.decorators import render_to
@@ -117,6 +117,7 @@ class VoteView(View):
             pass # Return redirect request
 
         session_id = kwargs.get('id', None)
+        unconf = kwargs.get('unconf', None)
         value = request.POST.get('value', None)
 
         if session_id and value:
@@ -124,7 +125,7 @@ class VoteView(View):
             vote.value = value
             vote.save()
 
-        session = Session.objects.get(pk=session_id)
+        session = Session.objects.get(unconference__slug=unconf, pk=session_id)
         response_data = dict(
             vote_width=session.vote_width(),
             session_id=session.pk
@@ -153,19 +154,24 @@ class CreateParticipantView(CreateView):
         return super(CreateParticipantView, self).form_valid(form)
 
     def get_success_url(self):
-        success_url = self.request.POST.get('next', reverse("session"))
+        success_url = self.request.POST.get(
+            'next', reverse("session", kwargs={"unconf": context["unconf"]})
+        )
         return success_url
 
     def get_context_data(self, *args, **kwargs):
         context = super(CreateParticipantView, self).get_context_data(*args, **kwargs)
-        
-        context['next'] = self.request.GET.get('next', reverse("session"))
+
+        context['unconf'] = kwargs.get('unconf', None)        
+        context['next'] = self.request.GET.get(
+            'next', reverse("session", kwargs={"unconf": context['unconf']})
+        )
+
         return context
 
 # Update participant for current user
 class UpdateParticipantView(UpdateView):
-    model = Participant
-    fields = ['organization']
+    form_class = CreateParticipantForm
     template_name = "participant/form.html"
 
     @method_decorator(login_required(login_url='/users/login'))
@@ -173,7 +179,10 @@ class UpdateParticipantView(UpdateView):
         return super(UpdateParticipantView, self).get(request, *args, **kwargs)
 
     def get_success_url(self):
-        return reverse("session")
+        success_url = self.request.POST.get(
+            'next', '/'
+        )
+        return success_url
 
     def get_object(self):
         try:
@@ -181,7 +190,15 @@ class UpdateParticipantView(UpdateView):
         except Participant.DoesNotExist:
             raise Http404
 
-### CRAZY VIEW THAT DOES EVERYTHING BASE ON RAILS MODEL ###
+    def get_context_data(self, *args, **kwargs):
+        context = super(UpdateParticipantView, self).get_context_data(*args, **kwargs)
+        context['unconf'] = kwargs.get('unconf', None)
+        context['next'] = self.request.GET.get(
+            'next', '/'
+        )
+        return context
+
+### CRAZY VIEW THAT DOES EVERYTHING BASED ON RAILS' MODEL ###
 class SessionView(TemplateView):
     get_actions = ['new', 'edit', 'show', 'index', 'delete']
     post_actions = ['create', 'update']
@@ -216,6 +233,10 @@ class SessionView(TemplateView):
         context = super(SessionView, self).get_context_data(*args, **kwargs)
         context['id'] = kwargs.get('id', None)
         context['action'] = kwargs.get('action', None)
+        context['unconf'] = kwargs.get('unconf', None)
+
+        if not context['unconf']:
+            return Http404
 
         if context['id']:
             try:
@@ -243,6 +264,8 @@ class SessionView(TemplateView):
             if room != "all":
                 context['room_id'] = filter['room'] = room
 
+            filter['unconference__slug'] = context['unconf']
+
             context['sessions'] = Session.objects.filter(**filter).select_related()
 
         return context
@@ -251,8 +274,8 @@ class SessionView(TemplateView):
     def index(self, request, context):
         context['view'] = self.request.GET.get('view', None)
         if context['view'] == 'schedule':
-            context['days'] = Day.objects.all()
-            context['slots'] = Slot.objects.all()
+            context['days'] = Day.objects.filter(unconference__slug=context['unconf'])
+            context['slots'] = Slot.objects.filter(day__in=context['days'])
             context['tags'] = SessionTag.objects.all()
             context['rooms'] = Room.objects.all()
             context['currentsessions'] = context['sessions'].filter(current_sessions_filter).order_by('slot__day','slot__start_time')
@@ -273,10 +296,20 @@ class SessionView(TemplateView):
         try:
             participant = self.request.user.participant
         except Participant.DoesNotExist:
-            return HttpResponseRedirect(reverse('create_participant')+'?next='+reverse("session", kwargs={"id": "new"}))
+            return HttpResponseRedirect(
+                reverse(
+                    'create_participant',
+                    kwargs={'unconf': context['unconf']}
+                )+'?next='+reverse("session",
+                    kwargs={"unconf": context['unconf'], "id": "new"})
+                )
 
         if not context.get('form', None):
-            context['form'] = SessionForm(initial=dict(presenters=[self.request.user.participant,]))
+            initial = dict(
+                presenters=[self.request.user.participant,],
+                unconference=Unconference.objects.get(slug=context['unconf'])
+            )
+            context['form'] = SessionForm(initial=initial)
         self.template_name = "session/new.html"
         return self.render_to_response(context)
 
@@ -287,7 +320,7 @@ class SessionView(TemplateView):
         if context['form'].is_valid():
             context['session'] = context['form'].save()
             return HttpResponseRedirect(
-                reverse('session')
+                reverse('session', kwargs={'unconf': context['unconf']})
             )
         else:
             return self.new(request, context)
@@ -319,7 +352,7 @@ class SessionView(TemplateView):
         if context['form'].is_valid():
             context['session'] = context['form'].save()
             return HttpResponseRedirect(
-                reverse('session')
+                reverse('session', kwargs={"unconf": context['unconf']})
             )
         else:
             return self.edit(request,   context)
