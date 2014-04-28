@@ -11,6 +11,16 @@ class SessionForm(forms.ModelForm):
             'unconference': forms.HiddenInput()
         }
 
+    def __init__(self, *args, **kwargs):
+        super(SessionForm, self).__init__(*args, **kwargs)
+        unconf = kwargs['initial'].get('unconference', None)
+
+        if unconf.slug != 'testcamp':
+            self.fields['presenters'].queryset = Participant.objects.filter(
+                unconference=unconf
+            )
+
+
 class SessionScheduleForm(forms.ModelForm):
     class Meta:
         model = Session
@@ -23,6 +33,12 @@ class SessionScheduleForm(forms.ModelForm):
             'unconference': forms.HiddenInput()
         }
 
+    def __init__(self, *args, **kwargs):
+        super(SessionScheduleForm, self).__init__(*args, **kwargs)
+        self.fields['presenters'].queryset = Participant.objects.filter(
+            unconference=self.fields['unconference'].initial
+        )
+
 # Form to save data either to the Participant model or the User model,
 # depending on whether or not the User model has a 'phone' field
 class CreateParticipantForm(forms.ModelForm):
@@ -33,7 +49,9 @@ class CreateParticipantForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CreateParticipantForm, self).__init__(*args, **kwargs)
         self.fields["phone"] = forms.CharField(max_length=20, required=True)
-        if self.instance:
+
+        # Provide initial phone if the participant exists
+        if self.instance.pk:
             self.fields["phone"].initial = self.instance.phone
 
     def save(self):

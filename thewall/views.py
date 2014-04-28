@@ -155,7 +155,7 @@ class CreateParticipantView(CreateView):
 
     def get_success_url(self):
         success_url = self.request.POST.get(
-            'next', reverse("session", kwargs={"unconf": context["unconf"]})
+            'next', None
         )
         return success_url
 
@@ -234,6 +234,17 @@ class SessionView(TemplateView):
         context['id'] = kwargs.get('id', None)
         context['action'] = kwargs.get('action', None)
         context['unconf'] = kwargs.get('unconf', None)
+        unconference = Unconference.objects.get(slug=context['unconf'])
+
+        # Hack to allow testers to mess with one conference
+        if unconference.slug != 'testcamp':
+            try:
+                participant = self.request.user.participant
+            except Partcipant.DoesNotExist:
+                raise Http404
+
+            if not participant in unconference.participants.all():
+                raise Http404
 
         if not context['unconf']:
             return Http404
@@ -298,8 +309,7 @@ class SessionView(TemplateView):
         except Participant.DoesNotExist:
             return HttpResponseRedirect(
                 reverse(
-                    'create_participant',
-                    kwargs={'unconf': context['unconf']}
+                    'create_participant'
                 )+'?next='+reverse("session",
                     kwargs={"unconf": context['unconf'], "id": "new"})
                 )

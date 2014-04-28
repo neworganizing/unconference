@@ -120,6 +120,7 @@ class Unconference(models.Model):
     name = models.CharField(max_length=127)
     venue = models.ForeignKey(Venue)
     days = models.ManyToManyField(Day)
+    participants = models.ManyToManyField(Participant)
 
     def __unicode__(self):
         return self.name
