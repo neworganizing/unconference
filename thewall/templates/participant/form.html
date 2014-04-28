@@ -1,9 +1,10 @@
 {% extends "wall-wrapper.html" %}
 
 {% block content %}
-<p>Please enter the organization you are associated with.  If you're attending as an individual, just leave this blank.  Thanks!</p>
+<p>Please enter the organization you are associated with.  If you're attending as an individual, just leave this blank.  Your phone number is required.  Thanks!</p>
 
 <form action="" method="post">
+	<input type="hidden" name="next" value="{{ next }}"/>
 	{% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Save Participant Info</button>

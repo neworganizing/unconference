@@ -1,3 +1,28 @@
+#session-form div {
+  margin-bottom: 1em;
+  font-size: 10pt;
+}
+
+#session-form label {
+  font-size: 12pt;
+  margin-bottom: 0.25em;
+  display: inline-block;
+}
+
+#session-form select {
+  width: 100%;
+}
+
+ul.errorlist {
+  font-size: 75%;
+  color: #F00;
+  margin-left: 2em;
+  display: inline-block;
+}
+
+ul.errorlist li {
+}
+
 .dropdowns {
   margin-bottom: 15px;
 }
@@ -187,7 +212,7 @@ header a:hover {
   right: 0;
 }
 
-a.vote-link {
+a.vote-link, a.fake-vote-link {
   vertical-align: top;
   display: inline-block;
   border: 1px solid #6BF;
@@ -199,7 +224,7 @@ a.vote-link {
   line-height: 100%;
 }
 
-a.vote-link:hover {
+a.vote-link:hover, a.fake-vote-link:hover {
   background: #CEF;
   text-decoration: none;
 }

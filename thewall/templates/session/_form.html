@@ -1,62 +1,56 @@
-<p>
-	{{ form.title.errors }}
-	<label>{{ form.title.label }}</label>
+<div>
+	<label>{{ form.title.label }}</label>{{ form.title.errors }}
 	{{ form.title }}
-</p>
+</div>
 
-<p>
-	{{ form.headline.errors }}
-	<label>{{ form.headline.label }}</label>
+<div>
+	<label>{{ form.headline.label }}</label>{{ form.headline.errors }}
+	<span class="help-text">A one line description of your session.</span>
 	{{ form.headline }}
-</p>
+</div>
 
 
-<p>
-	{{ form.description.errors }}
-	<label>{{ form.description.label }}</label>
+<div>
+	<label>{{ form.description.label }}</label>{{ form.description.errors }}
+	<span class="help-text">Full description of your session.</span>
 	{{ form.description }}
-</p>
+</div>
 
-<div class="span3">
-<p>
-	{{ form.tags.errors }}
-	<label>{{ form.tags.label }}</label>
+<div class="span3 firstspan">
+<div>
+	<label>{{ form.tags.label }}</label>{{ form.tags.errors }}
 	{{ form.tags }}
-</p>
+</div>
 </div>
 
-<div class="span3">
-<p>
-	{{ form.presenters.errors }}
-	<label>{{ form.presenters.label }}</label>
+<div class="lastspan4">
+<div>
+	<label>{{ form.presenters.label }}</label>{{ form.presenters.errors }}
 	{{ form.presenters }}
-</p>
+</div>
 </div>
 
-<p>
-	{{ form.difficulty.errors }}
-	<label>{{ form.difficulty.label }}</label>
+<div class="span6 firstspan">
+	<label>{{ form.difficulty.label }}</label>{{ form.difficulty.errors }}
 	{{ form.difficulty }}
-</p>
+</div>
 
 {% if request.user.is_staff %}
 
 <h1>Schedule Session</h1>
 
-<div class="span3">
-<p>
-	{{ form.slot.errors }}
-	<label>{{ form.slot.label }}</label>
+<div class="span3 firstspan">
+<div>
+	<label>{{ form.slot.label }}</label>{{ form.slot.errors }}
 	{{ form.slot }}
-</p>
+</div>
 </div>
 
 <div class="span3">
-<p>
-	{{ form.room.errors }}
-	<label>{{ form.room.label }}</label>
+<div>
+	<label>{{ form.room.label }}</label>{{ form.room.errors }}
 	{{ form.room }}
-</p>
+</div>
 </div>
 
 {% endif %}

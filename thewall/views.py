@@ -19,7 +19,7 @@ from rest_framework import viewsets
 
 from thewall.models import Session, Day, Slot, Venue, Room, Participant, Vote, SessionTag
 from thewall.serializers import SessionSerializer
-from thewall.forms import SessionForm, SessionScheduleForm
+from thewall.forms import SessionForm, SessionScheduleForm, CreateParticipantForm
 from thewall.decorators import render_to
 
 class SessionViewSet(viewsets.ModelViewSet):
@@ -137,20 +137,30 @@ class VoteView(View):
 
 # Create participant for current user
 class CreateParticipantView(CreateView):
-    model = Participant
-    fields = ['organization']
+    form_class = CreateParticipantForm
     template_name = "participant/form.html"
 
     @method_decorator(login_required(login_url='/users/login'))
     def get(self, request, *args, **kwargs):
         return super(CreateParticipantView, self).get(request, *args, **kwargs)
 
+    @method_decorator(login_required(login_url='/users/login'))
+    def post(self, request, *args, **kwargs):
+        return super(CreateParticipantView, self).post(request, *args, **kwargs)
+
     def form_valid(self, form):
         form.instance.user = self.request.user
         return super(CreateParticipantView, self).form_valid(form)
 
-    def get_success_url(self, form):
-        return reverse("session")
+    def get_success_url(self):
+        success_url = self.request.POST.get('next', reverse("session"))
+        return success_url
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(CreateParticipantView, self).get_context_data(*args, **kwargs)
+        
+        context['next'] = self.request.GET.get('next', reverse("session"))
+        return context
 
 # Update participant for current user
 class UpdateParticipantView(UpdateView):
@@ -263,7 +273,7 @@ class SessionView(TemplateView):
         try:
             participant = self.request.user.participant
         except Participant.DoesNotExist:
-            return HttpResponseRedirect(reverse('create_participant'))
+            return HttpResponseRedirect(reverse('create_participant')+'?next='+reverse("session", kwargs={"id": "new"}))
 
         if not context.get('form', None):
             context['form'] = SessionForm(initial=dict(presenters=[self.request.user.participant,]))
@@ -280,7 +290,7 @@ class SessionView(TemplateView):
                 reverse('session')
             )
         else:
-            return self.new(context)
+            return self.new(request, context)
 
     @method_decorator(login_required(login_url='/users/login'))
     def edit(self, request, context):
@@ -312,7 +322,7 @@ class SessionView(TemplateView):
                 reverse('session')
             )
         else:
-            return self.edit(context)
+            return self.edit(request,   context)
 
 def refresh(request):
 

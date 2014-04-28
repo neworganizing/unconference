@@ -41,8 +41,14 @@
 						<div class="vote-total" id="vote-total-{{ session.id }}" style="width: {{ session.vote_width }}px;">
 						</div>
 					</div>
+
+					{% if request.user.participant %}
 					<a class="button vote-link {% if session.id in request.user.participant.get_up_votes %}inactive{% endif %}" id="vote-up-{{ session.id }}" href="{% url "vote" id=session.id %}" data-value="1">+</a>
 					<a class="button vote-link {% if session.id in request.user.participant.get_down_votes %}inactive{% endif %}" id="vote-down-{{ session.id }}" href="{% url "vote" id=session.id %}" data-value="-1">-</a>
+					{% else %}
+					<a class="button fake-vote-link" href="{% url "create_participant" %}">+</a>
+					<a class="button fake-vote-link" href="{% url "create_participant" %}">-</a>
+					{% endif %}
 				</div>
 			</div>
 		</div>

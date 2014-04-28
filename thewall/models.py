@@ -15,6 +15,7 @@ class Participant(models.Model):
     #name = models.CharField(max_length=100)
     organization = models.CharField(max_length=100, blank=True)
     attendeenumber = models.IntegerField(blank=True, null=True)
+    _phone = models.CharField(max_length=20, blank=True, null=True)
 
     def __unicode__(self):
         """Unicode representation of participant"""
@@ -32,6 +33,21 @@ class Participant(models.Model):
                 value=-1).values_list('session_id', flat=True)
         return self._down_votes
 
+    @property
+    def phone(self):
+        if hasattr(self.user, 'phone'):
+            return self.user.phone
+
+        return self._phone
+
+    @phone.setter
+    def phone(self, value):
+        if hasattr(self.user, 'phone'):
+            self.user.phone = value
+            self.user.save()
+        else:
+            self._phone = value
+    
 
 """Models for Sessions"""
 
