@@ -17,11 +17,13 @@ class SessionForm(forms.ModelForm):
 
         if initial:
             unconf = initial.get('unconference', None)
-
-            if unconf and unconf.slug != 'testcamp':
-                self.fields['presenters'].queryset = Participant.objects.filter(
-                    unconference=unconf
-                )
+        else:
+            unconf = self.instance.unconference
+            
+        if unconf and unconf.slug != 'testcamp':
+            self.fields['presenters'].queryset = Participant.objects.filter(
+                unconference=unconf
+            )
 
 
 class SessionScheduleForm(forms.ModelForm):
