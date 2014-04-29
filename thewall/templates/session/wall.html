@@ -10,18 +10,18 @@
 		{% endfor %}
 	</tr>
 
-	{% for slot in slots %}
+	{% for row in wall %}
 	<tr>
 		<th class="first-colummn">
-			{{ slot.name }}<br />
-			<small>{{ slot.time }}</small>
+			{{ row.slot.name }}<br />
+			<small>{{ row.slot.time }}</small>
 		</th>
-		{% for session in slot.session_set.all %}
-			<td>{{ session }}<br />
-				<small>{% for presenter in session.presenters.all %}
-					{{ presenter }}{% if not forloop.last %}, {% endif %}
-				{% endfor %}</small>
-			</td>
+		{% for room, session in row.rooms %}
+			{% if session %}
+			<td>{{ session }}</td>
+			{% else %}
+			<td>&nbsp;</td>
+			{% endif %}
 		{% endfor %}
 	</tr>
 	{% endfor %}

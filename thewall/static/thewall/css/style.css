@@ -244,24 +244,31 @@ ul.presenter-list li {
 
 .wall-container {
   width: 100%;
-  overflow: auto;
+  overflow-x: scroll;
 }
 
 table.wall {
   font-size: 12pt;
   border-collapse: separate;
   border-spacing: 10px;
+  table-layout: fixed;
+  width: 100%;
+}
+
+table.wall td, table.wall th {
+  padding: 0.5em;
+  width: 10em;
+  text-align: center;
 }
 
 table.wall td {
-  padding: 0.5em;
-  width: 30em;
-  text-align: center;
   border: 1px solid #AAA;
   border-radius: 5px;
   background: beige;
+  height: 5em;
+  overflow: hidden;
 }
 
 table.wall th.first-column {
-  width: 22em;
+  width: 5em;
 }

@@ -287,6 +287,7 @@ class SessionView(TemplateView):
     @method_decorator(login_required(login_url='/users/login'))
     def index(self, request, context):
         context['view'] = self.request.GET.get('view', None)
+        
         if context['view'] == 'schedule':
             context['days'] = Day.objects.filter(unconference__slug=context['unconf'])
             context['slots'] = Slot.objects.filter(day__in=context['days'])
@@ -295,11 +296,32 @@ class SessionView(TemplateView):
             context['currentsessions'] = context['sessions'].filter(current_sessions_filter).order_by('slot__day','slot__start_time')
             context['pastsessions'] =  context['sessions'].filter(past_sessions_filter).order_by('-slot__day','-slot__start_time')
             self.template_name = 'session/list.html'
+
         elif context['view'] == 'wall':
             context['days'] = Day.objects.filter(unconference__slug=context['unconf'])
             context['rooms'] = Room.objects.filter(venue__unconference__slug=context['unconf'])
-            context['slots'] = Slot.objects.filter(day__in=context['days'])
+            slots = Slot.objects.filter(day__in=context['days'])
+
+            # Construct wall
+            context['wall'] = list()
+
+            for slot in slots:
+                row = dict()
+                row['slot'] = slot
+                row['rooms'] = dict()
+
+                for room in context['rooms']:
+                    row['rooms'][room.name] = None
+
+                for session in slot.session_set.all():
+                    row['rooms'][session.room.name] = session
+
+                row['rooms'] = sorted(row['rooms'].iteritems())
+
+                context['wall'].append(row)
+
             self.template_name = 'session/wall.html'
+        
         else:
             context['sessions'] = context['sessions'].annotate(total_votes=Sum('votes__value')).order_by('-total_votes')
             self.template_name = "session/index.html"

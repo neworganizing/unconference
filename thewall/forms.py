@@ -18,7 +18,7 @@ class SessionForm(forms.ModelForm):
         if initial:
             unconf = initial.get('unconference', None)
 
-            if unconf.slug != 'testcamp':
+            if unconf and unconf.slug != 'testcamp':
                 self.fields['presenters'].queryset = Participant.objects.filter(
                     unconference=unconf
                 )
