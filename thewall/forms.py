@@ -22,7 +22,7 @@ class SessionForm(forms.ModelForm):
 
         if unconf and unconf.slug != 'testcamp':
             self.fields['presenters'].queryset = Participant.objects.filter(
-                unconference_set__unconference=unconf
+                unconference=unconf
             )
 
 
@@ -49,9 +49,9 @@ class SessionScheduleForm(forms.ModelForm):
         
         if unconf and unconf.slug != 'testcamp':
             self.fields['presenters'].queryset = Participant.objects.filter(
-                unconference_set__unconference=unconf
+                unconference=unconf
             )
-            
+
         self.fields['slot'].queryset = Slot.objects.filter(day__in=self.instance.unconference.days.all())
         self.fields['room'].queryset = Room.objects.filter(venue=self.instance.unconference.venue)
 
