@@ -17,6 +17,9 @@ class Participant(models.Model):
     attendeenumber = models.IntegerField(blank=True, null=True)
     _phone = models.CharField(max_length=20, blank=True, null=True)
 
+    class Meta:
+        ordering = ('user__last_name', 'user__first_name', )
+
     def __unicode__(self):
         """Unicode representation of participant"""
         return self.user.first_name + " " + self.user.last_name + " (" + self.organization + ")"
@@ -55,17 +58,23 @@ class SessionTag(models.Model):
     """Session Tags"""
     tag = models.CharField(blank=False, max_length=20)
 
+    class Meta:
+        ordering = ('tag',)
+
     class Admin(object):
         list_display = ('tag',)
         search_fields = ('tag',)
 
     def __unicode__(self):
-        return self.tag
+        return self.tag.capitalize()
 
 class Day(models.Model):
     """Day of Unconference"""
     name = models.CharField(max_length=100)
     day = models.DateField(default=datetime.datetime.today)
+
+    class Meta:
+        ordering = ('day', 'name',)
 
     class Admin(object):
         list_display = ('name',)
@@ -93,6 +102,9 @@ class Slot(models.Model):
     def __unicode__(self):
         return self.day.name + " " + self.name + " (" + datetime.time.strftime(self.start_time,"%I:%M %p") + " - " + datetime.time.strftime(self.end_time,"%I:%M %p") + ")"
 
+    def time(self):
+        return datetime.time.strftime(self.start_time,"%I:%M %p") + " - " + datetime.time.strftime(self.end_time,"%I:%M %p")
+
 class Venue(models.Model):
     """Venue Location"""
     name = models.CharField(max_length=100)
@@ -111,6 +123,9 @@ class Room(models.Model):
     name = models.CharField(max_length=100)
     floor = models.CharField(max_length=20)
     venue = models.ForeignKey(Venue)
+
+    class Meta:
+        ordering = ('venue', 'name',)
 
     def __unicode__(self):
         return self.name
@@ -144,11 +159,12 @@ class Session(models.Model):
 
     class Meta:
         unique_together = (('unconference', 'slot', 'room'),)
+        ordering = ('title', )
 
 
     def vote_width(self):
         # votes / highest votes * 100
-        annotated_sessions = Session.objects.annotate(total_votes=Sum('votes__value')).order_by('-total_votes')
+        annotated_sessions = Session.objects.filter(unconference=self.unconference).annotate(total_votes=Sum('votes__value')).order_by('-total_votes')
         highest_votes = annotated_sessions[0]
         print highest_votes.total_votes
         if highest_votes.total_votes < 1:

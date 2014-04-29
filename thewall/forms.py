@@ -1,5 +1,5 @@
 from django import forms
-from thewall.models import Session, Participant
+from thewall.models import Session, Participant, Slot, Room
 
 class SessionForm(forms.ModelForm):
     class Meta:
@@ -38,6 +38,9 @@ class SessionScheduleForm(forms.ModelForm):
         self.fields['presenters'].queryset = Participant.objects.filter(
             unconference=self.fields['unconference'].initial
         )
+
+        self.fields['slot'].queryset = Slot.objects.filter(day__in=self.instance.unconference.days.all())
+        self.fields['room'].queryset = Room.objects.filter(venue=self.instance.unconference.venue)
 
 # Form to save data either to the Participant model or the User model,
 # depending on whether or not the User model has a 'phone' field

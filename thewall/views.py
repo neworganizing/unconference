@@ -238,7 +238,8 @@ class SessionView(TemplateView):
         context['unconf'] = kwargs.get('unconf', None)
         unconference = Unconference.objects.get(slug=context['unconf'])
 
-        # Hack to allow testers to mess with one conference
+        # Hack to allow testers to mess with one conference,
+        # but otherwise only participants can see it
         if unconference.slug != 'testcamp':
             try:
                 participant = self.request.user.participant
@@ -253,7 +254,7 @@ class SessionView(TemplateView):
 
         if context['id']:
             try:
-                context['session'] = get_object_or_404(Session, pk=context['id'])
+                context['session'] = get_object_or_404(Session, unconference__slug=context['unconf'], pk=context['id'])
             except ValueError:
                 context['session'] = None
         else: # A listing of all sessions, check for filters
@@ -290,10 +291,15 @@ class SessionView(TemplateView):
             context['days'] = Day.objects.filter(unconference__slug=context['unconf'])
             context['slots'] = Slot.objects.filter(day__in=context['days'])
             context['tags'] = SessionTag.objects.all()
-            context['rooms'] = Room.objects.all()
+            context['rooms'] = Room.objects.filter(venue__unconference__slug=context['unconf'])
             context['currentsessions'] = context['sessions'].filter(current_sessions_filter).order_by('slot__day','slot__start_time')
             context['pastsessions'] =  context['sessions'].filter(past_sessions_filter).order_by('-slot__day','-slot__start_time')
             self.template_name = 'session/list.html'
+        elif context['view'] == 'wall':
+            context['days'] = Day.objects.filter(unconference__slug=context['unconf'])
+            context['rooms'] = Room.objects.filter(venue__unconference__slug=context['unconf'])
+            context['slots'] = Slot.objects.filter(day__in=context['days'])
+            self.template_name = 'session/wall.html'
         else:
             context['sessions'] = context['sessions'].annotate(total_votes=Sum('votes__value')).order_by('-total_votes')
             self.template_name = "session/index.html"

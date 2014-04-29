@@ -241,3 +241,27 @@ ul.presenter-list li {
   display: inline;
   font-size: 10pt;
 }
+
+.wall-container {
+  width: 100%;
+  overflow: auto;
+}
+
+table.wall {
+  font-size: 12pt;
+  border-collapse: separate;
+  border-spacing: 10px;
+}
+
+table.wall td {
+  padding: 0.5em;
+  width: 30em;
+  text-align: center;
+  border: 1px solid #AAA;
+  border-radius: 5px;
+  background: beige;
+}
+
+table.wall th.first-column {
+  width: 22em;
+}

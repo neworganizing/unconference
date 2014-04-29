@@ -1,0 +1,30 @@
+{% extends "wall-wrapper.html" %}
+
+{% block content %}
+<div class="wall-container">
+<table class="wall">
+	<tr>
+		<th class="first-column"></th>
+		{% for room in rooms %}
+			<th>{{ room }}</th>
+		{% endfor %}
+	</tr>
+
+	{% for slot in slots %}
+	<tr>
+		<th class="first-colummn">
+			{{ slot.name }}<br />
+			<small>{{ slot.time }}</small>
+		</th>
+		{% for session in slot.session_set.all %}
+			<td>{{ session }}<br />
+				<small>{% for presenter in session.presenters.all %}
+					{{ presenter }}{% if not forloop.last %}, {% endif %}
+				{% endfor %}</small>
+			</td>
+		{% endfor %}
+	</tr>
+	{% endfor %}
+</table>
+</div>
+{% endblock %}
