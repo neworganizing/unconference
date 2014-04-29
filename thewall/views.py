@@ -313,7 +313,7 @@ class SessionView(TemplateView):
                 for room in context['rooms']:
                     row['rooms'][room.name] = None
 
-                for session in slot.session_set.all():
+                for session in slot.session_set.filter(unconference__slug=context['unconf']):
                     row['rooms'][session.room.name] = session
 
                 row['rooms'] = sorted(row['rooms'].iteritems())
