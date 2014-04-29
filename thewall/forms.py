@@ -13,12 +13,15 @@ class SessionForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(SessionForm, self).__init__(*args, **kwargs)
-        unconf = kwargs['initial'].get('unconference', None)
+        initial = kwargs.get('initial', None)
 
-        if unconf.slug != 'testcamp':
-            self.fields['presenters'].queryset = Participant.objects.filter(
-                unconference=unconf
-            )
+        if initial:
+            unconf = initial.get('unconference', None)
+
+            if unconf.slug != 'testcamp':
+                self.fields['presenters'].queryset = Participant.objects.filter(
+                    unconference=unconf
+                )
 
 
 class SessionScheduleForm(forms.ModelForm):
