@@ -1,8 +1,12 @@
 {% extends "wall-wrapper.html" %}
 
 {% block content %}
-<div class="offset2 span7">
+<div class="firstspan span11">
 <h1>Create New Session</h1>
+<div class="help-box">
+	<p>Fill out this form to add your session idea to the list.  You are automatically added to the list of presenters, but you can add others as well.  Please select at least one tag to categorize your session.  Anyone listed as a presenter can edit a session from the session ideas page by clicking the "Edit" link.</p>
+</div>
+<br />
 <form action="./" method="post" id="session-form">
 	{% csrf_token %}
 	{% include "session/_form.html" %}

@@ -3,6 +3,14 @@
 {% block content %}
 {% csrf_token %}
 
+<h1>{{ unconf|title }} Session Ideas</h1>
+
+<div class="help-box">
+	<p>Thanks for joining us for the {{ unconf|title }} unconference!  If you'd like to add a session, click the <strong>"New Session"</strong> link at the top of the page.  To vote for your prefered sessions, click the <strong>"+"</strong> button next to that session, or the <strong>"-"</strong> to down vote.  If you have any questions, don't hesitate to <a href="mailto:webmaster@neworganizing.com">email us</a>.</p>
+</div>
+
+<hr />
+
 {% for session in sessions %}
 	<div class="clearfix">
 		<div class="row">
