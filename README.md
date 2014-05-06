@@ -1,121 +1,92 @@
 #The Wall
 
-**The Wall** is a Django/Python app built to be deployed on Heroku that allows conferences and unconferences to post their full schedule on a responsive website with a full API backend (which has been used in the past to work with a mobile app.)
+**The Wall** is a Django/Python app built to be deployed on Heroku that allows conferences and unconferences to post their full schedule on a responsive website with a full API backend.  It also allows for users to submit session ideas, vote on session ideas, and schedule sessions once the final sessions have been chosen.
 
 Goals of the app are to allow rapid deployment, low maintainance and a responsive design that allows visitors to quickly view sessions on desktop, tablet and mobile.
 
-##Setup Notes
+##Setup
 
-The setup of this app is relatively quick and straightforward.
+### General Setup
 
-To save you a bunch of reading, here's the commands that will let you deploy in an instant (works on Mac/Linux.)
+    django-admin.py startproject mysite
+    cd mysite
+    add "-e git+git@github.com:neworganizing/unconference.git" to requirements.txt
+    pip install -r requirements.txt
+    (Add thewall.urls to your urls.py file)
+    python manage.py syncdb
+    python manage.py migrate
+    python manage.py collectstatic
+    python manage.py runserver
+    
+### Heroku
 
-    git clone git@github.com:neworganizing/unconference.git
-    cd unconference
+    django-admin.py startproject mysite
+    cd mysite
+    add "-e git+git@github.com:neworganizing/unconference.git" to requirements.txt
     heroku create
     heroku config:add AWS_STORAGE_BUCKET=bucketnamehere
     heroku config:add AWS_ACCESS_KEY_ID=public_access_key_here
     heroku config:add AWS_SECRET_ACCESS_KEY=secret_key_here
     git push heroku master
     heroku run python manage.py syncdb
+    heroku run python manage.py migrate
     heroku run python manage.py collectstatic
 
-Then visit `http://yourappname.herokuapp.com/admin/` to setup sessions.
+Then visit `http://yourappname.herokuapp.com/admin/` to setup the initial data.
 
-Here are the more detailed instructions 
+## Functionality Overview
 
-###Comand Line Setup
-These steps are a bit more complicated and will require some command line help. This is where you may want to bring in a bit of outside help if you aren't familiar or comfortable with using your operating system's command prompt.
+### Initial data setup
 
-#####Step 0: Install Heroku Tools
-Make sure that you have the [Heroku Toolbelt](https://toolbelt.heroku.com/) installed and an Amazon S3 account and bucket ready for the app.
+#### Step 0: Login
+If you correctly followed the configuration steps you'll need to login to your control panel at http://yourdomain.com/admin/.
 
-#####Step 1: Clone the app
-Using your operating system's shell, clone into the wall repository by running `git clone git@github.com:neworganizing/unconference.git`
-
-#####Step 2: Create a heroku app
-Move into the 'unconference' directory you just cloned into and type `heroku create`. You'll now see a url with the subdomain http://xyz123.herokuapp.com/, this is the heroku URL of our wall.
-
-#####Step 3: Add information for S3
-We need to add our s3 information to heroku before we can deploy. Your public and secret keys are available under 'Security Credentials' on the [Amazon Web Services](http://aws.amazon.com/) website, while you'll need to use the Amazon Management Console or a 3rd party app like the Firefox Extension [S3Fox](http://www.s3fox.net/) to create a bucket.
-
-Once you have your credentials and have created a bucket, set the following environmental variables
-
-    heroku config:add AWS_STORAGE_BUCKET=bucketnamehere
-    heroku config:add AWS_ACCESS_KEY_ID=public_access_key_here
-    heroku config:add AWS_SECRET_ACCESS_KEY=secret_key_here
-
-#####Step 4: Submit app to heroku
-We need to send our app to Heroku and launch it. This is done by typing the command `git push heroku master`. This may take a few moments.
-
-#####Step 5: Setup database
-We need to setup our database. Type in `heroku run python manage.py syncdb` and follow the prompts to create a new administrative account.
-
-#####Step 6: Send static files to Amazon S3
-We need to collect our static files into our S3 bucket. This is done with the command `heroku run python manage.py collectstatic`
-
-At this point you can visit http://yourherokuappurl.herokuapp.com/admin/ and login using the username and password you set during the `syncdb` step.
-
-###Event Configuration
-
-These steps can be handled by a less technically experienced event organizer. Much of the information is only seen via the API and not on the main website (as of right now)
-
-####Step 0: Login
-If you correctly followed the configuration steps you'll need to login to your control panel at http://yourherokuapp.herokapp.com/admin/ .
-
-####Step 1: Name Your Site
+#### Step 1: Name Your Site
 The first step is to give your site a name. If you visit /admin/sites/site/ you'll see a single record (Domain name: example.com, Display name exmaple.com.)
 
-Edit this record by clicking on the linked 'Domain name.' Set the domain name to the domain your wall is hosted on (in this case http://yourherokuappurl.herokuapp.com/) and the Display name to what your event is referred to as. Display name is used in the template to refer to your event, so it's important you set it properly.
+Edit this record by clicking on the linked 'Domain name.' Set the domain name to the domain your wall is hosted on and the Display name to what your site is referred to as.
 
 Change the settings to fit your needs then click 'Save'
 
-####Step 2: Add a venue
+#### Step 2: Add a venue
 Using the 'Home' link on the top of the admin page, find 'Venues' and click the +Add button.
 
 Any fields that are bold are required.
 
-####Step 3: Add days
-Going back to the home screen, click the +Add button next to Days and add the first day of your event. If you have a multi-day event, click 'Save and add another', otherwise save the day and go back to the homescreen.
+#### Step 3: Add days
+Going back to the home screen, click the +Add button next to Days and add the first day of your event. If you have a multi-day event, click 'Save and add another', otherwise save the day and go back to the homescreen.  Typically you can just name the day by the day of the week, but if you have fancier naming conventions those could be used too.
 
-####Step 4: Add slots
+#### Step 4: Add slots
 Going back to the home screen, click the +Add button next to Slots. From the dropdown choose a day, enter a name for the slot and then a start time and end time.
 
 Note: Start time and End time are in 24H format (so 1PM is 13:00:00)
 
-####Step 5: Add tags
+#### Step 5: Add tags
 Going back to home, click the +Add next to 'Session tags' and start adding tags for your sessions.
 
-####Step 6: Add rooms
+#### Step 6: Add rooms
 At the home screen, click the +Add next to 'Rooms' to add available rooms. Floor is useful for ordering and is required even if your event is only on a single floor.
 
-####Step 7: Add sessions and participants
-If you are planning on directly importing EventBrite attendees be sure to have that done before adding any sessions or participants. The import system only checks to see if a participant with the same participant ID in EventBrite exists in the 'Participants' database, so manually adding a user and then having that user register in EventBrite will result in that user appearing twice.
+#### Step 7: Add your unconference
 
-To add a session, click on the bolded 'Sessions' link on the Home page. Press 'Add session' on the top right of the screen that appears and enter the relevant information.
+Again from the home screen, click the +Add next to 'Unconferences' to add your unconference.  The slug will determine the URL for your sessions, such as "http://yourdomain/myunconference/sessions".  The display name will appear on the site, and venue, days, and participants helps determine what options should be displayed when creating a session.  Only users with a paricipant instance associated with them, and who are added to this unconference, will be able to access the sessions page and the wall.
+
+#### Step 8: Add participants
+If you are planning on directly importing EventBrite attendees be sure to have that done before adding any sessions or participants. The import system only checks to see if a participant with the same participant ID in EventBrite exists in the 'Participants' database, so manually adding a user and then having that user register in EventBrite will result in that user appearing twice.  Participants are tied to the current Django app's user model, and so that model must have a first name and last name for the participant to be displayed correctly.
+
+#### Step 9: Adding sessions
+
+To add a session through the backend, click on the bolded 'Sessions' link on the Home page. Press 'Add session' on the top right of the screen that appears and enter the relevant information.
 
 The 'Presenters' box is actually an autofill box. If you start typing in the name of an attendee in the system that attendee should appear in a dropdown menu. Use your arrow keys or mouse to select that attendee and add them as a presenter.
 
 If a presenter is not in the system, you can press the '+add' button to the right of the presenters box and a popup window will appear allowing you to add new presenters.
 
-As you add sessions they will start to appear on your wall in real time.
+As you add sessions, they will be added to the session voting page.  Any user with staff level access can assign a session to a particular room and slot, thus adding it to the public schedule.
 
-####Step 8: Check your work
-It is important to note that the system as it exists now does no deduping. You can schedule two events in the same room at the same time.
+Users can add sessions through the front end, using a similar form.  Sessions added in this way will automatically add the user as a presenter, but the user can add other presenters as well.
 
-The best way to handle this is to cycle through your data room by room on the public-facing wall and search for duplicates per session. If you are a logged in user you will see an 'Edit this entry' box appear next to sessions which will link you to that sessions entry in the admin.
-
-###Optional Addons
-
-#####Custom Domain/CNAME Suport
-Obviously using http://randomname.herokuapp.com/ isn't ideal. Thankfully, Heroku offers support for custom subdomains.
-
-Heroku offers [detailed instructions on custom domains](https://devcenter.heroku.com/articles/custom-domains) which is worth the read. Just note, you'll need access to your registrar or webhost to prepend the wall to your existing domain.
-
-#####Google Analytics
-You can add Google Analytics tracking to your wall by setting your Google Analaytics ID as the GA_ID. `heroku config:add GA_ID=UA-12345-1`
-
-If you want to track visitors across your entire domain name, specify your domain with `heroku config:add SITE_DOMAIN='yoursite.com'`
+### Optional Addons
 
 ####EventBrite Integration
 
