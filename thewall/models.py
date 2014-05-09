@@ -136,6 +136,8 @@ class Unconference(models.Model):
     venue = models.ForeignKey(Venue)
     days = models.ManyToManyField(Day)
     participants = models.ManyToManyField(Participant, blank=True)
+    eventbrite_page_id = models.CharField(max_length=31)
+    actionkit_page_id = models.IntegerField()
 
     def __unicode__(self):
         return self.name
