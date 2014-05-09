@@ -18,7 +18,7 @@
 		</th>
 		{% for room, session in row.rooms %}
 			{% if session %}
-			<td>{{ session }}</td>
+			<td><strong>{{ session }}</strong><br/>Presenters: {% for presenter in session.presenters.all %}{{ presenter }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
 			{% else %}
 			<td>&nbsp;</td>
 			{% endif %}
