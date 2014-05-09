@@ -32,10 +32,10 @@ class Command(BaseCommand):
         # Grab all of our attendees
         print "Downloading Attendees from EventBrite for ", event.name
 
-        try:
+        if eventbrite_event_id:
             attendees = eb.event_list_attendees({'id': eventbrite_event_id})['attendees']
-        except:
-            return "Error processing attendees: {0}".format(event)
+        else:
+            return "No event id provided"
 
         # Setup our counters
         handled = 0
