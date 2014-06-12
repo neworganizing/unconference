@@ -22,95 +22,6 @@ class Command(BaseCommand):
             help='List all attendees'),
     )
 
-    def pull_attendees_for_event(self, eb, event, options):
-
-        eventbrite_event_id = event.eventbrite_page_id
-
-        if not eventbrite_event_id:
-            return "Sorry, there is no eventbrite event id for this event."
-
-        # Grab all of our attendees
-        print "Downloading Attendees from EventBrite for ", event.name
-
-        if eventbrite_event_id:
-            attendees = eb.event_list_attendees({'id': eventbrite_event_id})['attendees']
-        else:
-            return "No event id provided"
-
-        # Setup our counters
-        handled = 0
-        numcreated = 0
-
-        # Loop over all our attendees
-        print "Adding/Updating Attendee Database"
-        for x in attendees:
-
-            # EB returns a dictionary with all attendee data under 'attendee', lets just assign the value of that dictionary to a variable
-            a = x['attendee']
-
-            # Lets assemble our participant's name. We'll ignore unicode characters.
-            first_name = a['first_name'].encode('ascii', 'ignore')
-            last_name = a['last_name'].encode('ascii', 'ignore')
-
-            # Check to see if there is a 'company' field returned, if so, save assign it to org
-            if a.has_key('company'):
-                org = a['company'].encode('ascii', 'ignore')
-            else:
-                org = 'Independent'
-
-            # Check to see if the 'company' field we got back was blank. If so, set the participant's organization to 'Independent'
-            if org == '':
-                org = 'Independent'
-
-            # Set our attendee number
-            number = str(a['id'])
-
-            email = a['email'].encode('ascii', 'ignore')
-
-            if email == '':
-                continue
-
-            # First, find user
-            try:
-                user, created = User.objects.get_or_create(first_name=first_name, last_name=last_name, email=email)
-            except IntegrityError:
-                user = User.objects.get(email=email)
-                if user.first_name == "":
-                    user.first_name = first_name
-                if user.last_name == "":
-                    user.last_name = last_name
-                user.save()
-
-            if user.password == '':
-                user.set_password('{0}{1}'.format(first_name[0].lower(), last_name.lower()))
-                user.save()
-
-            if not created:
-                print "User: {0} {1} exists.".format(first_name, last_name)
-
-            # get_or_create is a nice helper function here. It will run a SELECT statement for each attendee, so it isn't optimal, but 2000 select queries won't kill the database
-            participant, created = Participant.objects.get_or_create(user=user)
-            participant.attendeenumber = number
-            if not participant.organization or participant.organization == '':
-                participant.organization = org
-            participant.save()
-
-            event.participants.add(participant)
-
-            # As get_or_create returns a touple, lets test to see if a new object is created and increase our counter
-            if created == True:
-                numcreated += 1
-
-            # Lets print out some basic information for the individual running the sync
-            if options['list']:
-                print '%s %s %s %s %s' % (first_name, last_name, email, org, number)
-            handled += 1
-
-        event.save()
-
-        # Some final stats
-        return("\n%i Attendees\n%i Added to Database\n" % (handled, numcreated))
-
     def handle(self, *args, **options):
         # Try to start a connection with eventbrite, this will work with both the EventBrite OAuth2 method and a app/user key
         # We test on App/User method though
@@ -127,6 +38,81 @@ class Command(BaseCommand):
         results = []
 
         for event in events:
-            results.append(self.pull_attendees_for_event(eb, event, options))
+            results.append(pull_attendees_for_event(eb, event, options))
 
         return "\n".join(results)
+
+def pull_attendees_for_event(eb, event, options={}):
+        if not event.eventbrite_page_id:
+            return "Sorry, there is no eventbrite event id for this event."
+
+        # Grab all of our attendees
+        print "Downloading Attendees from EventBrite for ", event.name
+
+        attendees = eb.event_list_attendees({'id': event.eventbrite_page_id})['attendees']
+
+        # Setup our counters
+        handled = 0
+        numcreated = 0
+
+        # Loop over all our attendees
+        print "Adding/Updating Attendee Database"
+        for person in attendees:
+
+            # EB returns a dictionary with all attendee data under 'attendee', lets just assign the value of that dictionary to a variable
+            a = person['attendee']
+
+            # Lets assemble our participant's name. We'll ignore unicode characters.
+            first_name = a['first_name'].encode('ascii', 'ignore')
+            last_name = a['last_name'].encode('ascii', 'ignore')
+            number = str(a['id'])
+            email = a['email'].encode('ascii', 'ignore')
+
+            # User must have email address
+            if not email:
+                continue
+
+            # Check to see if there is a 'company' field returned, if so, save assign it to org
+            org = a.get('company', 'Independent').encode('ascii', 'ignore')
+
+            # Check to see if the 'company' field we got back was blank. If so, set the participant's organization to 'Independent'
+            if not org:
+                org = 'Independent'
+
+            # First, find user
+            user, created = User.objects.get_or_create(email=email)
+        
+            if not user.first_name:
+                user.first_name = first_name
+            if not user.last_name:
+                user.last_name = last_name
+            if not user.password:
+                user.set_password('{0}{1}'.format(first_name[0].lower(), last_name.lower()))
+
+            user.save()
+
+            if not created:
+                print "User: {0} {1} exists.".format(first_name, last_name)
+
+            participant, created = Participant.objects.get_or_create(user=user)
+            participant.attendeenumber = number
+            if not participant.organization:
+                participant.organization = org
+            participant.save()
+
+            event.participants.add(participant)
+
+            # As get_or_create returns a touple, lets test to see if a new object is created and increase our counter
+            if created == True:
+                numcreated += 1
+
+            # Lets print out some basic information for the individual running the sync
+            if options.get('list', False):
+                print '%s %s %s %s %s' % (first_name, last_name, email, org, number)
+
+            handled += 1
+
+        event.save()
+
+        # Some final stats
+        return("\n%i Attendees\n%i Added to Database\n" % (handled, numcreated))
