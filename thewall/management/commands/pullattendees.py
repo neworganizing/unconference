@@ -1,11 +1,17 @@
 from django.core.management.base import BaseCommand, CommandError
+from django.conf import settings
+from django.db import IntegrityError
+from django.contrib.auth import get_user_model
+from django.utils.translation import ugettext_lazy as _
+from django.utils.html import strip_tags
+from django.conf import settings
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
+
 from optparse import make_option
 from eventbrite import EventbriteClient
 
-from django.conf import settings
-from django.db import IntegrityError
 from thewall.models import Participant, Unconference
-from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
@@ -80,7 +86,7 @@ def pull_attendees_for_event(eb, event, options={}):
                 org = 'Independent'
 
             # First, find user
-            user, created = User.objects.get_or_create(email=email)
+            user, user_created = User.objects.get_or_create(email=email)
         
             if not user.first_name:
                 user.first_name = first_name
@@ -91,19 +97,45 @@ def pull_attendees_for_event(eb, event, options={}):
 
             user.save()
 
-            if not created:
+            if not user_created:
                 print "User: {0} {1} exists.".format(first_name, last_name)
 
-            participant, created = Participant.objects.get_or_create(user=user)
+            participant, participant_created = Participant.objects.get_or_create(user=user)
             participant.attendeenumber = number
             if not participant.organization:
                 participant.organization = org
             participant.save()
 
-            event.participants.add(participant)
+            if not event.participants.filter(pk=participant.pk).exists():
+                print "Adding user {0} to event {1}".format(user, event)
+                event.participants.add(participant)
+
+                # Email participant info about the event
+                to = user.email
+                from_email = 'Rootscamp Moderator <data@neworganizing.com>'
+                domain = settings.DOMAIN
+                    
+                subject = u"Submit session ideas for {0}".format(event)
+                    
+                if user_created:
+                    html = render_to_string("session/email/new_attendee_added.html", {"user": user, "domain": domain, "event": event})
+                else:
+                    html = render_to_string("session/email/existing_attendee_added.html", {"user": user, "domain": domain, "event": event})
+
+                text = strip_tags(html)
+
+                msg = EmailMultiAlternatives(subject, text, from_email, [to])
+                msg.attach_alternative(html, "text/html")
+
+                try:
+                    msg.send()
+                except:
+                    pass
+
+
 
             # As get_or_create returns a touple, lets test to see if a new object is created and increase our counter
-            if created == True:
+            if user_created == True:
                 numcreated += 1
 
             # Lets print out some basic information for the individual running the sync

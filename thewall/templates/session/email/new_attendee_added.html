@@ -1,0 +1,25 @@
+{% load i18n %}{% autoescape off %}
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>{% blocktrans %}NOI Notification{% endblocktrans %}</title>
+	</head>
+
+	<body style="width: 650px;">
+		<img src="http://neworganizing.com/static/images/rootscamp_email.png"/>
+
+		<div style="padding: 1em 2em;">
+			<p>{% blocktrans %}Hi{% endblocktrans %} {{ user.first_name }},</p>
+			 
+			<p>Thanks for registering for {{ event }}!  We've setup an NOI account for you so that you can access our moderator tool.  This tool allows you to submit your session ideas and vote for which sessions interest you the most.</p>
+
+			<p><a href="http://{{ domain }}/wall/{{ event.slug }}/sessions/">Click here to login and get started.</a></p>
+
+			<p>Username: {{ user.username }}</p>
+			<p>Password: {{ user.password }}</p>
+
+			<p>- The NOI Team</p>
+		</div>
+	</body>
+</html>
+{% endautoescape %}
