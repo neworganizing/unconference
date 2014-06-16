@@ -15,8 +15,8 @@
 
 			<p><a href="http://{{ domain }}/wall/{{ event.slug }}/sessions/">Click here to login and get started.</a></p>
 
-			<p>Username: {{ user.username }}</p>
-			<p>Password: {{ user.password }}</p>
+			<p>Username: {{ user.get_username }}</p>
+			<p>Password: {{ password }}</p>
 
 			<p>- The NOI Team</p>
 		</div>

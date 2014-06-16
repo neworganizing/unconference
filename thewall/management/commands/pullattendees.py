@@ -88,12 +88,17 @@ def pull_attendees_for_event(eb, event, options={}):
             # First, find user
             user, user_created = User.objects.get_or_create(email=email)
         
+            password = None
+
             if not user.first_name:
                 user.first_name = first_name
             if not user.last_name:
                 user.last_name = last_name
-            if not user.password:
-                user.set_password('{0}{1}'.format(first_name[0].lower(), last_name.lower()))
+
+            print "Password: ", user.password
+            if not user.has_usable_password():
+                password = '{0}{1}'.format(first_name[0].lower(), last_name.lower())
+                user.set_password(password)
 
             user.save()
 
@@ -118,7 +123,7 @@ def pull_attendees_for_event(eb, event, options={}):
                 subject = u"Submit session ideas for {0}".format(event)
                     
                 if user_created:
-                    html = render_to_string("session/email/new_attendee_added.html", {"user": user, "domain": domain, "event": event})
+                    html = render_to_string("session/email/new_attendee_added.html", {"user": user, "domain": domain, "event": event, "password": password})
                 else:
                     html = render_to_string("session/email/existing_attendee_added.html", {"user": user, "domain": domain, "event": event})
 
