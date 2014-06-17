@@ -117,7 +117,7 @@ def pull_attendees_for_event(eb, event, options={}):
 
                 # Email participant info about the event
                 to = user.email
-                from_email = 'Rootscamp Moderator <data@neworganizing.com>'
+                from_email = 'Rootscamp Moderator <info@neworganizing.com>'
                 domain = settings.DOMAIN
                     
                 subject = u"Submit session ideas for {0}".format(event)
