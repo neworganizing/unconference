@@ -21,6 +21,10 @@
   background: #FDFDCD;
 }
 
+.help-box ul {
+  margin-left: 1.5em;
+}
+
 ul.errorlist {
   font-size: 75%;
   color: #F00;

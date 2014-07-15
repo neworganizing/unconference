@@ -6,6 +6,7 @@
 <form action="" method="post">
 	<input type="hidden" name="next" value="{{ next }}"/>
 	{% csrf_token %}
+	{% comment %}{{ user_form.as_p }}{% endcomment %}
     {{ form.as_p }}
     <button type="submit">Save Participant Info</button>
 </form>

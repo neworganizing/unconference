@@ -17,7 +17,7 @@
 			<div class="span9">
 				<h2>
 					{{ session.title }}
-					{% if request.user.participant in session.presenters.all or request.user.is_staff %}
+					{% if request.user.participant in session.presenters.all or request.user.is_staff or request.user = session.creator %}
 						(<a href="{% url "session" unconf=unconf id=session.pk action="edit" %}">Edit</a>)
 					{% endif %}
 				</h2>
@@ -45,6 +45,7 @@
 			</div>
 
 			<div class="span3">
+				{% if request.user.is_authenticated %}
 				<div class="vote-widget">
 					<div class="vote-container">
 						<div class="vote-total" id="vote-total-{{ session.id }}" style="width: {{ session.vote_width }}px;">
@@ -59,6 +60,7 @@
 					<a class="button fake-vote-link" href="{% url "create_participant" %}">-</a>
 					{% endif %}
 				</div>
+				{% endif %}
 			</div>
 		</div>
 	</div>

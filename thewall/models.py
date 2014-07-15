@@ -38,18 +38,25 @@ class Participant(models.Model):
 
     @property
     def phone(self):
-        if hasattr(self.user, 'phone'):
-            return self.user.phone
+        try:
+            if hasattr(self.user, 'phone'):
+                return self.user.phone
+        except:
+            pass
 
         return self._phone
 
     @phone.setter
     def phone(self, value):
-        if hasattr(self.user, 'phone'):
-            self.user.phone = value
-            self.user.save()
-        else:
-            self._phone = value
+        try:
+            if self.user and hasattr(self.user, 'phone'):
+                self.user.phone = value
+                self.user.save()
+                return
+        except:
+            pass
+        
+        self._phone = value
     
 
 """Models for Sessions"""
@@ -148,13 +155,14 @@ class Session(models.Model):
     title = models.TextField()
     description = models.TextField()
     headline = models.TextField()
-    presenters = models.ManyToManyField(Participant)
+    presenters = models.ManyToManyField(Participant, null=True, blank=True)
     tags = models.ManyToManyField(SessionTag)
     slot = models.ForeignKey(Slot, null=True, blank=True)
     room = models.ForeignKey(Room, null=True, blank=True)
     difficulty = models.CharField(max_length=30, choices=(('B', 'Beginner'), ('I','Intermediate'), ('A','Advanced')), default='Beginner')
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True, auto_now_add=True)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
 
     def __unicode__(self):
         return self.title

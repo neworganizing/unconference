@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth import get_user_model
 from thewall.models import Session, Participant, Slot, Room
 
 class SessionForm(forms.ModelForm):
@@ -25,6 +26,11 @@ class SessionForm(forms.ModelForm):
                 unconference=unconf
             )
 
+
+class ParticipantForm(forms.ModelForm):
+    class Meta:
+        model = get_user_model()
+        fields = ('first_name', 'last_name', 'email')
 
 class SessionScheduleForm(forms.ModelForm):
     class Meta:
@@ -70,8 +76,11 @@ class CreateParticipantForm(forms.ModelForm):
         if self.instance.pk:
             self.fields["phone"].initial = self.instance.phone
 
-    def save(self):
-        instance = super(CreateParticipantForm, self).save()
+    def save(self, commit=True):
+        instance = super(CreateParticipantForm, self).save(commit=commit)
         instance.phone = self.cleaned_data["phone"]
-        instance.save()
+
+        if commit:
+            instance.save()
+
         return instance

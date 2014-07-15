@@ -14,12 +14,16 @@ from django.views.generic import View, TemplateView, CreateView, UpdateView
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model, login
+from django.contrib.auth.forms import UserChangeForm
+from django.contrib import messages
+User = get_user_model()
 
 from rest_framework import viewsets
 
 from thewall.models import Session, Day, Slot, Venue, Room, Participant, Vote, SessionTag, Unconference
 from thewall.serializers import SessionSerializer
-from thewall.forms import SessionForm, SessionScheduleForm, CreateParticipantForm
+from thewall.forms import SessionForm, SessionScheduleForm, CreateParticipantForm, ParticipantForm
 from thewall.decorators import render_to
 
 class SessionViewSet(viewsets.ModelViewSet):
@@ -172,11 +176,24 @@ class CreateParticipantView(CreateView):
 # Update participant for current user
 class UpdateParticipantView(UpdateView):
     form_class = CreateParticipantForm
+    #user_form_class = UserChangeForm
     template_name = "participant/form.html"
 
     @method_decorator(login_required(login_url='/users/login'))
     def get(self, request, *args, **kwargs):
         return super(UpdateParticipantView, self).get(request, *args, **kwargs)
+
+    @method_decorator(login_required(login_url='/users/login'))
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST, instance=self.get_object())
+        #user_form = self.user_form_class(request.POST)
+
+        if form.is_valid():# and user_form.is_valid():
+            form.save()
+            #user_form.save()
+            messages.info(request, 'User information updated successfully.')
+            return HttpResponseRedirect(self.get_success_url())
+
 
     def get_success_url(self):
         success_url = self.request.POST.get(
@@ -184,7 +201,7 @@ class UpdateParticipantView(UpdateView):
         )
         return success_url
 
-    def get_object(self):
+    def get_object(self, queryset=None):
         try:
             return self.request.user.participant
         except Participant.DoesNotExist:
@@ -196,6 +213,8 @@ class UpdateParticipantView(UpdateView):
         context['next'] = self.request.GET.get(
             'next', '/'
         )
+        #if 'user_form' not in context:
+        #    context['user_form'] = UserChangeForm(instance=self.request.user)
         return context
 
 ### CRAZY VIEW THAT DOES EVERYTHING BASED ON RAILS' MODEL ###
@@ -203,7 +222,7 @@ class SessionView(TemplateView):
     get_actions = ['new', 'edit', 'show', 'index', 'delete']
     post_actions = ['create', 'update']
 
-    @method_decorator(login_required(login_url='/users/login'))
+    #@method_decorator(login_required(login_url='/users/login'))
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(*args, **kwargs)
 
@@ -218,7 +237,7 @@ class SessionView(TemplateView):
         if context['action'] in self.get_actions:
             return getattr(self, context['action'])(request, context)
 
-    @method_decorator(login_required(login_url='/users/login'))
+    #@method_decorator(login_required(login_url='/users/login'))
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(*args, **kwargs)
 
@@ -240,14 +259,14 @@ class SessionView(TemplateView):
 
         # Hack to allow testers to mess with one conference,
         # but otherwise only participants can see it
-        if unconference.slug != 'testcamp':
-            try:
-                participant = self.request.user.participant
-            except Participant.DoesNotExist:
-                raise Http404
+        #if unconference.slug != 'testcamp':
+        #    try:
+        #        participant = self.request.user.participant
+        #    except Participant.DoesNotExist:
+        #        raise Http404
 
-            if not participant in unconference.participants.all():
-                raise Http404
+        #    if not participant in unconference.participants.all():
+        #        raise Http404
 
         if not context['unconf']:
             return Http404
@@ -284,10 +303,10 @@ class SessionView(TemplateView):
 
         return context
 
-    @method_decorator(login_required(login_url='/users/login'))
+    #@method_decorator(login_required(login_url='/users/login'))
     def index(self, request, context):
         context['view'] = self.request.GET.get('view', None)
-        
+
         if context['view'] == 'schedule':
             context['days'] = Day.objects.filter(unconference__slug=context['unconf'])
             context['slots'] = Slot.objects.filter(day__in=context['days'])
@@ -327,38 +346,76 @@ class SessionView(TemplateView):
             self.template_name = "session/index.html"
         return self.render_to_response(context)
 
-    @method_decorator(login_required(login_url='/users/login'))
+    #@method_decorator(login_required(login_url='/users/login'))
     def show(self, request, context):
         self.template_name = "session/show.html"
         return self.render_to_response(context)
 
-    @method_decorator(login_required(login_url='/users/login'))
+    #@method_decorator(login_required(login_url='/users/login'))
     def new(self, request, context):
-        try:
-            participant = self.request.user.participant
-        except Participant.DoesNotExist:
-            return HttpResponseRedirect(
-                reverse(
-                    'create_participant'
-                )+'?next='+reverse("session",
-                    kwargs={"unconf": context['unconf'], "id": "new"})
-                )
+        #try:
+        #    participant = self.request.user.participant
+        #except Participant.DoesNotExist:
+        #    return HttpResponseRedirect(
+        #        reverse(
+        #            'create_participant'
+        #        )+'?next='+reverse("session",
+        #            kwargs={"unconf": context['unconf'], "id": "new"})
+        #        )
 
         if not context.get('form', None):
             initial = dict(
-                presenters=[self.request.user.participant,],
                 unconference=Unconference.objects.get(slug=context['unconf'])
             )
+
+            if hasattr(request.user, 'participant'):
+                presenters=[request.user.participant,],
+
             context['form'] = SessionForm(initial=initial)
+
+        if not request.user.is_authenticated():
+            if not context.get('participant_form', None):
+                context['participant_form'] = ParticipantForm(prefix='participant')
+            if not context.get('participant_details_form', None):
+                context['participant_details_form'] = CreateParticipantForm(prefix='participant_details')
+
         self.template_name = "session/new.html"
         return self.render_to_response(context)
 
-    @method_decorator(login_required(login_url='/users/login'))
+    #@method_decorator(login_required(login_url='/users/login'))
     def create(self, request, context):
         context['form'] = SessionForm(self.request.POST)
+        context['participant_form'] = ParticipantForm(self.request.POST, prefix='participant')
+        context['participant_details_form'] = CreateParticipantForm(self.request.POST, prefix='participant_details')
 
+        user = None
         if context['form'].is_valid():
+            if not request.user.is_authenticated():
+                if context['participant_form'].is_valid() and context['participant_details_form'].is_valid():
+                    user = context['participant_form'].save()
+                    participant = context['participant_details_form'].save(commit=False)
+                    participant.user = user
+                    participant.save()
+                    unconf = Unconference.objects.get(slug=context['unconf'])
+                    unconf.participants.add(participant)
+                    user.backend = 'django.contrib.auth.backends.ModelBackend'
+                    login(request, user)
+                    messages.info(request,
+                        """
+                        Your account has been created!  To add a password, which is required to login later,
+                        please click the <a href="/{% url "update_patricipants" %}?next={% url "session" unconf=unconf %}>"edit"</a> link next to your email at the top right of the page.
+                        """
+                    )
+                else:
+                    return self.new(request, context)
+            else:
+                user = request.user
+
             context['session'] = context['form'].save()
+            context['session'].presenters.add(request.user.participant)
+            context['session'].creator = user
+            context['session'].save()
+
             return HttpResponseRedirect(
                 reverse('session', kwargs={'unconf': context['unconf']})
             )
@@ -367,7 +424,9 @@ class SessionView(TemplateView):
 
     @method_decorator(login_required(login_url='/users/login'))
     def edit(self, request, context):
-        if not (request.user.is_staff or request.user.participant in context['session'].presenters.all()):
+        if (not (request.user.is_staff or \
+            request.user.participant in context['session'].presenters.all())) \
+            and request.user != context['session'].creator:
             raise Http404
 
         if not context.get('form', None):
@@ -378,10 +437,11 @@ class SessionView(TemplateView):
         self.template_name = "session/edit.html"
         return self.render_to_response(context)
 
-
     @method_decorator(login_required(login_url='/users/login'))
     def update(self, request, context):
-        if not (request.user.is_staff or request.user.participant in context['session'].presenters.all()):
+        if (not (request.user.is_staff or \
+            request.user.participant in context['session'].presenters.all())) \
+            and request.user != context['session'].creator:
             raise Http404
 
         if request.user.is_staff:
