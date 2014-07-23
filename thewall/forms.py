@@ -3,9 +3,11 @@ from django.contrib.auth import get_user_model
 from thewall.models import Session, Participant, Slot, Room
 
 class SessionForm(forms.ModelForm):
+    extra_presenters = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), label="Presenters")
+
     class Meta:
         model = Session
-        fields = ('unconference', 'title', 'description', 'headline', 'presenters', 'tags', 'difficulty')
+        fields = ('unconference', 'title', 'description', 'headline', 'extra_presenters', 'tags', 'difficulty')
         widgets = {
             'title': forms.TextInput(),
             'headline': forms.TextInput(),
@@ -21,10 +23,10 @@ class SessionForm(forms.ModelForm):
         else:
             unconf = self.instance.unconference
 
-        if unconf and unconf.slug != 'testcamp':
-            self.fields['presenters'].queryset = Participant.objects.filter(
-                unconference=unconf
-            )
+        #if unconf and unconf.slug != 'testcamp':
+        #    self.fields['presenters'].queryset = Participant.objects.filter(
+        #        unconference=unconf
+        #    )
 
 
 class ParticipantForm(forms.ModelForm):
@@ -36,7 +38,7 @@ class SessionScheduleForm(forms.ModelForm):
     class Meta:
         model = Session
         fields = ('unconference', 'title', 'description', 'headline',
-                  'presenters', 'tags', 'difficulty',
+                  'extra_presenters', 'tags', 'difficulty',
                   'slot', 'room')
         widgets = {
             'title': forms.TextInput(),
@@ -53,10 +55,10 @@ class SessionScheduleForm(forms.ModelForm):
         else:
             unconf = self.instance.unconference
         
-        if unconf and unconf.slug != 'testcamp':
-            self.fields['presenters'].queryset = Participant.objects.filter(
-                unconference=unconf
-            )
+        #if unconf and unconf.slug != 'testcamp':
+        #    self.fields['presenters'].queryset = Participant.objects.filter(
+        #        unconference=unconf
+        #    )
 
         self.fields['slot'].queryset = Slot.objects.filter(day__in=self.instance.unconference.days.all())
         self.fields['room'].queryset = Room.objects.filter(venue=self.instance.unconference.venue)

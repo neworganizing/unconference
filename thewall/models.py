@@ -163,6 +163,7 @@ class Session(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True, auto_now_add=True)
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
+    extra_presenters = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
         return self.title

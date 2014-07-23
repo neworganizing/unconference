@@ -39,6 +39,10 @@
                         <li>{{ presenter }}{% if not forloop.last %}, {% endif %}</li>
                     {% endfor %}
                 </ul>
+                {% if session.extra_presenters %}
+                    {% if session.presenters.count > 0 %}, {% endif %}
+                    {{ session.extra_presenters }}
+                {% endif %}
             </div>
             <div class="lastspan4">
                 <h5>Tags</h5>

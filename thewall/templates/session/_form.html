@@ -27,10 +27,20 @@
 </div>
 </div>
 
+{% comment %}
 <div class="lastspan6">
 <div>
 	<label>{{ form.presenters.label }}</label>{{ form.presenters.errors }}
 	{{ form.presenters }}
+</div>
+</div>
+{% endcomment %}
+
+<div class="lastspan6">
+<div>
+	<label>{{ form.extra_presenters.label }}</label>{{ form.extra_presenters.errors }}
+	<span class="help-text">Enter each presenter name seperated by a comma.</span>
+	{{ form.extra_presenters }}
 </div>
 </div>
 
