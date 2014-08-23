@@ -417,7 +417,7 @@ class SessionView(TemplateView):
                 user = request.user
 
             context['session'] = context['form'].save()
-            context['session'].presenters.add(request.user.participant)
+            #context['session'].presenters.add(request.user.participant)
             context['session'].creator = user
             context['session'].save()
 
