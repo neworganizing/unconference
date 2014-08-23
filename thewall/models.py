@@ -82,6 +82,7 @@ class Day(models.Model):
 
     class Meta:
         ordering = ('day', 'name',)
+        get_latest_by = 'day'
 
     class Admin(object):
         list_display = ('name',)

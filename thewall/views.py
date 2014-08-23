@@ -10,7 +10,7 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.db.models import Q, Sum
-from django.views.generic import View, TemplateView, CreateView, UpdateView
+from django.views.generic import View, TemplateView, CreateView, UpdateView, ListView
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -139,6 +139,11 @@ class VoteView(View):
         return HttpResponse(json.dumps(response_data), content_type="application/json")
 
 ### VIEWS USING DJANGO GENERIC VIEWS ###
+
+class UnconferencesView(ListView):
+    template_name = "unconferences.html"
+    model = Unconference
+    queryset = Unconference.objects.order_by('-days__day')
 
 # Create participant for current user
 class CreateParticipantView(CreateView):
@@ -368,8 +373,8 @@ class SessionView(TemplateView):
                 unconference=Unconference.objects.get(slug=context['unconf'])
             )
 
-            if hasattr(request.user, 'participant'):
-                presenters=[request.user.participant,],
+            #if hasattr(request.user, 'participant'):
+            #    presenters=[request.user.participant,],
 
             context['form'] = SessionForm(initial=initial)
 

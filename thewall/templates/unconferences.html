@@ -1,0 +1,23 @@
+{% extends "wall-wrapper.html" %}
+
+{% block content %}
+<h1>Unconferences</h1>
+
+<ul id="unconference_list">
+{% for unconference in object_list %}
+    <li>
+        <h3>
+            <a href="{% url "session" unconf=unconference.slug %}">{{ unconference.name }}</a>
+        </h3>
+        
+        <table>
+            <tr>
+                <td><strong>Date:</strong> {{ unconference.days.earliest.day|date:"l, F jS Y" }}</td>
+                <td><strong>Location:</strong> {{ unconference.venue }}</td>
+                <td><strong>Participants:</strong> {{ unconference.participants.count }}</td>
+            </tr>
+        </table>
+    </li>
+{% endfor %}
+</ul>
+{% endblock %}

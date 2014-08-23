@@ -284,3 +284,20 @@ table.wall td {
 table.wall th.first-column {
   width: 5em;
 }
+
+ul#unconference_list {
+  margin-top: 3em;
+  margin-left: 3em;
+}
+
+ul#unconference_list li {
+  font-size: 12pt;
+}
+
+ul#unconference_list h3 {
+  font-size: 175%;
+}
+
+ul#unconference_list table {
+  width: 100%;
+}

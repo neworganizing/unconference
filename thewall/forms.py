@@ -35,6 +35,8 @@ class ParticipantForm(forms.ModelForm):
         fields = ('first_name', 'last_name', 'email')
 
 class SessionScheduleForm(forms.ModelForm):
+    extra_presenters = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), label="Presenters")
+    
     class Meta:
         model = Session
         fields = ('unconference', 'title', 'description', 'headline',

@@ -15,6 +15,7 @@ router = routers.DefaultRouter()
 router.register(r'sessions', views.SessionViewSet)
 
 urlpatterns = patterns('',
+    url(r'^$', views.UnconferencesView.as_view(), name='unconferences_url'),
 	url(r'^lookups/', include(ajax_select_urls)),
     #url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     #url(r'^admin/', include(admin.site.urls)),
