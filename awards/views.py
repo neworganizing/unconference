@@ -127,24 +127,6 @@ class SubmitNominee(TemplateView):
         return super(SubmitNominee, self).form_valid(form)
 
 
-class SubmitMVO(SubmitNominee):
-    form_class = MostValuableOrganizerSubmissionForm
-    award = "MVO"
-    akit_page = "RC_2013_MVOnominees"
-
-
-class SubmitMVT(SubmitNominee):
-    form_class = MostValuableTechnologySubmissionForm
-    award = "MVT"
-    akit_page = "RC_2013_MVTnominees"
-
-
-class SubmitMVC(SubmitNominee):
-    form_class = MostValuableCampaignSubmissionForm
-    award = "MVC"
-    akit_page = "RC_2013_MVCnominees"
-
-
 class UpdateAward(UpdateView):
     def get_object(self, queryset=None):
         super(UpdateAward, self).get_object(self.request, queryset=queryset)
@@ -311,75 +293,35 @@ class DisplayNominee(TemplateView):
             slug=kwargs['unconference']
         )
 
+        if self.request.user.is_authenticated():
+            query = {
+                "slug": kwargs['slug'],
+                "unconference__slug": context['unconference'].slug
+            }
+        else:
+            query = {
+                "slug": kwargs['slug'],
+                "unconference__slug": context['unconference'].slug,
+                "approved": True
+            }
+
         if self.award == 'mvo':
             context['nominee'] = get_object_or_404(
                 MostValuableOrganizer,
-                slug=kwargs['slug'],
-                unconference__slug=context['unconference'].slug,
-                approved=True
+                **query
             )
         elif self.award == 'mvt':
             context['nominee'] = get_object_or_404(
                 MostValuableTechnology,
-                slug=kwargs['slug'],
-                unconference__slug=context['unconference'].slug,
-                approved=True
+                **query
             )
         elif self.award == 'mvc':
             context['nominee'] = get_object_or_404(
                 MostValuableCampaign,
-                slug=kwargs['slug'],
-                unconference__slug=context['unconference'].slug,
-                approved=True
+                **query
             )
 
         return context
 
     def get_template_names(self):
         return ['awards/display_'+self.award+'.html']
-
-
-@render_to("awards/display_mvo.html")
-def display_mvo(request, unconference, slug):
-    if request.user.is_authenticated():
-        nom = get_object_or_404(
-            MostValuableOrganizer, slug=slug,
-            unconference__slug=unconference
-        )
-    else:
-        nom = get_object_or_404(
-            MostValuableOrganizer,
-            slug=slug, unconference__slug=unconference,
-            approved=True
-        )
-    return {'nominee': nom}
-
-
-@render_to("awards/display_mvt.html")
-def display_mvt(request, unconference, slug):
-    if request.user.is_authenticated():
-        nom = get_object_or_404(
-            MostValuableTechnology, slug=slug,
-            unconference__slug=unconference
-        )
-    else:
-        nom = get_object_or_404(
-            MostValuableTechnology, slug=slug,
-            unconference__slug=unconference, approved=True
-        )
-    return {'nominee': nom}
-
-
-@render_to("awards/display_mvc.html")
-def display_mvc(request, unconference, slug):
-    if request.user.is_authenticated():
-        nom = get_object_or_404(
-            MostValuableCampaign, slug=slug,
-            unconference__slug=unconference
-        )
-    else:
-        nom = get_object_or_404(
-            MostValuableCampaign, slug=slug,
-            unconference__slug=unconference, approved=True
-        )
-    return {'nominee': nom}

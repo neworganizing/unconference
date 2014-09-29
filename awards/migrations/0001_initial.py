@@ -44,9 +44,9 @@ user_model_label = '%s.%s' % (
 class Migration(SchemaMigration):
 
     depends_on = (
-        (user_profile_app_label, ""),
-        (user_app_label, ""),
-        (organization_app_label, "")
+        (user_profile_app_label, "0001_initial"),
+        (user_app_label, "0001_initial"),
+        (organization_app_label, "0001_initial")
     )
 
     def forwards(self, orm):
