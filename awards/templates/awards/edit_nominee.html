@@ -1,0 +1,39 @@
+{% if form %}
+</section>
+<section class="bkgrd awards nominate">
+<h2>Edit Your Entry</h2>
+    <form method="post" action="/awards/edit" class="nominateform" enctype="multipart/form-data">
+    <ul>
+    <li><label for="id_{{ form.personal_statement.html_name }}"><h4>Personal Statement</h4>
+        <p>Provide a quick personal statement to add to your nomination</p>
+        {% if form.personal_statement.errors %}
+            <p class="error">{{ form.personal_statement.errors }}</p>
+        {% endif %}</label>
+        {{ form.personal_statement }}
+    </li>
+    <li><label for="id_{{ form.image.html_name }}"><h4>Twitter</h4>
+        <p>Provide an optional twitter handle</p>
+        {% if form.twitter.errors %}
+            <p class="error">{{ form.twitter.errors }}</p>
+        {% endif %}</label>
+        {{ form.twitter }}
+    </li>
+    <li><label for="id_{{ form.image.html_name }}"><h4>Picture</h4>
+        <p>Provide an image to go alongside your nomination</p>
+        {% if form.image.errors %}
+            <p class="error">{{ form.image.errors }}</p>
+        {% endif %}</label>
+        {{ form.image }}
+    </li>
+    <li><button type="submit">Submit My Edit</button></li>
+    </ul>
+    <input type="hidden" name="award" value="{{ nominee.short_name }}">
+    <input type="hidden" name="id" value="{{ nominee.id }}">
+    <input type="hidden" name="secure_code" value="{{ nominee.secure_code }}">
+    <input type="hidden" name="redirect" value="{{ nominee.get_absolute_url }}">
+    {% csrf_token %}
+    </form>
+    
+</section>
+<section class="bkgrd awards entry">
+{% endif %}

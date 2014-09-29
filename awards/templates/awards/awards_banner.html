@@ -1,0 +1,33 @@
+<div class="mvologo">
+    <a href="{% url "list_award_nominees" unconference=unconference.slug %}">
+        <img src="{{ STATIC_URL }}images/MVOAwardsSmallBanner.png">
+    </a>
+</div>
+
+<div class="awardlisting">
+    <ul class="vote-list">
+        <li class="vote-list-item break">
+            <a href="{% url "list_award_nominees" unconference=unconference.slug award="mvo" %}">Organizer Nominees</a>
+        </li>
+        <li class="vote-list-item break">
+            <a href="{% url "list_award_nominees" unconference=unconference.slug award="mvt" %}">Technology Nominees</a>
+        </li>
+        <li class="vote-list-item">
+            <a href="{% url "list_award_nominees" unconference=unconference.slug award="mvc" %}">Campaign Nominees</a>
+        </li>
+    </ul>
+
+    {% if unconference.nominations_closed %}
+    <ul class="vote-list" style="font-weight: bold">
+        <li>
+            Voting for most valuable organizing awards is now closed.
+        </li>
+    </ul>
+    {% else %}
+    <ul class="vote-list">
+        <li class="vote-list-item break"><a href="{% url "submit_nominee" unconference=unconference.slug award="mvo" %}">Nominate An Organizer</a></li>
+        <li class="vote-list-item break"><a href="{% url "submit_nominee" unconference=unconference.slug award="mvt" %}">Nominate A Technology</a></li>
+        <li class="vote-list-item"><a href="{% url "submit_nominee" unconference=unconference.slug award="mvc" %}">Nominate A Campaign</a></li>
+    </ul>
+    {% endif %}
+</div>

@@ -1,0 +1,82 @@
+{% extends "awards/display_nominee.html" %}
+{% block pagetitle %}{{ nominee.name|capfirst|safe }} for Most Valuable Organizer{% endblock %}
+
+{% block content %}
+<section class="bkgrd awards entry">
+    {% include "awards/awards_banner.html" %}
+
+    {% if user.is_authenticated %}
+        <p>Approved: {{ nominee.approved }} | Contacted: {{ nominee.contacted }}</p>
+        <p>
+            <a href="{% url 'admin:awards_mostvaluableorganizer_change' nominee.id %}">
+                Edit This Entry
+            </a>
+        </p>
+
+        <p>Nominee Secure URL: 
+            <a href="{{ nominee.edit_url }}">{{ nominee.edit_url }}</a>
+        </p>
+    {% endif %}
+    
+    {% include "awards/edit_nominee.html" %}
+
+    <h3>Nominee for Most Valuable Organizer</h2>
+    
+    <h2>
+        {{ nominee.name|capfirst|safe }}
+        {% if nominee.twitter %}
+            <a href="https://twitter.com/{{ nominee.twitter }}" class="twitter-follow-button" data-show-count="false" data-size="large" style="font-size: 15px;">
+                Follow {{ nominee.twitter }}
+            </a>
+        {% endif %}
+    </h2>
+
+    {% include "awards/display_top.html" %}
+
+    {% if nominee.image %}
+        <p><img src="{{ MEDIA_URL }}{{ nominee.image }}" class="nominee-image" style="margin-bottom: 1em; margin-right: 1em; float: left"></p>
+    {% endif %}
+
+    <ul>
+        <li>
+            <ul class="sublist">
+                <li>
+                    <h5 class="first">Nominee's Organization</h5>
+                    <p>{{ nominee.profile.organization|default:"Unaffiliated" }}</p>
+                </li>
+                
+                <li>
+                    <h5>How the nominee exhibited innovation</h5>
+                    <p>{{ nominee.innovation }}</p>
+                </li>
+                
+                <li>
+                    <h5>How the nominee exhibited respect</h5>
+                    <p>{{ nominee.respect }}</p>
+                </li>
+                
+                <li>
+                    <h5>How the nominee exhibited courage</h5>
+                    <p>{{ nominee.courage }}</p>
+                </li>
+                
+                <li>
+                    <h5>How the nominee exhibited excellence</h5>
+                    <p>{{ nominee.excellence }}</p>
+                </li>
+                
+                {% if nominee.comments %}
+                    <li>
+                        <h5>Additional Comments</h5>
+                        <p>{{ nominee.comments }}</p>
+                    </li>
+                {% endif %}
+            </ul>
+        </li>
+
+        <div style="clear: left">
+            {% include "awards/display_common_info.html" %}
+        </div>
+    </ul>
+</section>
+{% endblock content %}

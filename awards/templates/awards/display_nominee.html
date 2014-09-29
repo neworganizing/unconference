@@ -1,0 +1,7 @@
+{% extends "awards/voterreg_area.html" %}
+{% block pagetitle %}{{ nominee.name|capfirst|safe }} for {{ nominee.long_award_name }}{% endblock %}
+{% block socialtags %}
+<meta property="og:title" content="Vote {{ nominee.name }} for {{ nominee.long_award_name }} at RootsCamp 2013" />
+<meta property="og:image" content="http://rootscamp.neworganizing.com/static/img/awards/facebook-mvo.png" />
+<meta property="og:url" content="http://rootscamp.neworganizing.com{{ nominee.get_absolute_url }}" />
+{% endblock socialtags %}

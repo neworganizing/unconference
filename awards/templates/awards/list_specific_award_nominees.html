@@ -1,0 +1,18 @@
+{% extends "mvo/voterreg_area.html" %}
+{% block pagetitle %}Nominees for {{ long_award_name }}{% endblock %}
+{% block content %}
+<section class="bkgrd awards awards-list">
+    {% include "mvo/awards_banner.html" %}
+
+    <h2>{{ long_award_name }}</h2>
+                <p style="font-size: 16px;">To learn more about the nominees just click on their name below. Then click the Facebook "Like" button to cast your vote. Feel free to vote for as many candidates as you wish!</p>
+
+    <ul class="nominees-list">
+        {% for nom in nominees %}
+        <li><a href="{{ nom.get_absolute_url }}">{{ nom.name|capfirst|safe }}</a></li>
+        {% comment %}<li class="facebook"><div class="fb-like" data-href="http://rootscamp.neworganizing.com{{ nom.get_absolute_url }}" data-send="true" data-width="600" data-show-faces="false" data-font="lucida grande"></div></li>{% endcomment %}
+        {% endfor %}
+        <li><a href="submit/">Submit a nominee</a></li>
+    </ul>
+</section>
+{% endblock content %}

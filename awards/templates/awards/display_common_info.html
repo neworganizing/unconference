@@ -1,0 +1,22 @@
+{% if nominee.personal_statement %}
+    <li>
+        <h4>Nominee's Personal Statement</h4>
+        <ul class="sublist">
+            <li>{{ nominee.personal_statement }}</li>
+        </ul>
+    </li>
+{% endif %}
+
+<li>
+    <h4>Submitted By {{ nominee.nominator.name|capfirst }} </h4>
+    <ul class="sublist">
+        <li>Relationship to Nominee: {{ nominee.relationship }}</li>
+        {% if nominee.nominator.twitter_handle %}
+            <li>
+                <a href="https://twitter.com/{{ nominee.nominator.twitter_handle }}" class="twitter-follow-button" data-show-count="false">
+                    Follow {{ nominee.nominator.twitter_handle }}
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</li>

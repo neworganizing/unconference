@@ -8,11 +8,12 @@ import datetime
 
 """Models for Participants"""
 
+
 class Participant(models.Model):
     """Presenter Information"""
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL)
-    #name = models.CharField(max_length=100)
+    # name = models.CharField(max_length=100)
     organization = models.CharField(max_length=100, blank=True)
     attendeenumber = models.IntegerField(blank=True, null=True)
     _phone = models.CharField(max_length=20, blank=True, null=True)
@@ -22,7 +23,8 @@ class Participant(models.Model):
 
     def __unicode__(self):
         """Unicode representation of participant"""
-        return self.user.first_name + " " + self.user.last_name + " (" + self.organization + ")"
+        return self.user.first_name + " " + self.user.last_name + " (" + \
+            self.organization + ")"
 
     def get_up_votes(self):
         if not hasattr(self, '_up_votes'):
@@ -55,11 +57,11 @@ class Participant(models.Model):
                 return
         except:
             pass
-        
+
         self._phone = value
-    
 
 """Models for Sessions"""
+
 
 class SessionTag(models.Model):
     """Session Tags"""
@@ -74,6 +76,7 @@ class SessionTag(models.Model):
 
     def __unicode__(self):
         return self.tag.capitalize()
+
 
 class Day(models.Model):
     """Day of Unconference"""
@@ -93,6 +96,7 @@ class Day(models.Model):
     def day_slug(self):
         return "day-%s" % self.pk
 
+
 class Slot(models.Model):
     """Timeslots"""
     day = models.ForeignKey(Day)
@@ -108,10 +112,16 @@ class Slot(models.Model):
         ordering = ('day__day', 'start_time')
 
     def __unicode__(self):
-        return self.day.name + " " + self.name + " (" + datetime.time.strftime(self.start_time,"%I:%M %p") + " - " + datetime.time.strftime(self.end_time,"%I:%M %p") + ")"
+        return self.day.name + " " + self.name + " (" + \
+            datetime.time.strftime(
+                self.start_time, "%I:%M %p"
+            ) + " - " + datetime.time.strftime(self.end_time, "%I:%M %p") + ")"
 
     def time(self):
-        return datetime.time.strftime(self.start_time,"%I:%M %p") + " - " + datetime.time.strftime(self.end_time,"%I:%M %p")
+        return datetime.time.strftime(
+            self.start_time, "%I:%M %p"
+        ) + " - " + datetime.time.strftime(self.end_time, "%I:%M %p")
+
 
 class Venue(models.Model):
     """Venue Location"""
@@ -138,6 +148,7 @@ class Room(models.Model):
     def __unicode__(self):
         return self.name
 
+
 class Unconference(models.Model):
     slug = models.SlugField(max_length=127)
     name = models.CharField(max_length=127)
@@ -150,6 +161,7 @@ class Unconference(models.Model):
     def __unicode__(self):
         return self.name
 
+
 class Session(models.Model):
     """Actual Sessions"""
     unconference = models.ForeignKey(Unconference, null=True, blank=True)
@@ -160,10 +172,16 @@ class Session(models.Model):
     tags = models.ManyToManyField(SessionTag)
     slot = models.ForeignKey(Slot, null=True, blank=True)
     room = models.ForeignKey(Room, null=True, blank=True)
-    difficulty = models.CharField(max_length=30, choices=(('B', 'Beginner'), ('I','Intermediate'), ('A','Advanced')), default='Beginner')
+    difficulty = models.CharField(
+        max_length=30, choices=(
+            ('B', 'Beginner'), ('I', 'Intermediate'), ('A', 'Advanced')
+        ), default='Beginner'
+    )
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True, auto_now_add=True)
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
+    creator = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True
+    )
     extra_presenters = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
@@ -173,10 +191,11 @@ class Session(models.Model):
         unique_together = (('unconference', 'slot', 'room'),)
         ordering = ('title', )
 
-
     def vote_width(self):
         # votes / highest votes * 100
-        annotated_sessions = Session.objects.filter(unconference=self.unconference).annotate(total_votes=Sum('votes__value')).order_by('-total_votes')
+        annotated_sessions = Session.objects.filter(
+            unconference=self.unconference
+        ).annotate(total_votes=Sum('votes__value')).order_by('-total_votes')
         highest_votes = annotated_sessions[0]
         print highest_votes.total_votes
         if highest_votes.total_votes < 1:
@@ -185,7 +204,9 @@ class Session(models.Model):
             else:
                 return 0
 
-        vote_width = (self.total_vote() / float(highest_votes.total_votes)) * 100.0
+        vote_width = (
+            self.total_vote() / float(highest_votes.total_votes)
+        ) * 100.0
 
         if vote_width < 0:
             vote_width = 0
@@ -203,6 +224,7 @@ VALUES = (
     (u'-1', -1)
 )
 
+
 class Vote(models.Model):
     session = models.ForeignKey(Session, related_name="votes")
     participant = models.ForeignKey(Participant, related_name="votes")
@@ -212,7 +234,9 @@ class Vote(models.Model):
         unique_together = (('participant', 'session'),)
 
     def __unicode__(self):
-        return u"{0} voted {1} on {2}".format(self.participant.user, self.value, self.session)
+        return u"{0} voted {1} on {2}".format(
+            self.participant.user, self.value, self.session
+        )
 
 admin.site.register(Slot)
 admin.site.register(Day)

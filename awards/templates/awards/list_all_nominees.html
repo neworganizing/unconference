@@ -1,0 +1,26 @@
+{% extends "awards/wrapper.html" %}
+{% block pagetitle %}Award Nominees{% endblock %}
+{% block content %}
+<section class="bkgrd awards">
+    {% include "awards/awards_banner.html" %}
+
+    {% for nominee_data in nominees %}
+        <h2>{{ nominee_data.long_award_name }} Nominees</h2>
+        <p style="font-size: 16px;">To learn more about the nominees just click on their name below. Then click the Facebook "Like" button to cast your vote. Feel free to vote for as many candidates as you wish!</p>
+        <ul class="awards-list">
+            {% for nom in nominee_data.object_list %}
+            <li class="clearfix">
+                <a href="{{ nom.get_absolute_url }}">
+                    <img src="{{ MEDIA_URL }}{{ nom.profile.photo }}" />
+                    <div class="nominee-info">
+                        <h3>{{ nom.name }}</h3>
+                        {{ nom.personal_statement|linebreaks }}
+                    </div>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+        <p><a href="{{ nominee_data.short_award_name }}/submit/">Submit a nominee</a></p>
+    {% endfor %}
+</section>
+{% endblock content %}

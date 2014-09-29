@@ -1,0 +1,125 @@
+{% extends "awards/wrapper.html" %}
+{% block topcontent %}
+
+{% if form %}{% else %}
+<div class="awardbox-overlay hidden-phone" style="">
+
+</div>
+   <div class="awardbox hidden-phone" style="display: none;">
+<div class="title">Register To Vote</div>
+<div class="registerform"><form class="actionkit-widget nominateform" name="signup" action="http://act.neworganizing.com/act/" onsubmit="this.submitted=1;return false">
+                <ul>
+                <input type="hidden" name="page" value="RC_2013_MVO_Voters">
+                    <li><label for="id_name"><h4>Your Name</h4></label>
+                        
+                        <input id="id_name" type="text" name="name" placeholder="name"></li>
+                    <li><label for="id_email"><h4>Your Email Address</h4></label>
+                        <input id="id_email" type="email" name="email" placeholder="email"></li>
+                                            <li><label for="id_zip"><h4>Your Zip</h4></label>
+                        <input id="id_zip" type="zip" name="zip" placeholder="zip"></li>
+                    
+                    <li><button type="submit">Register To Vote</button></li>
+                    <li class="error"></li>
+                </ul>
+                </form></div>
+<div class="mvostar"><img src="{{ STATIC_URL }}img/awards/mvostar.png"></div>
+<div class="close"><a href="http://neworganizing.com/content/page/noi-privacy-policy" class="privacy-policy">NOI Privacy Policy</a> | <a href="#" class="another-time">Maybe Another Time</a></div>
+</div>
+{% endif %}
+
+{% endblock %}
+{% block footerscript %}
+
+
+    <script>
+    // Awards Code by Nick
+
+// Validate and clean up an AKID, if AKID is invalid return null, otherwise return sanitized akid
+function akid_cleaner (akid) {
+    // Confirm we were passed a string
+    if (typeof akid != "string") return null;
+
+    // Split the string on the period
+    var akid_array = akid.split(".");
+
+    // Confirm that the resulting array is 3 long
+    if (akid_array.length != 3) return null;
+
+    // Flesh out the userid and hash
+    var userid = akid_array[1];
+    var hash = akid_array[2];
+
+    // Make sure that the hash is 6 characters long, the userid is a number and exists
+    if (hash.length != 6 || isNaN(userid) || userid.length == 0) return null;
+    // Return the clean token
+    return "." + userid + "." + hash;
+}
+
+function akid_from_url(url) {
+    path = /akid=([^&]*)/g;
+    var m = path.exec(url);
+ 
+    // If we couldn't find any query string, return null
+    if (m == null) return null;
+
+    // Lets test the AKID and see if it's valid
+    return akid_cleaner(m[1]);
+}
+
+// Grab AKID from query string, if a valid AKID doesn't exist, return null
+function akid_query_string() {
+    // Test if the akid is in the query string
+    return akid_from_url(location.search.substring(1));
+}
+
+// Grab the AKID from a cookie, if a valid AKID doesn't exist, return null
+function akid_get_cookie() {
+    return $.cookie('akid');
+}
+
+// Insert clean AKID into cookie, return null if AKID is bad, clean akid if success
+function akid_set_cookie(raw_akid) {
+    var akid = akid_cleaner(raw_akid);
+    if (akid == null) return null;
+    $.cookie('akid',akid,{ expires: 30, path: '/' });
+}
+
+{% if not request.user.is_staff %}
+$(document).ready(function(){
+    akid_set_cookie(akid_query_string());
+    if (akid_cleaner($.cookie('akid')) == null && $.cookie('pass') == null) {
+        $('.awardbox').fadeIn();
+    }
+});
+{% endif %}
+
+
+function onWidgetError(f, response) {
+    var error_list = [];
+    for ( error in response.errors ) error_list.push(response.errors[error][0]);
+    for ( error in error_list ) _gaq.push(['_trackEvent', 'Action', 'Register', error]);
+    $('.awardbox .error').html('Error: ' + error_list.join(' '));
+    _gaq.push(['_trackEvent', 'Action', 'Register', 'Error']);
+    return false;
+};
+
+function onWidgetSuccess(form, serverResponse) {
+    console.log(form);
+    console.log(serverResponse);
+    window.full = serverResponse;
+    akid = akid_from_url(serverResponse.redirect);
+    akid_set_cookie(akid);
+    _gaq.push(['_trackEvent', 'Action', 'Register', 'Success']);
+    $('.awardbox').hide();
+}
+
+$('.another-time').click(function(event) {
+    event.preventDefault();
+    $.cookie('pass','Yes',{ path: '/' });
+    $('.awardbox').hide();
+    _gaq.push(['_trackEvent', 'Action', 'Register', 'Another Time']);
+});
+</script>
+  <script src="http://act.neworganizing.com/samples/widget.js"></script>
+
+{% endblock %}

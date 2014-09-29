@@ -1,0 +1,13 @@
+{% load cache %}
+
+{% comment %}
+{% if nominee.rootscamp.slug == '2013' %}
+        <p>Show your support and appreciation for this nominee by sharing this page with your friends</p>
+<div class="fb-like" data-href="http://rootscamp.neworganizing.com{{ nominee.get_absolute_url }}" data-send="true" data-width="600" data-show-faces="true" data-font="lucida grande"></div>
+<h3>Step 2: 
+    <a href="https://twitter.com/intent/tweet?text=I%20just%20voted%20for%20{{ nominee.name|title|urlencode }}{% if nominee.twitter %}%20(%40{{ nominee.twitter|slugify|urlencode }}){% endif %}%20for%20%40RootsCamp%20{{ nominee.long_award_name|urlencode }}{% if nominee.name|length < 26 %}%20and%20you%20should%20too{% endif %}&url=http%3A%2F%2Frootscamp.org{{ nominee.get_absolute_url|urlencode }}">
+        Share Your Vote On Twitter
+    </a>
+</h3>
+{% endif %}
+{% endcomment %}

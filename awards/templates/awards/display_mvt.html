@@ -1,0 +1,25 @@
+{% extends "awards/display_nominee.html" %}
+{% block content %}
+<section class="bkgrd awards entry">
+    {% include "awards/awards_banner.html" %}
+    {% if user.is_authenticated %}<p>Approved: {{ nominee.approved }} | Contacted: {{ nominee.contacted }}</p><p><a href="{% url 'admin:awards_mostvaluabletechnology_change' nominee.id %}">Edit This Entry</a></p>
+    <p>Nominee Secure URL: <a href="{{ nominee.edit_url }}">{{ nominee.edit_url }}</a></p>{% endif %}
+    {% include "awards/edit_nominee.html" %}
+    <h3>Nominee for Most Valuable Technology</h2>
+    <h2>{{ nominee.name|capfirst|safe }}  {% if nominee.twitter %}<a href="https://twitter.com/{{ nominee.twitter }}" class="twitter-follow-button" data-show-count="false" data-size="large" style="font-size: 15px;">Follow {{ nominee.twitter }}</a>{% endif %}</h2>
+    {% if nominee.website %}<h4><a href="{{ nominee.website }}">{{ nominee.website }}</a></h4>{% endif %}
+
+    {% include "awards/display_top.html" %}
+    <ul>
+        <li><h4>Nominee Information</h4>
+            <ul class="sublist">
+                <li><h5>How the nominee exhibited innovation</h5><p>{{ nominee.innovation }}</p></li>
+                <li><h5>How the nominee exhibited potential</h5><p>{{ nominee.potential }}</p></li>
+                <li><h5>How the nominee exhibited courage</h5><p>{{ nominee.accessibility }}</p></li>
+                {% if nominee.additional %}<li><h5>Additional Comments</h5><p>{{ nominee.additional }}</p></li>{% endif %}
+            </ul>
+        </li>
+        {% include "awards/display_common_info.html" %}
+    </ul>
+</section>
+{% endblock content %}

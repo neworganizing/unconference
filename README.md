@@ -120,3 +120,10 @@ Attendee ID is not a 'secret' field in EventBrite. In fact, any event that expos
 This app was originally built in-house by the team at [New Organizing Institute](http://neworganizing.com/) led by [Nick Catalano](https://github.com/nickcatal) for the [RootsCamp](http://rootscamp.org/) unconference and is released under an open source Apache 2.0 license.
 
 Bug fixes and feature additions that fit the goals laid out in the start of this README are greatly appreciated.
+
+# Awards App
+
+## Requirements
+You need to define ORGANIZATION_MODEL and USER_PROFILE_MODEL in your settings, or use the
+models provided in "standalone_models".  The standalone_models.models Models represent
+the minimum requirements for models that are compatible with this app.  Additionally there must be a named url called "list_organizations" for the organization autocomplete to work.

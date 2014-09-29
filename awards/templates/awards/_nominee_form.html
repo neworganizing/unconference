@@ -1,0 +1,49 @@
+<div class="clearfix">
+    <div style="width: 48%; margin-right: 2%; float: left;">
+        <p>
+            <label for="first_name">{{ form.first_name.label }}</label>
+            {{ form.first_name.errors }}
+            {{ form.first_name }}
+        </p>
+
+        <p>
+            <label for="email">{{ form.email.label }}</label>
+            {{ form.email.errors }}
+            {{ form.email }}
+        </p>
+
+        <p>
+            <label for="twitter_handle">{{ form.twitter_handle.label }}</label>
+            {{ form.twitter_handle.errors }}
+            {{ form.twitter_handle }}
+        </p>
+    </div>
+
+    <div style="width: 48%; float: left;">
+        <p>
+            <label for="last_name">{{ form.last_name.label }}</label>
+            {{ form.last_name.errors }}
+            {{ form.last_name }}
+        </p>
+
+        <p>
+            <label for="zip_code">{{ form.zip_code.label }}</label>
+            {{ form.zip_code.errors }}
+            {{ form.zip_code }}
+        </p>
+
+        <p>
+            <label for="facebook_handle">{{ form.facebook_handle.label }}</label>
+            {{ form.facebook_handle.errors }}
+            {{ form.facebook_handle }}
+        </p>
+    </div>
+
+    <div style="width: 98%; clear: both">
+        <p>
+            <label for="organization">{{ form.organization.label }}</label>
+            {{ form.organization.errors }}
+            {{ form.organization }}
+        </p>
+    </div>
+</div>
