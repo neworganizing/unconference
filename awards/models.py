@@ -1,9 +1,13 @@
+import json
+
 from django.db import models
+from django.db.models.signals import post_save
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
 from autoslug import AutoSlugField
+from actionkit import ActionKit
 
 from thewall.models import Unconference
 from utils import get_user_profile_model_name, get_organization_model_name
@@ -362,3 +366,106 @@ class MostValuableCampaign(AwardNominee):
     @property
     def twitter(self):
         return self.organization.twitter
+
+
+def send_nominator_to_actionkit(sender, instance, **kwargs):
+
+    if sender == MostValuableOrganizer:
+        page_id = 'RC_2014_MVO-award-nominators-organizers'
+    elif sender == MostValuableCampaign:
+        page_id = 'RC_2014_MVO-award-nominators-campaign'
+    elif sender == MostValuableTechnology:
+        page_id = 'RC_2014_MVO-award-nominators-technology'
+    else:
+        print "Not a valid nominee: ", sender
+        return
+
+    akit = ActionKit(
+        instance=settings.ACTIONKIT_INSTANCE,
+        username=settings.ACTIONKIT_USERNAME,
+        password=settings.ACTIONKIT_PASSWORD
+    )
+
+    user_data = {
+        "first_name": instance.nominator.first_name,
+        "last_name": instance.nominator.last_name,
+        "email": instance.nominator.email,
+        "source": "website_awards",
+        "zip": instance.nominator.zip_code,
+        "plus4": instance.nominator.zip_plus4
+    }
+
+    print user_data
+
+    try:
+        user_result = akit.user.create(
+            user_data
+        )
+    except:
+        # User already exists, try and find to update instead
+        users = akit.user.list(email=user_data['email'], _limit=1)
+        try:
+            user_id = users['objects'][0]["id"]
+        except (IndexError, KeyError):
+            print "User should exist, but cannnot be found"
+            return
+
+        print user_id
+        print user_data
+
+        # user_result = akit.user.update(
+        #    user_id,
+        #    user_data
+        # )
+    else:
+        if user_result.status_code == 201:
+            user_id = user_result.headers['location']
+        elif user_result.status_code == 200:
+            user_id = json.loads(user_result.json())['resource_uri']
+        else:
+            print "User creation failed: ", user_result.text
+            return
+
+        user_id = user_id.split('/')[-1]
+        print "User creation succesful: ", user_id
+
+    if instance.nominator.phone:
+        akit.phone.create(
+            {
+                "user": user_id,
+                "phone": instance.nominator.phone,
+                "source": "website_awards"
+            }
+        )
+
+    action_result = akit.action.create(
+        {
+            "user": user_id,
+            "page": page_id,
+            "source": "website_awards",
+            "email": instance.nominator.email,
+            "name": instance.nominator.name
+        }
+    )
+
+    print action_result
+
+    # if not action_result.status_code == 200 or \
+    #    action_result.status_code == 201:
+    #    print "Action creation failed: ", action_result
+
+post_save.connect(
+    send_nominator_to_actionkit,
+    sender=MostValuableOrganizer,
+    dispatch_uid="awards_MVO_send_to_akit"
+)
+post_save.connect(
+    send_nominator_to_actionkit,
+    sender=MostValuableCampaign,
+    dispatch_uid="awards_MVC_send_to_akit"
+)
+post_save.connect(
+    send_nominator_to_actionkit,
+    sender=MostValuableTechnology,
+    dispatch_uid="awards_MVT_send_to_akit"
+)
