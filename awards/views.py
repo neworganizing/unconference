@@ -1,4 +1,5 @@
 from django.http import HttpResponseRedirect, Http404
+from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import TemplateView
 from django.views.generic.edit import UpdateView
@@ -23,10 +24,10 @@ UserProfile = get_user_profile_model()
 
 class SubmitNominee(TemplateView):
     template_name = "awards/submit_nominee.html"
-    success_url = '/awards/thanks/'
     form_class = None
     award = None
     akit_page = None
+    unconference = None
 
     def get(self, request, *args, **kwargs):
         # super(SubmitNominee, self).get(request, *args, **kwargs)
@@ -57,7 +58,16 @@ class SubmitNominee(TemplateView):
 
             nomination.save()
 
-            return HttpResponseRedirect(self.success_url)
+            messages.success(
+                request,
+                """
+                Thanks for submitting your nomination!  It will
+                become visible on this page once the nominee has
+                confirmed the submission.
+                """
+            )
+
+            return HttpResponseRedirect(self.get_success_url())
         else:
             messages.error(
                 request,
@@ -70,6 +80,7 @@ class SubmitNominee(TemplateView):
         context['unconference'] = get_object_or_404(
             Unconference, slug=kwargs['unconference']
         )
+        self.unconference = context['unconference']
 
         context['award'] = kwargs['award']
 
@@ -125,6 +136,12 @@ class SubmitNominee(TemplateView):
         # Save the submission
         form.save(commit=True)
         return super(SubmitNominee, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse(
+            "list_award_nominees",
+            kwargs={"unconference": self.unconference.slug}
+        )
 
 
 class UpdateAward(UpdateView):

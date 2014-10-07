@@ -418,10 +418,17 @@ def send_nominator_to_actionkit(sender, instance, **kwargs):
         #    user_data
         # )
     else:
-        if user_result.status_code == 201:
+        print user_result
+        if user_result == 201:
             user_id = user_result.headers['location']
-        elif user_result.status_code == 200:
-            user_id = json.loads(user_result.json())['resource_uri']
+        elif user_result == 200:
+            # User already exists, try and find
+            users = akit.user.list(email=user_data['email'], _limit=1)
+            try:
+                user_id = users['objects'][0]["id"]
+            except (IndexError, KeyError):
+                print "User should exist, but cannnot be found"
+                return
         else:
             print "User creation failed: ", user_result.text
             return
