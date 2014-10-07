@@ -419,9 +419,7 @@ def send_nominator_to_actionkit(sender, instance, **kwargs):
         # )
     else:
         print user_result
-        if user_result == 201:
-            user_id = user_result.headers['location']
-        elif user_result == 200:
+        if user_result == 201 or user_result == 200:
             # User already exists, try and find
             users = akit.user.list(email=user_data['email'], _limit=1)
             try:
