@@ -431,8 +431,8 @@ def send_nominator_to_actionkit(sender, instance, **kwargs):
             print "User creation failed: ", user_result.text
             return
 
-        user_id = user_id.split('/')[-1]
-        print "User creation succesful: ", user_id
+        # user_id = user_id.split('/')[-1]
+        print "User creation successful: ", user_id
 
     if instance.nominator.phone:
         akit.phone.create(
