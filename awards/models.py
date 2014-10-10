@@ -443,14 +443,20 @@ def send_nominator_to_actionkit(sender, instance, **kwargs):
             }
         )
 
+    action_data = {
+        "user": user_id,
+        "page": page_id,
+        "source": "website_awards",
+        "email": instance.nominator.email,
+        "name": instance.nominator.name,
+        "user_twitter": instance.nominator.twitter_handle
+    }
+
+    if instance.nominator.organization:
+        action_data['user_organization'] = instance.nominator.organization.name
+
     action_result = akit.action.create(
-        {
-            "user": user_id,
-            "page": page_id,
-            "source": "website_awards",
-            "email": instance.nominator.email,
-            "name": instance.nominator.name
-        }
+        action_data
     )
 
     print action_result
