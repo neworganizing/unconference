@@ -15,6 +15,7 @@ setup(
         'beautifulsoup4',
         'eventbrite',
         'sorl-thumbnail',
-        'django-phonenumber-field'
+        'django-phonenumber-field',
+        'django-autoslug'
     ],
 )
