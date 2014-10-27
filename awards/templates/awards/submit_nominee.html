@@ -21,12 +21,16 @@
     {{ nominee_form.errors }}
     {{ form.errors }}
 
-    {% if not request.user.is_authenticated %}
+    {% if not request.user.is_authenticated or not user_profile %}
     <h2>About You</h2>
 
-    <p>Already have an NOI account?  <a href="/users/login?next={{ request.path }}">Save time by logging in.</a></p>
+    {% if not request.user.is_authenticated %}
+        <p>Already have an NOI account?  <a href="/users/login?next={{ request.path }}">Save time by logging in.</a></p>
+    {% endif %}
 
     {% include "awards/_nominator_form.html" with form=nominator_form %}
+    {% else %}
+    <p>User Profile: {{ user_profile }}</p>
     {% endif %}
 
     <h2>About the Nominee</h2>

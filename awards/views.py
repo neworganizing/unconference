@@ -30,20 +30,28 @@ class SubmitNominee(TemplateView):
     unconference = None
 
     def get(self, request, *args, **kwargs):
-        # super(SubmitNominee, self).get(request, *args, **kwargs)
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
 
+        # if the user does not yet have a profile, they should have
+        # seen the nominator form and filled it out
+        user_profile = None
+        if request.user.is_authenticated():
+            try:
+                user_profile = UserProfile.objects.get(user=request.user)
+            except UserProfile.DoesNotExist:
+                pass
+
         if context['nomination_form'].is_valid() and \
                 context['nominee_form'].is_valid() and \
-                (request.user.is_authenticated() or
+                (user_profile or
                  context['nominator_form'].is_valid()):
-            if request.user.is_authenticated():
-                user_profile = UserProfile.objects.get(user=request.user)
-            else:
+
+            # Save the user's profile if they didn't already have one
+            if not user_profile:
                 user_profile = context['nominator_form'].save()
 
             nominee = context['nominee_form'].save()
@@ -110,9 +118,32 @@ class SubmitNominee(TemplateView):
             prefix="nomination"
         )
 
-        if not self.request.user.is_authenticated():
+        # If logged in, determine if the user has a profile
+        if self.request.user.is_authenticated():
+            try:
+                context['user_profile'] = UserProfile.objects.get(
+                    user=self.request.user
+                )
+            except:
+                context['user_profile'] = None
+        else:
+            context['user_profile'] = None
+
+        # If no profile existed, initialize or populate
+        # the nominator form
+        if not context['user_profile']:
+            if self.request.user.is_authenticated() and not data:
+                initial = {
+                    'email': self.request.user.email,
+                    'first_name': self.request.user.first_name,
+                    'last_name': self.request.user.last_name
+                }
+            else:
+                initial = None
+
             context['nominator_form'] = NominatorForm(
                 data,
+                initial=initial,
                 prefix='nominator'
             )
 
@@ -293,7 +324,11 @@ def list_award_nominees(request, unconference, award=None):
         }
         context['nominees'].append(nominee_data)
 
-    context['unconference'] = Unconference.objects.get(slug=unconference)
+    try:
+        context['unconference'] = Unconference.objects.get(slug=unconference)
+    except:
+        raise Http404
+
     return context
 
 

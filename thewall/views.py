@@ -10,29 +10,34 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.db.models import Q, Sum
-from django.views.generic import View, TemplateView, CreateView, UpdateView, ListView
-from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import (View, TemplateView, CreateView, UpdateView,
+                                  ListView)
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import get_user_model, login
-from django.contrib.auth.forms import UserChangeForm
 from django.contrib import messages
-User = get_user_model()
 
 from rest_framework import viewsets
 
-from thewall.models import Session, Day, Slot, Venue, Room, Participant, Vote, SessionTag, Unconference
+from thewall.models import (Session, Day, Slot, Venue, Room, Participant,
+                            Vote, SessionTag, Unconference)
 from thewall.serializers import SessionSerializer
-from thewall.forms import SessionForm, SessionScheduleForm, CreateParticipantForm, ParticipantForm
+from thewall.forms import (SessionForm, SessionScheduleForm,
+                           CreateParticipantForm, ParticipantForm)
 from thewall.decorators import render_to
+
+User = get_user_model()
+
 
 class SessionViewSet(viewsets.ModelViewSet):
     queryset = Session.objects.all()
     serializer_class = SessionSerializer
 
+
 # Helper functions
 def has_data_subevent_id_attr(tag):
     return tag.has_attr('data-subevent-id')
+
 
 def extract_session(session_data):
     output = dict()
@@ -109,10 +114,10 @@ def extract_session(session_data):
 current_sessions_filter = (~Q(slot=None) & (Q(slot__day__day__gt=datetime.datetime.today) | (Q(slot__day__day=datetime.datetime.today) & Q(slot__start_time__gte=datetime.datetime.now))))
 past_sessions_filter = (~Q(slot=None) & (Q(slot__day__day__lt=datetime.datetime.today) | (Q(slot__day__day=datetime.datetime.today) & Q(slot__start_time__lte=datetime.datetime.now))))
 
-### VIEWS USING CUSTOM CBV's ###
-
 # designed for ajax
 # pattern is r'^sessions/(?P<id>[0-9]+)/vote/?$'
+
+
 class VoteView(View):
     def post(self, request, *args, **kwargs):
         try:
@@ -138,7 +143,8 @@ class VoteView(View):
         # no response data is necessary
         return HttpResponse(json.dumps(response_data), content_type="application/json")
 
-### VIEWS USING DJANGO GENERIC VIEWS ###
+
+# ## VIEWS USING DJANGO GENERIC VIEWS ## #
 
 class UnconferencesView(ListView):
     template_name = "unconferences.html"
@@ -146,6 +152,8 @@ class UnconferencesView(ListView):
     queryset = Unconference.objects.order_by('-days__day')
 
 # Create participant for current user
+
+
 class CreateParticipantView(CreateView):
     form_class = CreateParticipantForm
     template_name = "participant/form.html"
@@ -169,19 +177,21 @@ class CreateParticipantView(CreateView):
         return success_url
 
     def get_context_data(self, *args, **kwargs):
-        context = super(CreateParticipantView, self).get_context_data(*args, **kwargs)
+        context = super(CreateParticipantView, self).get_context_data(
+            *args, **kwargs
+        )
 
-        context['unconf'] = kwargs.get('unconf', None)        
+        context['unconf'] = kwargs.get('unconf', None)
         context['next'] = self.request.GET.get(
             'next', reverse("session", kwargs={"unconf": context['unconf']})
         )
 
         return context
 
-# Update participant for current user
+
 class UpdateParticipantView(UpdateView):
     form_class = CreateParticipantForm
-    #user_form_class = UserChangeForm
+    # user_form_class = UserChangeForm
     template_name = "participant/form.html"
 
     @method_decorator(login_required(login_url='/users/login'))
@@ -191,14 +201,13 @@ class UpdateParticipantView(UpdateView):
     @method_decorator(login_required(login_url='/users/login'))
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST, instance=self.get_object())
-        #user_form = self.user_form_class(request.POST)
+        # user_form = self.user_form_class(request.POST)
 
-        if form.is_valid():# and user_form.is_valid():
+        if form.is_valid():  # and user_form.is_valid():
             form.save()
-            #user_form.save()
+            # user_form.save()
             messages.info(request, 'User information updated successfully.')
             return HttpResponseRedirect(self.get_success_url())
-
 
     def get_success_url(self):
         success_url = self.request.POST.get(
@@ -213,21 +222,25 @@ class UpdateParticipantView(UpdateView):
             raise Http404
 
     def get_context_data(self, *args, **kwargs):
-        context = super(UpdateParticipantView, self).get_context_data(*args, **kwargs)
+        context = super(UpdateParticipantView, self).get_context_data(
+            *args, **kwargs
+        )
         context['unconf'] = kwargs.get('unconf', None)
         context['next'] = self.request.GET.get(
             'next', '/'
         )
-        #if 'user_form' not in context:
+        # if 'user_form' not in context:
         #    context['user_form'] = UserChangeForm(instance=self.request.user)
         return context
 
-### CRAZY VIEW THAT DOES EVERYTHING BASED ON RAILS' MODEL ###
+#  ## CRAZY VIEW THAT DOES EVERYTHING BASED ON RAILS' MODEL ##  #
+
+
 class SessionView(TemplateView):
     get_actions = ['new', 'edit', 'show', 'index', 'delete']
     post_actions = ['create', 'update']
 
-    #@method_decorator(login_required(login_url='/users/login'))
+    # @method_decorator(login_required(login_url='/users/login'))
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(*args, **kwargs)
 
@@ -242,7 +255,7 @@ class SessionView(TemplateView):
         if context['action'] in self.get_actions:
             return getattr(self, context['action'])(request, context)
 
-    #@method_decorator(login_required(login_url='/users/login'))
+    # @method_decorator(login_required(login_url='/users/login'))
     def post(self, request, *args, **kwargs):
         context = self.get_context_data(*args, **kwargs)
 
@@ -254,13 +267,12 @@ class SessionView(TemplateView):
         if context['action'] in self.post_actions:
             return getattr(self, context['action'])(request, context)
 
-
     def get_context_data(self, *args, **kwargs):
         context = super(SessionView, self).get_context_data(*args, **kwargs)
         context['id'] = kwargs.get('id', None)
         context['action'] = kwargs.get('action', None)
         context['unconf'] = kwargs.get('unconf', None)
-        unconference = Unconference.objects.get(slug=context['unconf'])
+        # unconference = Unconference.objects.get(slug=context['unconf'])
 
         # Hack to allow testers to mess with one conference,
         # but otherwise only participants can see it
@@ -278,10 +290,13 @@ class SessionView(TemplateView):
 
         if context['id']:
             try:
-                context['session'] = get_object_or_404(Session, unconference__slug=context['unconf'], pk=context['id'])
+                context['session'] = get_object_or_404(
+                    Session, unconference__slug=context['unconf'],
+                    pk=context['id']
+                )
             except ValueError:
                 context['session'] = None
-        else: # A listing of all sessions, check for filters
+        else:  # A listing of all sessions, check for filters
             time = self.request.GET.get("time", "all")
             tag = self.request.GET.get("tag", "all")
             room = self.request.GET.get("room", "all")
@@ -304,26 +319,45 @@ class SessionView(TemplateView):
 
             filter['unconference__slug'] = context['unconf']
 
-            context['sessions'] = Session.objects.filter(**filter).select_related()
+            context['sessions'] = Session.objects.filter(
+                **filter
+            ).select_related()
 
         return context
 
-    #@method_decorator(login_required(login_url='/users/login'))
+    # @method_decorator(login_required(login_url='/users/login'))
     def index(self, request, context):
         context['view'] = self.request.GET.get('view', None)
 
         if context['view'] == 'schedule':
-            context['days'] = Day.objects.filter(unconference__slug=context['unconf'])
+            context['days'] = Day.objects.filter(
+                unconference__slug=context['unconf']
+            )
             context['slots'] = Slot.objects.filter(day__in=context['days'])
             context['tags'] = SessionTag.objects.all()
-            context['rooms'] = Room.objects.filter(venue__unconference__slug=context['unconf'])
-            context['currentsessions'] = context['sessions'].filter(current_sessions_filter).order_by('slot__day','slot__start_time')
-            context['pastsessions'] =  context['sessions'].filter(past_sessions_filter).order_by('-slot__day','-slot__start_time')
+            context['rooms'] = Room.objects.filter(
+                venue__unconference__slug=context['unconf']
+            )
+            context['currentsessions'] = context['sessions'].filter(
+                current_sessions_filter
+            ).order_by(
+                'slot__day', 'slot__start_time'
+            )
+
+            context['pastsessions'] = context['sessions'].filter(
+                past_sessions_filter
+            ).order_by(
+                '-slot__day', '-slot__start_time'
+            )
             self.template_name = 'session/list.html'
 
         elif context['view'] == 'wall':
-            context['days'] = Day.objects.filter(unconference__slug=context['unconf'])
-            context['rooms'] = Room.objects.filter(venue__unconference__slug=context['unconf'])
+            context['days'] = Day.objects.filter(
+                unconference__slug=context['unconf']
+            )
+            context['rooms'] = Room.objects.filter(
+                venue__unconference__slug=context['unconf']
+            )
             slots = Slot.objects.filter(day__in=context['days'])
 
             # Construct wall
@@ -337,7 +371,9 @@ class SessionView(TemplateView):
                 for room in context['rooms']:
                     row['rooms'][room.name] = None
 
-                for session in slot.session_set.filter(unconference__slug=context['unconf']):
+                for session in slot.session_set.filter(
+                    unconference__slug=context['unconf']
+                ):
                     row['rooms'][session.room.name] = session
 
                 row['rooms'] = sorted(row['rooms'].iteritems())
@@ -345,22 +381,24 @@ class SessionView(TemplateView):
                 context['wall'].append(row)
 
             self.template_name = 'session/wall.html'
-        
+
         else:
-            context['sessions'] = context['sessions'].annotate(total_votes=Sum('votes__value')).order_by('-total_votes')
+            context['sessions'] = context['sessions'].annotate(
+                total_votes=Sum('votes__value')
+            ).order_by('-total_votes')
             self.template_name = "session/index.html"
         return self.render_to_response(context)
 
-    #@method_decorator(login_required(login_url='/users/login'))
+    # @method_decorator(login_required(login_url='/users/login'))
     def show(self, request, context):
         self.template_name = "session/show.html"
         return self.render_to_response(context)
 
-    #@method_decorator(login_required(login_url='/users/login'))
+    # @method_decorator(login_required(login_url='/users/login'))
     def new(self, request, context):
-        #try:
+        # try:
         #    participant = self.request.user.participant
-        #except Participant.DoesNotExist:
+        # except Participant.DoesNotExist:
         #    return HttpResponseRedirect(
         #        reverse(
         #            'create_participant'
@@ -373,21 +411,25 @@ class SessionView(TemplateView):
                 unconference=Unconference.objects.get(slug=context['unconf'])
             )
 
-            #if hasattr(request.user, 'participant'):
+            # if hasattr(request.user, 'participant'):
             #    presenters=[request.user.participant,],
 
             context['form'] = SessionForm(initial=initial)
 
         if not request.user.is_authenticated():
             if not context.get('participant_form', None):
-                context['participant_form'] = ParticipantForm(prefix='participant')
+                context['participant_form'] = ParticipantForm(
+                    prefix='participant'
+                )
             if not context.get('participant_details_form', None):
-                context['participant_details_form'] = CreateParticipantForm(prefix='participant_details')
+                context['participant_details_form'] = CreateParticipantForm(
+                    prefix='participant_details'
+                )
 
         self.template_name = "session/new.html"
         return self.render_to_response(context)
 
-    #@method_decorator(login_required(login_url='/users/login'))
+    # @method_decorator(login_required(login_url='/users/login'))
     def create(self, request, context):
         context['form'] = SessionForm(self.request.POST)
         context['participant_form'] = ParticipantForm(self.request.POST, prefix='participant')

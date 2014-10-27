@@ -1,12 +1,13 @@
-"""Models for Session App"""
+import datetime
 
 from django.db import models
 from django.db.models import Sum
 from django.contrib import admin
 from django.conf import settings
-import datetime
 
-"""Models for Participants"""
+from .utils import get_organization_model_name
+
+organization_model_name = get_organization_model_name()
 
 
 class Participant(models.Model):
@@ -238,11 +239,22 @@ class Vote(models.Model):
             self.participant.user, self.value, self.session
         )
 
+
+class Sponsorship(models.Model):
+    organization = models.ForeignKey(organization_model_name)
+    unconference = models.ForeignKey(Unconference)
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+
+    def __unicode__(self):
+        return "{0}'s sponsorship of {1} at ${2}".format(
+            self.organization,
+            self.unconference,
+            self.amount
+        )
+
 admin.site.register(Slot)
 admin.site.register(Day)
 admin.site.register(Room)
 admin.site.register(Venue)
 admin.site.register(SessionTag)
-# Session?
-# Participant?
-# Vote?
+admin.site.register(Sponsorship)

@@ -1,0 +1,25 @@
+{% load smart_load %}
+{% load thumbnail from sorl.thumbnail as sorl_thumbnail %}
+
+{% regroup sponsorships by amount as sponsor_levels %}
+
+<div class="sponsor-list">
+{% for level in sponsor_levels %}
+    <ul>
+        {% for sponsor in level.list %}
+            <li>
+                <a href="{{ sponsor.organization.website }}">
+                    <span class="sponsor-logo">
+                    {% sorl_thumbnail sponsor.organization.logo "200x100" as im %}
+                        <img src="{{ im.url }}"/>
+                    {% empty %}
+                        {{ sponsor.organization }}
+                    {% endthumbnail %}
+                    </span>
+                </a>
+            </li>
+        {% endfor %}
+        <hr/>
+    </ul>
+{% endfor %}
+</div>
