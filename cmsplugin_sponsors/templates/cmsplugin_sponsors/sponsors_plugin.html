@@ -1,5 +1,4 @@
-{% load smart_load %}
-{% load thumbnail from sorl.thumbnail as sorl_thumbnail %}
+{% load thumbnail %}
 
 {% regroup sponsorships by amount as sponsor_levels %}
 
@@ -10,11 +9,7 @@
             <li>
                 <a href="{{ sponsor.organization.website }}">
                     <span class="sponsor-logo">
-                    {% sorl_thumbnail sponsor.organization.logo "200x100" as im %}
-                        <img src="{{ im.url }}"/>
-                    {% empty %}
-                        {{ sponsor.organization }}
-                    {% endthumbnail %}
+                    <img src="{% thumbnail sponsor.organization.logo 150x75 crop="scale" %}" />
                     </span>
                 </a>
             </li>
