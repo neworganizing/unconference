@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url
-from awards.views import SubmitNominee, DisplayNominee
+from awards.views import SubmitNominee, DisplayNominee, UpdateNominee
 
 # http://neworganizing.rootscamp.org/awards/<rootscampslug>/<awardtype>/{{
 # OR submit OR update }}
@@ -24,11 +24,11 @@ urlpatterns = patterns(
     ),
     url(
         r'^(?P<unconference>[A-Za-z0-9\_\-]+)/(?P<award>[A-Za-z0-9\_\-]+)/edit/(?P<slug>[A-Za-z0-9\_\-]+)/$',  # noqa
-        'awards.views.nominee_update_award_form',
-        name='nominee_update_award_form'
+        UpdateNominee.as_view(),
+        name='nominee_update_form'
     ),
     url(
         r'^(?P<unconference>[A-Za-z0-9\_\-]+)/(?P<award>[A-Za-z0-9\_\-]+)/submit/$',  # noqa
         SubmitNominee.as_view(), name='submit_nominee'
-    ),
+    )
 )
