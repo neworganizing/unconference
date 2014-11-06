@@ -101,21 +101,97 @@ class MostValuableCampaignSubmissionForm(AwardForm):
 
 class EditForm(forms.ModelForm):
     twitter = forms.CharField(max_length=50)
+    image = forms.ImageField()
 
 
 class MostValuableOrganizerEditForm(EditForm):
     class Meta:
         model = MostValuableOrganizer
-        fields = {'personal_statement', 'twitter'}
+        fields = ('personal_statement', 'twitter', 'image')
+
+    def __init__(self, *args, **kwargs):
+        if 'instance' not in kwargs:
+            raise Exception(u"Edit form requires an instance")
+
+        initial = kwargs.get('initial', {})
+        initial['twitter'] = kwargs['instance'].profile.twitter_handle
+        initial['image'] = kwargs['instance'].profile.photo
+        kwargs['initial'] = initial
+
+        super(EditForm, self).__init__(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        twitter = self.cleaned_data['twitter']
+        del self.cleaned_data['twitter']
+        image = self.cleaned_data['image']
+        del self.cleaned_data['image']
+
+        instance = super(EditForm, self).save(*args, **kwargs)
+
+        instance.profile.twitter_handle = twitter
+        instance.profile.set_photo(image)
+        instance.profile.save()
+
+        return instance
 
 
 class MostValuableTechnologyEditForm(EditForm):
     class Meta:
         model = MostValuableTechnology
-        fields = {'personal_statement', 'twitter'}
+        fields = ('personal_statement', 'twitter', 'image')
+
+    def __init__(self, *args, **kwargs):
+        if 'instance' not in kwargs:
+            raise Exception(u"Edit form requires an instance")
+
+        initial = kwargs.get('initial', {})
+        initial['twitter'] = kwargs['instance'].organization.twitter_handle
+        initial['image'] = kwargs['instance'].organization.logo
+        kwargs['initial'] = initial
+
+        super(EditForm, self).__init__(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        twitter = self.cleaned_data['twitter']
+        del self.cleaned_data['twitter']
+        image = self.cleaned_data['image']
+        del self.cleaned_data['image']
+
+        instance = super(EditForm, self).save(*args, **kwargs)
+
+        instance.organization.twitter_handle = twitter
+        instance.organization.set_logo(image)
+        instance.organization.save()
+
+        return instance
 
 
 class MostValuableCampaignEditForm(EditForm):
     class Meta:
         model = MostValuableCampaign
-        fields = {'personal_statement', 'twitter'}
+        fields = ('personal_statement', 'twitter', 'image')
+
+    def __init__(self, *args, **kwargs):
+        if 'instance' not in kwargs:
+            raise Exception(u"Edit form requires an instance")
+
+        initial = kwargs.get('initial', {})
+        initial['twitter'] = kwargs['instance'].organization.twitter_handle
+        initial['image'] = kwargs['instance'].organization.logo
+        kwargs['initial'] = initial
+
+        super(EditForm, self).__init__(*args, **kwargs)
+
+    def save(self, *args, **kwargs):
+        twitter = self.cleaned_data['twitter']
+        del self.cleaned_data['twitter']
+        image = self.cleaned_data['image']
+        del self.cleaned_data['image']
+
+        instance = super(EditForm, self).save(*args, **kwargs)
+
+        instance.organization.twitter_handle = twitter
+        instance.organization.set_logo(image)
+        instance.organization.save()
+
+        return instance

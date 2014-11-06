@@ -367,6 +367,8 @@ class MostValuableCampaign(AwardNominee):
 
 
 def send_nominator_to_actionkit(sender, instance, **kwargs):
+    if instance.pk:
+        return
 
     if sender == MostValuableOrganizer:
         page_id = 'RC_2014_MVO-award-nominators-organizers'

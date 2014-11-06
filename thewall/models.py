@@ -162,6 +162,9 @@ class Unconference(models.Model):
     def __unicode__(self):
         return self.name
 
+    class Meta:
+        ordering = ['name', ]
+
 
 class Session(models.Model):
     """Actual Sessions"""
@@ -252,9 +255,11 @@ class Sponsorship(models.Model):
             self.amount
         )
 
+    class Meta:
+        ordering = ['organization', 'unconference', 'amount']
+
 admin.site.register(Slot)
 admin.site.register(Day)
 admin.site.register(Room)
 admin.site.register(Venue)
 admin.site.register(SessionTag)
-admin.site.register(Sponsorship)

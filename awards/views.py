@@ -4,6 +4,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import TemplateView
 from django.views.generic.edit import UpdateView
 from django.contrib import messages
+from django.core.signing import Signer
 
 from thewall.models import Unconference
 
@@ -175,42 +176,94 @@ class SubmitNominee(TemplateView):
         )
 
 
-class UpdateAward(UpdateView):
+class UpdateNominee(UpdateView):
+    template_name = "awards/update_nominee.html"
+
     def get_object(self, queryset=None):
-        super(UpdateAward, self).get_object(self.request, queryset=queryset)
-        obj = get_object_or_404(
-            self.model,
+        # super(UpdateNominee, self).get_object(queryset=queryset)
+
+        self.object = self.model.objects.get(
             slug=self.kwargs['slug'],
             unconference__slug=self.kwargs['unconference']
         )
 
-        if obj.secure_code() != self.kwargs['code']:
-            raise Http404
-
-        return obj
+        return self.object
 
     def get(self, request, *args, **kwargs):
-        super(UpdateAward, self).get(request, *args, **kwargs)
+        self.configure_award(**kwargs)
+
+        # Ensure proper token has been passed
+        token = request.GET.get('token', None)
+
+        if not token:
+            return HttpResponseRedirect(
+                reverse(
+                    'list_award_nominees',
+                    kwargs={
+                        "unconference": kwargs['unconference']
+                    }
+                )
+            )
+
+        super(UpdateNominee, self).get(request, *args, **kwargs)
+
         context = self.get_context_data(**kwargs)
-        context['update'] = True
-        context['nominee'] = self.obj
+        context['nominee'] = self.object
+        context['form'] = self.form(instance=self.object)
+
+        signer = Signer()
+        user_id = signer.unsign(token)
+
+        if int(user_id) != int(self.object.profile.user.pk):
+            print "User id from token: ",  user_id
+            print "User id from db: ", self.object.profile.user.pk
+            return HttpResponseRedirect(
+                reverse(
+                    'list_award_nominees',
+                    kwargs={
+                        "unconference": kwargs['unconference']
+                    }
+                )
+            )
+
         return self.render_to_response(context)
 
+    def post(self, request, *args, **kwargs):
+        self.configure_award(**kwargs)
 
-class UpdateMVO(UpdateView):
-    model = MostValuableOrganizer
-    form_class = MostValuableOrganizerSubmissionForm
-    template_name = "awards/display_mvo.html"
+        form = self.form(
+            request.POST, request.FILES, instance=self.get_object()
+        )
 
+        print form
 
-class UpdateMVC(UpdateView):
-    model = MostValuableCampaign
-    template_name = "awards/display_mvc.html"
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(
+                reverse(
+                    'list_award_nominees',
+                    kwargs={'unconference': kwargs['unconference']}
+                )
+            )
 
+        context = self.get_context_data(**kwargs)
+        context['nominee'] = self.object
+        context['form'] = form
 
-class UpdateMVT(UpdateView):
-    model = MostValuableTechnology
-    template_name = "awards/display_mvt.html"
+        return self.render_to_response(context)
+
+    def configure_award(self, **kwargs):
+        if kwargs['award'] == 'mvo':
+            self.model = MostValuableOrganizer
+            self.form = MostValuableOrganizerEditForm
+        elif kwargs['award'] == 'mvc':
+            self.model = MostValuableCampaign
+            self.form = MostValuableCampaignEditForm
+        elif kwargs['award'] == 'mvt':
+            self.model = MostValuableTechnology
+            self.form = MostValuableTechnologyEditForm
+        else:
+            raise Exception
 
 
 def nominee_update_award_form(request, unconference, award, slug):
