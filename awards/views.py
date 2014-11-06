@@ -181,6 +181,7 @@ class UpdateNominee(UpdateView):
 
     def get_object(self, queryset=None):
         # super(UpdateNominee, self).get_object(queryset=queryset)
+        super(UpdateNominee, self).get_object(queryset=queryset)
 
         self.object = self.model.objects.get(
             slug=self.kwargs['slug'],

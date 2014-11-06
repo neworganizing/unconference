@@ -103,6 +103,17 @@ class EditForm(forms.ModelForm):
     twitter = forms.CharField(max_length=50)
     image = forms.ImageField()
 
+    def __init__(self, *args, **kwargs):
+        if 'instance' not in kwargs:
+            raise Exception(u"Edit form requires an instance")
+
+        initial = kwargs.get('initial', {})
+        initial['twitter'] = kwargs['instance'].profile.twitter_handle
+        initial['image'] = kwargs['instance'].profile.photo
+        kwargs['initial'] = initial
+
+        super(EditForm, self).__init__(*args, **kwargs)
+
 
 class MostValuableOrganizerEditForm(EditForm):
     class Meta:
