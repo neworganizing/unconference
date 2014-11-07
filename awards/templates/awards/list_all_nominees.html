@@ -24,6 +24,7 @@
                     <img src="{% thumbnail nom.profile.photo 200x0 crop %}" />
                     <div class="nominee-info">
                         <h3>{{ nom.name }}</h3>
+                        <div class="fb-like" data-href="http://rootscamp.neworganizing.com{{ nom.get_absolute_url }}" data-layout="button_count" data-width="600" data-show-faces="false">&nbsp;</div>
                         {{ nom.personal_statement|linebreaks }}
                     </div>
                 </a>

@@ -92,12 +92,11 @@ class AwardNominee(models.Model):
         return md5.md5(str(self.id)+settings.SECRET_KEY).hexdigest()[0:6]
 
     def edit_url(self):
-        return """
-            /awards/%s/%s/edit/%s/?code=%s
-        """ % (
-            self.unconference.slug, self.short_name,
-            self.slug, self.secure_code()
-        )
+        return reverse('nominee_update_form', kwargs={
+            "unconference": self.unconference.slug,
+            "award": self.short_name,
+            "slug": self.slug
+        })
 
     def email_to(self):
         if self.short_name in ['mvc', 'mvt']:
