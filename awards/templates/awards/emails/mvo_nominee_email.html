@@ -2,7 +2,7 @@
     <body>
         <h1>Congratulations {{ nominee.profile.user.first_name }}, you've been nominated form Most Valuable Organizer!</h1>
 
-        <p><a href="{% url "nominee_update_form" unconference=nominee.unconference.slug award="mvo" slug=nominee.slug %}?token={{ token }}">Complete your profile</a> to add a photo, personal statement, and other information to increase your chances of winning.  Nominees will be voted for online and the winners will be announced at Rootscamp!</p>
+        <p><a href="http://{{ domain }}{% url "nominee_update_form" unconference=nominee.unconference.slug award="mvo" slug=nominee.slug %}?token={{ token }}">Complete your profile</a> to add a photo, personal statement, and other information to increase your chances of winning.  Nominees will be voted for online and the winners will be announced at Rootscamp!</p>
 
         <p>PS</p>
         <p>If you don't yet have tickets to Rootscamp, you can get them here: <a href="http://www.eventbrite.com/e/rootscamp-national-2014-tickets-11202989443?aff=website-email">buy Rootscamp tickets</a>.

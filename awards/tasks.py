@@ -6,8 +6,10 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.html import strip_tags
 from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
-
 from django.core.signing import Signer
+from django.conf import settings
+
+from django.contrib.sites.models import Site
 
 
 @task
@@ -28,6 +30,7 @@ def send_nominee_emails():
     signer = Signer()
     from_email = 'NOI <info@neworganizing.com>'
     subject = _(u"You've been nominated for an award!")
+    current_site = Site.objects.get(pk=settings.SITE_ID)
     for mvo_nominee in pending_mvo_nominees:
         to = mvo_nominee.profile.user.email
         token = signer.sign(mvo_nominee.profile.user.pk)
@@ -38,7 +41,8 @@ def send_nominee_emails():
             "awards/emails/mvo_nominee_email.html",
             {
                 "nominee": mvo_nominee,
-                "token": token
+                "token": token,
+                "domain": current_site.domain
             }
         )
         text = strip_tags(html)
