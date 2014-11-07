@@ -181,12 +181,21 @@ class UpdateNominee(UpdateView):
 
     def get_object(self, queryset=None):
         # super(UpdateNominee, self).get_object(queryset=queryset)
-        super(UpdateNominee, self).get_object(queryset=queryset)
 
-        self.object = self.model.objects.get(
-            slug=self.kwargs['slug'],
-            unconference__slug=self.kwargs['unconference']
-        )
+        try:
+            self.object = self.model.objects.get(
+                slug=self.kwargs['slug'],
+                unconference__slug=self.kwargs['unconference']
+            )
+        except self.model.DoesNotExist:
+            print "Nominee not found!"
+            return Http404
+        except self.model.MultipleObjectsReturned:
+            matches = self.model.objects.filter(
+                slug=self.kwargs['slug'],
+                unconference__slug=self.kwargs['unconference']
+            ).order_by('created_at')
+            self.object = matches[0]
 
         return self.object
 

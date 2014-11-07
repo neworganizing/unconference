@@ -367,7 +367,7 @@ class MostValuableCampaign(AwardNominee):
 
 
 def send_nominator_to_actionkit(sender, instance, **kwargs):
-    if instance.pk:
+    if not kwargs['created']:
         return
 
     if sender == MostValuableOrganizer:
