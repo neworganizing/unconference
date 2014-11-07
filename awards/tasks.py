@@ -43,7 +43,8 @@ def send_nominee_emails():
             {
                 "nominee": mvo_nominee,
                 "token": token,
-                "domain": current_site.domain
+                "domain": current_site.domain,
+                "edit_url": mvo_nominee.edit_url()
             }
         )
         text = strip_tags(html)
@@ -66,7 +67,8 @@ def send_nominee_emails():
             {
                 "nominee": mvc_nominee,
                 "token": token,
-                "domain": current_site.domain
+                "domain": current_site.domain,
+                "edit_url": mvc_nominee.edit_url()
             }
         )
         text = strip_tags(html)
@@ -89,7 +91,8 @@ def send_nominee_emails():
             {
                 "nominee": mvt_nominee,
                 "token": token,
-                "domain": current_site.domain
+                "domain": current_site.domain,
+                "edit_url": mvt_nominee.edit_url()
             }
         )
         text = strip_tags(html)
