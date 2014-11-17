@@ -2,56 +2,58 @@
 
 {{ form.non_field_errors }}
 
-<div>
-	<label>{{ form.title.label }}</label>{{ form.title.errors }}
-	{{ form.title }}
+<div class="row">
+	<div class="span4 firstspan">
+		<label>{{ form.title.label }}</label>{{ form.title.errors }}
+		{{ form.title }}
+	</div>
+
+	<div class="span8 firstspan">
+		<label>{{ form.headline.label }}</label>{{ form.headline.errors }}
+		<span class="help-text">A one line description of your session.</span>
+		{{ form.headline }}
+	</div>
 </div>
 
-<div>
-	<label>{{ form.headline.label }}</label>{{ form.headline.errors }}
-	<span class="help-text">A one line description of your session.</span>
-	{{ form.headline }}
+
+<div class="row">
+	<div class="lastspan12 firstspan">
+		<label>{{ form.description.label }}</label>{{ form.description.errors }}
+		<span class="help-text">Full description of your session.</span>
+		{{ form.description }}
+	</div>
 </div>
 
+<div class="row">
+	<div class="span3 firstspan">
+		<label>{{ form.tags.label }}</label>{{ form.tags.errors }}
+		{{ form.tags }}
+	</div>
 
-<div>
-	<label>{{ form.description.label }}</label>{{ form.description.errors }}
-	<span class="help-text">Full description of your session.</span>
-	{{ form.description }}
-</div>
+	<div class="lastspan2">
+		<label>{{ form.difficulty.label }}</label>{{ form.difficulty.errors }}
+		{{ form.difficulty }}
+	</div>
 
-<div class="span5 firstspan">
-<div>
-	<label>{{ form.tags.label }}</label>{{ form.tags.errors }}
-	{{ form.tags }}
-</div>
-</div>
+	{% comment %}
+	<div class="lastspan6">
+	<div>
+		<label>{{ form.presenters.label }}</label>{{ form.presenters.errors }}
+		{{ form.presenters }}
+	</div>
+	</div>
+	{% endcomment %}
 
-{% comment %}
-<div class="lastspan6">
-<div>
-	<label>{{ form.presenters.label }}</label>{{ form.presenters.errors }}
-	{{ form.presenters }}
-</div>
-</div>
-{% endcomment %}
-
-<div class="lastspan6">
-<div>
-	<label>{{ form.extra_presenters.label }}</label>{{ form.extra_presenters.errors }}
-	<span class="help-text">Enter each presenter name seperated by a comma.</span>
-	{{ form.extra_presenters }}
-</div>
-</div>
-
-<div class="span11 firstspan">
-	<label>{{ form.difficulty.label }}</label>{{ form.difficulty.errors }}
-	{{ form.difficulty }}
+	<div class="lastspan7">
+		<label>{{ form.extra_presenters.label }}</label>{{ form.extra_presenters.errors }}
+		<span class="help-text">Enter each presenter name seperated by a comma.</span>
+		{{ form.extra_presenters }}
+	</div>
 </div>
 
 {% if request.user.is_staff %}
 
-<h1 style="clear: both;">Schedule Session</h1>
+<h2 style="clear: both;">Schedule Session</h2>
 
 <div class="span7 firstspan">
 <div>

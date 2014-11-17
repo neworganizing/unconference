@@ -18,7 +18,7 @@
             </div>
             <div class="lastspan11">
             {% if user.is_staff %}
-                <span class="editlink"><a class="session-link" href="{% url "session" unconf=unconf id=session.id action="edit" %}">Edit This Entry</a></span>
+                <span class="editlink"><a class="session-link" href="{% url "session_id_action" unconf=unconf id=session.id action="edit" %}">Edit This Entry</a></span>
             {% endif %}
             <a href="#" class="session-link details session-{{ session.id}}-detailslink" data-session_id="{{ session.id }}">
                 More Details

@@ -7,17 +7,13 @@
 	{% for session in currentsessions %}
 		{% if forloop.first %}
 			<div class="row">
-				<div class="span12">
-					<h1>Upcoming Sessions</h1>
-				</div>
+				<h2>Upcoming Sessions</h2>
 			</div>
 		{% endif %}
 
 		{% ifchanged session.slot %}
 			<div class="row">
-				<div class="span12">
-					<h3><strong>{{ session.slot.day.name }}, {{ session.slot.name }}: {{ session.slot.start_time }} - {{ session.slot.end_time }}</strong></h3>
-				</div>
+				<h3>{{ session.slot.day.name }}, {{ session.slot.name }}: {{ session.slot.start_time }} - {{ session.slot.end_time }}</h3>
 			</div>
 		{% endifchanged %}
 
@@ -27,17 +23,13 @@
 	{% for session in pastsessions %}
 		{% if forloop.first %}
 			<div class="row">
-				<div class="span12">
-					<h2>Past Sessions</h2>
-				</div>
+				<h2>Past Sessions</h2>
 			</div>
 		{% endif %}
 
 		{% ifchanged session.slot %}
 			<div class="row">
-				<div class="span12">
-					<h3>{{ session.slot.day.name }} {{ session.slot.name }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</h3>
-				</div>
+				<h3>{{ session.slot.day.name }} {{ session.slot.name }} {{ session.slot.start_time }} - {{ session.slot.end_time }}</h3>
 			</div>
 		{% endifchanged %}
 		
@@ -48,10 +40,8 @@
 
 	</div>
 {% else %}
-    <div class="row">
-    	<div class="span12 noresults">
-    		<h3>No Results Found</h3>
-    	</div>
+    <div class="row noresults">
+    	<h3>Schedule coming soon!</h3>
     </div>
     {% endif %}
 {% endblock content %}

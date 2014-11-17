@@ -3,25 +3,25 @@
 {% block content %}
 {% csrf_token %}
 
-<h1>{{ unconf|title }} Session Ideas</h1>
+<div style="text-align: center;">
+	<h2>{{ unconf|title }} Session Ideas</h2>
+</div>
 
 <div class="help-box">
 	<p>Thanks for joining us for the {{ unconf|title }} unconference!  If you'd like to add a session, click the <strong>"New Session"</strong> link at the top of the page.  To vote for your prefered sessions, click the <strong>"+"</strong> button next to that session, or the <strong>"-"</strong> to down vote.  If you have any questions, don't hesitate to <a href="mailto:webmaster@neworganizing.com">email us</a>.</p>
 </div>
 
-<hr />
-
 {% for session in sessions %}
-	<div class="clearfix">
+	<div class="session-listing clearfix">
 		<div class="row">
 			<div class="span9">
-				<h2>
+				<h3>
 					{{ session.title }}
-					{% if request.user.participant in session.presenters.all or request.user.is_staff or request.user = session.creator %}
-						(<a href="{% url "session" unconf=unconf id=session.pk action="edit" %}">Edit</a>)
-					{% endif %}
-				</h2>
-				<h3>{{ session.headline }}</h3>
+				</h3>
+				{% if request.user.participant in session.presenters.all or request.user.is_staff or request.user = session.creator %}
+					{% if session.slot %}Scheduled: {{ session.slot }}{% endif %}(<a href="{% url "session_id_action" unconf=unconf id=session.pk action="edit" %}">Edit</a>)
+				{% endif %}
+				<h4>{{ session.headline }}</h4>
 			</div>
 			<div class="span2">
 				<p>Tags:
@@ -68,6 +68,5 @@
 			</div>
 		</div>
 	</div>
-	<hr >
 {% endfor %}
 {% endblock %}

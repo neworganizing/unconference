@@ -6,9 +6,7 @@
 <ul id="unconference_list">
 {% for unconference in object_list %}
     <li>
-        <h3>
-            <a href="{% url "session" unconf=unconference.slug %}">{{ unconference.name }}</a>
-        </h3>
+        <a href="{% url "session" unconf=unconference.slug %}">{{ unconference.name }}</a>
         
         <table>
             <tr>
