@@ -26,8 +26,16 @@
 
         {% include "filter.html" %}
         
-    {% block content %}
-    {% endblock content %}
+        {% if messages %}
+          <ul class="messages">
+              {% for message in messages %}
+              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+              {% endfor %}
+          </ul>
+        {% endif %}
+        
+        {% block content %}
+        {% endblock content %}
 </div>
 <script src="{{ STATIC_URL }}thewall/js/plugins.js"></script>
 <script src="{{ STATIC_URL }}thewall/js/script.js"></script>

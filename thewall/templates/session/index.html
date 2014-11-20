@@ -11,6 +11,33 @@
 	<p>Thanks for joining us for the {{ unconf|title }} unconference!  If you'd like to add a session, click the <strong>"Submit a Session"</strong> link at the top of the page.  To vote for your prefered sessions, click the <strong>"<i class="fa fa-thumbs-up"></i>"</strong> button next to that session, or the <strong>"<i class="fa fa-thumbs-down"></i>"</strong> to down vote.  If you have any questions, don't hesitate to <a href="mailto:webmaster@neworganizing.com">email us</a>.</p>
 </div>
 
+{% if not request.user.is_authenticated %}
+	<div class="registerform" style="text-align: center;">
+		<h4>Register to vote!</h4>
+		<form action={% url "create_user" %} method="post" class="clearfix" style="border: 1px solid black; width: 440px; padding: 1em 0; margin: 0 auto; text-align: left;">
+			{% csrf_token %}
+			<input type="hidden" name="unconf" value="{{ unconf }}" />
+			<div class="span6">
+				<div class="row">
+					<div class="span3 firstspan">
+						<label>{{ form.first_name.label }}</label>{{ form.first_name }}
+						{{ form.first_name.errors }}
+					</div>
+					<div class="span3 firstspan">
+						<label>{{ form.last_name.label }}</label>{{ form.last_name }}
+						{{ form.last_name.errors }}
+					</div>
+				</div>
+				<div class="row">
+					<label>{{ form.email.label }}</label>{{ form.email }}
+					{{ form.email.errors }}
+				</div>
+				<button type="submit">Register to Vote</button>
+			</div>
+		</form>
+	</div>
+{% endif %}
+
 {% for session in sessions %}
 	<div class="session-listing clearfix">
 		<div class="row">
@@ -55,12 +82,9 @@
 						</div>
 					</div>
 
-					{% if request.user.is_authenticated and request.user.participant %}
-						<a class="button vote-link {% if session.id in request.user.participant.get_up_votes %}inactive{% endif %}" id="vote-up-{{ session.id }}" href="{% url "vote" unconf=unconf id=session.id %}" data-value="1"><i class="fa fa-thumbs-up"></i></a>
-						<a class="button vote-link {% if session.id in request.user.participant.get_down_votes %}inactive{% endif %}" id="vote-down-{{ session.id }}" href="{% url "vote" unconf=unconf id=session.id %}" data-value="-1"><i class="fa fa-thumbs-down"></i></a>
-					{% else %}
-					<a class="button fake-vote-link" href="{% url "create_participant" %}"><i class="fa fa-thumbs-up"></i></a>
-					<a class="button fake-vote-link" href="{% url "create_participant" %}"><i class="fa fa-thumbs-down"></i></a>
+					{% if request.user.is_authenticated %}
+					<a class="button vote-link {% if session.id in request.user.participant.get_up_votes %}inactive{% endif %}" id="vote-up-{{ session.id }}" href="{% url "vote" unconf=unconf id=session.id %}" data-value="1"><i class="fa fa-thumbs-up"></i></a>
+					<a class="button vote-link {% if session.id in request.user.participant.get_down_votes %}inactive{% endif %}" id="vote-down-{{ session.id }}" href="{% url "vote" unconf=unconf id=session.id %}" data-value="-1"><i class="fa fa-thumbs-down"></i></a>
 					{% endif %}
 				</div>
 			</div>

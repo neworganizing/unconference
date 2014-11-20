@@ -68,13 +68,16 @@ class SessionScheduleForm(forms.ModelForm):
 # Form to save data either to the Participant model or the User model,
 # depending on whether or not the User model has a 'phone' field
 class CreateParticipantForm(forms.ModelForm):
+    password = forms.CharField(max_length=255, widget=forms.PasswordInput, required=False)
+    password_confirmation = forms.CharField(max_length=255, widget=forms.PasswordInput, required=False)
+
     class Meta:
         model = Participant
         fields = ['organization']
 
     def __init__(self, *args, **kwargs):
         super(CreateParticipantForm, self).__init__(*args, **kwargs)
-        self.fields["phone"] = forms.CharField(max_length=20, required=True)
+        self.fields["phone"] = forms.CharField(max_length=20, required=False)
 
         # Provide initial phone if the participant exists
         if self.instance.pk:
@@ -83,6 +86,10 @@ class CreateParticipantForm(forms.ModelForm):
     def save(self, commit=True):
         instance = super(CreateParticipantForm, self).save(commit=commit)
         instance.phone = self.cleaned_data["phone"]
+
+        if self.cleaned_data['password'] and (self.cleaned_data['password'] == self.cleaned_data['password_confirmation']):  # noqa
+            instance.user.set_password(self.cleaned_data['password'])
+            instance.user.save()
 
         if commit:
             instance.save()

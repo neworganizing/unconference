@@ -12,7 +12,7 @@ from thewall.models import *
 class ParticipantAdmin(admin.ModelAdmin):
     """Admin area for managing participants"""
     list_display = ('user', 'organization', 'attendeenumber')
-    search_fields = ('user', 'attendeenumber')
+    search_fields = ('user', 'user__email', 'attendeenumber')
 
 admin.site.register(Participant, ParticipantAdmin)
 

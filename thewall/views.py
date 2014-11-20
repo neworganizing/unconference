@@ -10,6 +10,7 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect, get_object_or_404
 from django.core.urlresolvers import reverse
 from django.db.models import Q, Sum
+from django.conf import settings
 from django.views.generic import (View, TemplateView, CreateView, UpdateView,
                                   ListView)
 from django.utils.decorators import method_decorator
@@ -123,7 +124,8 @@ class VoteView(View):
         try:
             participant = request.user.participant
         except Participant.DoesNotExist:
-            pass # Return redirect request
+            participant = Participant(user=request.user)
+            participant.save()
 
         session_id = kwargs.get('id', None)
         unconf = kwargs.get('unconf', None)
@@ -157,17 +159,115 @@ class UnconferencesView(ListView):
 # Create participant for current user
 
 
+class CreateUserView(CreateView):
+    form_class = ParticipantForm
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form_class()(request.POST)
+
+        if form.is_valid():
+            user = form.save()
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
+            login(request, user)
+
+            account_url = reverse("update_participant")
+            next_url = reverse(
+                "session",
+                kwargs={
+                    "unconf": request.POST.get('unconf', None)
+                }
+            )
+
+            messages.info(
+                request,
+                """
+                Your account has been created! <a href="{0}?next={1}">Add a password</a> to login again later.
+                """.format(account_url, next_url)
+            )
+            return HttpResponseRedirect(
+                reverse(
+                    'session',
+                    kwargs={
+                        'unconf': request.POST.get('unconf', None)
+                    }
+                )
+            )
+        else:
+
+            if 'email' in form.errors:
+                user = get_user_model().objects.get(
+                    email=request.POST.get('email', None)
+                )
+
+                if user.has_usable_password():
+                    messages.info(
+                        request,
+                        """
+                        This email address is already registered,
+                        please login.
+                        """
+                    )
+
+                    next_url = reverse(
+                        'session',
+                        kwargs={
+                            'unconf': request.POST.get('unconf', None)
+                        }
+                    )
+
+                    return HttpResponseRedirect(
+                        settings.LOGIN_URL+"?next={0}".format(next_url)
+                    )
+                else:
+
+                    account_url = reverse("update_participant")
+                    next_url = reverse(
+                        "session",
+                        kwargs={
+                            "unconf": request.POST.get('unconf', None)
+                        }
+                    )
+                    messages.info(
+                        request,
+                        """
+                        Found your account! <a href="{0}?next={1}">Add a password</a> to login again later.
+                        """.format(account_url, next_url)
+                    )
+                    user.backend = 'django.contrib.auth.backends.ModelBackend'
+                    login(request, user)
+            else:
+                messages.error(
+                    request,
+                    """
+                    Failed to create account!  Please try again. Errors: {0}
+                    """.format(form.errors)
+                )
+
+            return HttpResponseRedirect(
+                reverse(
+                    'session',
+                    kwargs={
+                        'unconf': request.POST.get('unconf', None)
+                    }
+                )
+            )
+
+
 class CreateParticipantView(CreateView):
     form_class = CreateParticipantForm
     template_name = "participant/form.html"
 
     @method_decorator(login_required(login_url='/users/login'))
     def get(self, request, *args, **kwargs):
-        return super(CreateParticipantView, self).get(request, *args, **kwargs)
+        return super(CreateParticipantView, self).get(
+            request, *args, **kwargs
+        )
 
     @method_decorator(login_required(login_url='/users/login'))
     def post(self, request, *args, **kwargs):
-        return super(CreateParticipantView, self).post(request, *args, **kwargs)
+        return super(CreateParticipantView, self).post(
+            request, *args, **kwargs
+        )
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -211,6 +311,10 @@ class UpdateParticipantView(UpdateView):
             # user_form.save()
             messages.info(request, 'User information updated successfully.')
             return HttpResponseRedirect(self.get_success_url())
+        else:
+            context = self.get_context_data(*args, **kwargs)
+            context['form'] = form
+            return self.render_to_response(context)
 
     def get_success_url(self):
         success_url = self.request.POST.get(
@@ -220,9 +324,12 @@ class UpdateParticipantView(UpdateView):
 
     def get_object(self, queryset=None):
         try:
-            return self.request.user.participant
+            self.object = self.request.user.participant
         except Participant.DoesNotExist:
-            raise Http404
+            self.object = Participant(user=self.request.user)
+            self.object.save()
+
+        return self.object
 
     def get_context_data(self, *args, **kwargs):
         context = super(UpdateParticipantView, self).get_context_data(
@@ -246,6 +353,9 @@ class SessionView(TemplateView):
     # @method_decorator(login_required(login_url='/users/login'))
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(*args, **kwargs)
+
+        if not request.user.is_authenticated():
+            context['form'] = ParticipantForm()
 
         if not context['action']:
             if context.get('session', None):
