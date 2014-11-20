@@ -1,52 +1,56 @@
 {% extends "wall-wrapper.html" %}
 
 {% block content %}
-<div class="firstspan span12">
-<h2>Create New Session</h2>
-<div class="help-box">
-	<p>Fill out this form to add your session idea to the list.  You are automatically added to the list of presenters, but you can add others as well.  Please select at least one tag to categorize your session.  Anyone listed as a presenter can edit a session from the session ideas page by clicking the "Edit" link.</p>
+<div style="text-align: center">
+<div class="firstspan span12" style="float: none;">
+	<h2>Create New Session</h2>
+	
+	<div class="help-box"  style="text-align: left;">
+		<p>Fill out this form to add your session idea to the list.  You are automatically added to the list of presenters, but you can add others as well.  Please select at least one tag to categorize your session.  Anyone listed as a presenter can edit a session from the session ideas page by clicking the "Edit" link.</p>
+	</div>
+	
+	<br />
+	<form action="./" method="post" id="session-form"  style="text-align: left;">
+		{% csrf_token %}
+
+		{% if participant_form %}
+		<h2>Your Info</h2>
+		{{ participant_form.non_field_errors }}
+		{{ participant_details_form.non_field_errors }}
+		<div class="row">
+			<div class="firstspan span2">
+				<label>{{ participant_form.first_name.label }}</label>{{ participant_form.first_name.errors }}
+				{{ participant_form.first_name }}
+			</div>
+			<div class="span2">
+				<label>{{ participant_form.last_name.label }}</label>{{ participant_form.last_name.errors }}
+				{{ participant_form.last_name }}
+			</div>
+			<div class="span4">
+				<label>{{ participant_form.email.label }}</label>{{ participant_form.email.errors }}
+				{{ participant_form.email }}
+			</div>
+		</div>
+		<div class="row">
+			<div class="firstspan span3">
+				<label>{{ participant_details_form.organization.label }}</label>{{ participant_details_form.organization.errors }}
+				{{ participant_details_form.organization }}
+			</div>
+			<div class="span3">
+				<label>{{ participant_details_form.phone.label }}</label>{{ participant_details_form.phone.errors }}
+				{{ participant_details_form.phone }}
+			</div>
+		</div>
+
+		<h2>Session Info</h2>
+		{% endif %}
+
+		{% include "session/_form.html" %}
+
+		<p>
+			<button type="submit">Create Session</button>
+		</p>
+	</form>
 </div>
-<br />
-<form action="./" method="post" id="session-form">
-	{% csrf_token %}
-
-	{% if participant_form %}
-	<h2>Your Info</h2>
-	{{ participant_form.non_field_errors }}
-	{{ participant_details_form.non_field_errors }}
-	<div class="row">
-		<div class="firstspan span2">
-			<label>{{ participant_form.first_name.label }}</label>{{ participant_form.first_name.errors }}
-			{{ participant_form.first_name }}
-		</div>
-		<div class="span2">
-			<label>{{ participant_form.last_name.label }}</label>{{ participant_form.last_name.errors }}
-			{{ participant_form.last_name }}
-		</div>
-		<div class="span4">
-			<label>{{ participant_form.email.label }}</label>{{ participant_form.email.errors }}
-			{{ participant_form.email }}
-		</div>
-	</div>
-	<div class="row">
-		<div class="firstspan span3">
-			<label>{{ participant_details_form.organization.label }}</label>{{ participant_details_form.organization.errors }}
-			{{ participant_details_form.organization }}
-		</div>
-		<div class="span3">
-			<label>{{ participant_details_form.phone.label }}</label>{{ participant_details_form.phone.errors }}
-			{{ participant_details_form.phone }}
-		</div>
-	</div>
-
-	<h2>Session Info</h2>
-	{% endif %}
-
-	{% include "session/_form.html" %}
-
-	<p>
-		<button type="submit">Create Session</button>
-	</p>
-</form>
 </div>
 {% endblock %}

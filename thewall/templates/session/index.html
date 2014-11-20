@@ -8,7 +8,7 @@
 </div>
 
 <div class="help-box">
-	<p>Thanks for joining us for the {{ unconf|title }} unconference!  If you'd like to add a session, click the <strong>"New Session"</strong> link at the top of the page.  To vote for your prefered sessions, click the <strong>"+"</strong> button next to that session, or the <strong>"-"</strong> to down vote.  If you have any questions, don't hesitate to <a href="mailto:webmaster@neworganizing.com">email us</a>.</p>
+	<p>Thanks for joining us for the {{ unconf|title }} unconference!  If you'd like to add a session, click the <strong>"Submit a Session"</strong> link at the top of the page.  To vote for your prefered sessions, click the <strong>"<i class="fa fa-thumbs-up"></i>"</strong> button next to that session, or the <strong>"<i class="fa fa-thumbs-down"></i>"</strong> to down vote.  If you have any questions, don't hesitate to <a href="mailto:webmaster@neworganizing.com">email us</a>.</p>
 </div>
 
 {% for session in sessions %}
@@ -49,22 +49,20 @@
 			</div>
 
 			<div class="span3">
-				{% if request.user.is_authenticated %}
 				<div class="vote-widget">
 					<div class="vote-container">
 						<div class="vote-total" id="vote-total-{{ session.id }}" style="width: {{ session.vote_width }}px;">
 						</div>
 					</div>
 
-					{% if request.user.participant %}
-					<a class="button vote-link {% if session.id in request.user.participant.get_up_votes %}inactive{% endif %}" id="vote-up-{{ session.id }}" href="{% url "vote" unconf=unconf id=session.id %}" data-value="1">+</a>
-					<a class="button vote-link {% if session.id in request.user.participant.get_down_votes %}inactive{% endif %}" id="vote-down-{{ session.id }}" href="{% url "vote" unconf=unconf id=session.id %}" data-value="-1">-</a>
+					{% if request.user.is_authenticated and request.user.participant %}
+						<a class="button vote-link {% if session.id in request.user.participant.get_up_votes %}inactive{% endif %}" id="vote-up-{{ session.id }}" href="{% url "vote" unconf=unconf id=session.id %}" data-value="1"><i class="fa fa-thumbs-up"></i></a>
+						<a class="button vote-link {% if session.id in request.user.participant.get_down_votes %}inactive{% endif %}" id="vote-down-{{ session.id }}" href="{% url "vote" unconf=unconf id=session.id %}" data-value="-1"><i class="fa fa-thumbs-down"></i></a>
 					{% else %}
-					<a class="button fake-vote-link" href="{% url "create_participant" %}">+</a>
-					<a class="button fake-vote-link" href="{% url "create_participant" %}">-</a>
+					<a class="button fake-vote-link" href="{% url "create_participant" %}"><i class="fa fa-thumbs-up"></i></a>
+					<a class="button fake-vote-link" href="{% url "create_participant" %}"><i class="fa fa-thumbs-down"></i></a>
 					{% endif %}
 				</div>
-				{% endif %}
 			</div>
 		</div>
 	</div>

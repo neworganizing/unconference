@@ -130,7 +130,10 @@ class VoteView(View):
         value = request.POST.get('value', None)
 
         if session_id and value:
-            vote, created = Vote.objects.get_or_create(participant=participant,session_id=session_id)
+            vote, created = Vote.objects.get_or_create(
+                participant=participant,
+                session_id=session_id
+            )
             vote.value = value
             vote.save()
 
