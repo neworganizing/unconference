@@ -19,7 +19,9 @@ admin.site.register(Participant, ParticipantAdmin)
 
 class SessionAdmin(AjaxSelectAdmin):
     list_filter = ('slot', 'tags', 'room',)
-    list_display = ('title', 'unconference', 'room', 'slot', 'description')
+    list_display = (
+        'title', 'unconference', 'room', 'slot', 'description', 'difficulty'
+    )
     search_fields = ('title',)
 
     form = make_ajax_form(Session, {'presenters': 'participant'})

@@ -178,8 +178,10 @@ class Session(models.Model):
     room = models.ForeignKey(Room, null=True, blank=True)
     difficulty = models.CharField(
         max_length=30, choices=(
-            ('B', 'Beginner'), ('I', 'Intermediate'), ('A', 'Advanced')
-        ), default='Beginner'
+            ('B', 'Basic - All are welcome'),
+            ('I', 'Working Knowledge - some previous skill suggested'),
+            ('A', 'Advanced')
+        ), default='B'
     )
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True, auto_now_add=True)
