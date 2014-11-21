@@ -354,8 +354,8 @@ class SessionView(TemplateView):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(*args, **kwargs)
 
-        if not request.user.is_authenticated():
-            context['form'] = ParticipantForm()
+#        if not request.user.is_authenticated():
+#            context['user_form'] = ParticipantForm()
 
         if not context['action']:
             if context.get('session', None):
