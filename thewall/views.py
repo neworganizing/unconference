@@ -354,9 +354,6 @@ class SessionView(TemplateView):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(*args, **kwargs)
 
-#        if not request.user.is_authenticated():
-#            context['user_form'] = ParticipantForm()
-
         if not context['action']:
             if context.get('session', None):
                     context['action'] = 'show'
@@ -441,6 +438,9 @@ class SessionView(TemplateView):
     # @method_decorator(login_required(login_url='/users/login'))
     def index(self, request, context):
         context['view'] = self.request.GET.get('view', None)
+
+        if not request.user.is_authenticated():
+            context['form'] = ParticipantForm()
 
         if context['view'] == 'schedule':
             context['days'] = Day.objects.filter(
