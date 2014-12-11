@@ -212,6 +212,14 @@ class Session(models.Model):
 
                 import firebase
 
+                if not self.created:
+                    # If a Session is assigned a slot and room when it is
+                    # FIRST CREATED (has not been saved previously),
+                    # then it will not have self.created, self.modified,
+                    # or access to any many-to-many relationships.
+                    # This solves that.
+                    super(Session, self).save(*args, **kwargs)
+
                 session_info = {
                     "created": self.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
                     "description": self.description,
@@ -263,6 +271,32 @@ class Session(models.Model):
                     firebase_connection.put("/schedule", self.id, session_info)
                 except Exception:
                     pass
+
+            # Provide a way to unpublish sessions from Firebase through the interface
+            # (Removing either the slot or the room will work)
+            elif getattr(settings, 'FIREBASE_SYNC', False) and not (self.slot and self.room):
+                FIREBASE_SECRET = getattr(settings, "FIREBASE_SECRET", False)
+                FIREBASE_USER = getattr(settings, "FIREBASE_USER", False)
+                FIREBASE_PASS = getattr(settings, "FIREBASE_PASS", False)
+                FIREBASE_URL = getattr(settings, "FIREBASE_URL", False)
+
+                if not (FIREBASE_SECRET and FIREBASE_USER and FIREBASE_PASS and FIREBASE_URL):
+                    raise ImproperlyConfigured
+
+                import firebase
+
+                # Check: does this session exist currently in Firebase?
+                # If not, do nothing.
+                try:
+                    firebase_auth = firebase.firebase.FirebaseAuthentication(FIREBASE_SECRET, FIREBASE_USER, FIREBASE_PASS)
+                    firebase_connection = firebase.firebase.FirebaseApplication(FIREBASE_URL, authentication=firebase_auth)
+                    response = firebase_connection.get("/schedule", self.id)
+                except Exception:
+                    pass
+                else:
+                    # If so, it no longer has a room & slot and therefore needs to be unpublished
+                    if response:
+                        firebase_connection.delete("/schedule", self.id)
 
         except Exception:
             pass
