@@ -4,7 +4,7 @@
 {% csrf_token %}
 
 <div style="text-align: center;">
-	<h2>{{ unconf|title }} Session Ideas</h2>
+	<h4>{{ unconf|title }} Session Ideas</h4>
 </div>
 
 <div class="help-box">
@@ -14,7 +14,7 @@
 {% if not request.user.is_authenticated %}
 	<div class="registerform" style="text-align: center;">
 		<h4>Register to vote!</h4>
-		<form action={% url "create_user" %} method="post" class="clearfix" style="border: 1px solid black; width: 440px; padding: 1em 0; margin: 0 auto; text-align: left;">
+		<form action={% url "create_user" %} method="post" class="clearfix" style="border: 1px solid black; padding: 1em 0; margin: 0 auto; text-align: left;">
 			{% csrf_token %}
 			<input type="hidden" name="unconf" value="{{ unconf }}" />
 			<div class="span6">
@@ -23,7 +23,7 @@
 						<label>{{ form.first_name.label }}</label>{{ form.first_name }}
 						{{ form.first_name.errors }}
 					</div>
-					<div class="span3 firstspan">
+					<div class="firstspan">
 						<label>{{ form.last_name.label }}</label>{{ form.last_name }}
 						{{ form.last_name.errors }}
 					</div>

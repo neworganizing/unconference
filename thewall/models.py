@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Sum
 from django.contrib import admin
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 
 from .utils import get_organization_model_name
 
@@ -189,6 +190,118 @@ class Session(models.Model):
         settings.AUTH_USER_MODEL, null=True, blank=True
     )
     extra_presenters = models.TextField(null=True, blank=True)
+    offrecord = models.BooleanField(default=False)
+    partner_session = models.BooleanField(default=False)
+
+    def save(self, *args, **kwargs):
+
+        """ If settings.FIREBASE_SYNC is True, syncs with Firebase
+            Otherwise, leaves save() functionality alone.
+        """
+
+        try:
+            if getattr(settings, 'FIREBASE_SYNC', False) and (self.slot and self.room):
+
+                FIREBASE_SECRET = getattr(settings, "FIREBASE_SECRET", False)
+                FIREBASE_USER = getattr(settings, "FIREBASE_USER", False)
+                FIREBASE_PASS = getattr(settings, "FIREBASE_PASS", False)
+                FIREBASE_URL = getattr(settings, "FIREBASE_URL", False)
+
+                if not (FIREBASE_SECRET and FIREBASE_USER and FIREBASE_PASS and FIREBASE_URL):
+                    raise ImproperlyConfigured
+
+                import firebase
+
+                if not self.created:
+                    # If a Session is assigned a slot and room when it is
+                    # FIRST CREATED (has not been saved previously),
+                    # then it will not have self.created, self.modified,
+                    # or access to any many-to-many relationships.
+                    # This solves that.
+                    super(Session, self).save(*args, **kwargs)
+
+                session_info = {
+                    "created": self.created.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "description": self.description,
+                    "difficulty": self.difficulty,
+                    "id": self.id,
+                    "modified": self.modified.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "offrecord": int(self.offrecord),
+                    "partnersession": int(self.partner_session),
+                    "presenters": [],
+                    "room": {
+                        # "floor": self.room.floor,
+                        "name": self.room.name,
+                    },
+                    "slot": {
+                        "day": {
+                            "day": self.slot.day.day.strftime("%Y-%m-%d"),
+                            "name": self.slot.day.day.strftime("%A")
+                        },
+                        "end_time": self.slot.end_time.strftime("%H:%M:00"),
+                        "name": self.slot.name,
+                        "start_time": self.slot.start_time.strftime("%H:%M:00"),
+                    },
+                    "tags": [],
+                    "title": self.title,
+                }
+
+                for index, presenter in enumerate(self.presenters.all()):
+                    session_info["presenters"].append({
+                        "attendeenumber": presenter.attendeenumber,
+                        "name": "{0}{1}".format(presenter.user.first_name, presenter.user.last_name),
+                        "organization": presenter.organization
+                    })
+
+                for index, tag in enumerate(self.tags.all()):
+                    session_info["tags"].append({
+                        "tag": tag.tag
+                    })
+
+                # This may need some adjustment depending on how difficulty values are stored
+                # Since it's stored differently in Firebase vs. Django
+                if session_info["difficulty"] == "B":  # Beginner
+                    session_info["difficulty"] = "A"
+                elif session_info["difficulty"] == "I":  # Intermediate
+                    session_info["difficulty"] = "B"
+
+                try:
+                    firebase_auth = firebase.firebase.FirebaseAuthentication(FIREBASE_SECRET, FIREBASE_USER, FIREBASE_PASS)
+                    firebase_connection = firebase.firebase.FirebaseApplication(FIREBASE_URL, authentication=firebase_auth)
+                    firebase_connection.put("/schedule", self.id, session_info)
+                except Exception:
+                    pass
+
+            # Provide a way to unpublish sessions from Firebase through the interface
+            # (Removing either the slot or the room will work)
+            elif getattr(settings, 'FIREBASE_SYNC', False) and not (self.slot and self.room):
+                FIREBASE_SECRET = getattr(settings, "FIREBASE_SECRET", False)
+                FIREBASE_USER = getattr(settings, "FIREBASE_USER", False)
+                FIREBASE_PASS = getattr(settings, "FIREBASE_PASS", False)
+                FIREBASE_URL = getattr(settings, "FIREBASE_URL", False)
+
+                if not (FIREBASE_SECRET and FIREBASE_USER and FIREBASE_PASS and FIREBASE_URL):
+                    raise ImproperlyConfigured
+
+                import firebase
+
+                # Check: does this session exist currently in Firebase?
+                # If not, do nothing.
+                try:
+                    firebase_auth = firebase.firebase.FirebaseAuthentication(FIREBASE_SECRET, FIREBASE_USER, FIREBASE_PASS)
+                    firebase_connection = firebase.firebase.FirebaseApplication(FIREBASE_URL, authentication=firebase_auth)
+                    response = firebase_connection.get("/schedule", self.id)
+                except Exception:
+                    pass
+                else:
+                    # If so, it no longer has a room & slot and therefore needs to be unpublished
+                    if response:
+                        firebase_connection.delete("/schedule", self.id)
+
+        except Exception:
+            pass
+        else:
+            super(Session, self).save(*args, **kwargs)
 
     def __unicode__(self):
         return self.title
