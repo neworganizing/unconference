@@ -267,21 +267,22 @@ table.wall {
 }
 
 table.wall td, table.wall th {
-  padding: 0.5em;
-  width: 10em;
+  padding: 0.5em 0.25em;
+  width: 6.75em;
   text-align: center;
 }
 
 table.wall td {
-  border: 1px solid #AAA;
-  border-radius: 5px;
-  background: beige;
-  height: 5em;
+  border: 1px solid #6FC168;
+  box-shadow: 3px 3px 3px #CCC;
+  background: #FFF;
+  height: 8em;
   overflow: hidden;
+  font-size: 14pt;
 }
 
 table.wall th.first-column {
-  width: 5em;
+  width: 4em;
 }
 
 ul#unconference_list {
