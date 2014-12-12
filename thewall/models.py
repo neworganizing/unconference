@@ -290,7 +290,7 @@ class Session(models.Model):
                 try:
                     firebase_auth = firebase.firebase.FirebaseAuthentication(FIREBASE_SECRET, FIREBASE_USER, FIREBASE_PASS)
                     firebase_connection = firebase.firebase.FirebaseApplication(FIREBASE_URL, authentication=firebase_auth)
-                    response = firebase_connection.get("/schedule", self.id)
+                    response = firebase_connection.get("/schedule/{0}".format(self.id))
                 except Exception:
                     pass
                 else:
