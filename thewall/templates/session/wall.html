@@ -13,18 +13,8 @@
 	{% for row in wall %}
 	<tr>
 		<th class="first-colummn">
-			{% if row.slot.start_time|length = 4 %}
-				{{ row.slot.start_time|truncatechars:4 }}
-			{% elif row.slot.start_time|length = 5 %}
-				{{ row.slot.start_time|truncatechars:5 }}
-			{% endif %}
-
-			{% if row.slot.end_time|length = 4 %}
-				{{ row.slot.end_time|truncatechars:4 }}
-			{% elif row.slot.end_time|length = 5 %}
-				{{ row.slot.end_time|truncatechars:5 }}
-			{% endif %}
-
+			{{ row.slot.start_time|truncatechars:5 }}
+			{{ row.slot.end_time|truncatechars:5 }}
 		</th>
 		{% for room, session in row.rooms %}
 			{% if session %}

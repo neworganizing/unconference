@@ -268,7 +268,7 @@ table.wall {
 
 table.wall td, table.wall th {
   padding: 0.5em 0.25em;
-  width: 5.9em;
+  width: 5.35em;
   text-align: center;
 }
 
@@ -283,10 +283,11 @@ table.wall td {
 
 .tablecell {
   line-height: 1.2;
+  height: 14.5em;
 }
 
 .session-title {
-  font-size: 15pt;
+  font-size: 14pt;
 }
 
 .session-presenters {
