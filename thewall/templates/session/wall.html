@@ -13,16 +13,32 @@
 	{% for row in wall %}
 	<tr>
 		<th class="first-colummn">
-			{{ row.slot.name }}
+			{% if row.slot.start_time|length = 4 %}
+				{{ row.slot.start_time|truncatechars:4 }}
+			{% elif row.slot.start_time|length = 5 %}
+				{{ row.slot.start_time|truncatechars:5 }}
+			{% endif %}
+
+			{% if row.slot.end_time|length = 4 %}
+				{{ row.slot.end_time|truncatechars:4 }}
+			{% elif row.slot.end_time|length = 5 %}
+				{{ row.slot.end_time|truncatechars:5 }}
+			{% endif %}
+
 		</th>
 		{% for room, session in row.rooms %}
 			{% if session %}
 			<td>
-				<strong>{{ session }}</strong><br/>Presenters: {% for presenter in session.presenters.all %}{{ presenter }}{% if not forloop.last %}, {% endif %}{% endfor %}
-				{% if session.extra_presenters %}
-					{% if session.presenters.count > 0 %}, {% endif %}
-					{{ session.extra_presenters }}
-				{% endif %}
+				<div class="tablecell">
+					<strong class="session-title">{{ session }}</strong>
+					<div class="session-presenters">
+						Presenters: {% for presenter in session.presenters.all %}{{ presenter }}{% if not forloop.last %}, {% endif %}{% endfor %}
+						{% if session.extra_presenters %}
+							{% if session.presenters.count > 0 %}, {% endif %}
+							{{ session.extra_presenters }}
+						{% endif %}
+					</div>
+				</div>
 			</td>
 			{% else %}
 			<td>&nbsp;</td>

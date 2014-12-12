@@ -268,7 +268,7 @@ table.wall {
 
 table.wall td, table.wall th {
   padding: 0.5em 0.25em;
-  width: 6.75em;
+  width: 5.9em;
   text-align: center;
 }
 
@@ -281,8 +281,21 @@ table.wall td {
   font-size: 14pt;
 }
 
+.tablecell {
+  line-height: 1.2;
+}
+
+.session-title {
+  font-size: 15pt;
+}
+
+.session-presenters {
+  font-size: 12pt;
+  font-family: PT Sans Narrow;
+}
+
 table.wall th.first-column {
-  width: 4em;
+  width: 3.5em;
 }
 
 ul#unconference_list {
