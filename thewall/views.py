@@ -438,6 +438,7 @@ class SessionView(TemplateView):
     # @method_decorator(login_required(login_url='/users/login'))
     def index(self, request, context):
         context['view'] = self.request.GET.get('view', None)
+        context['day'] = self.request.GET.get('day', None)
 
         if not request.user.is_authenticated():
             context['form'] = ParticipantForm()
@@ -486,7 +487,7 @@ class SessionView(TemplateView):
 
                 for session in slot.session_set.filter(
                     unconference__slug=context['unconf']
-                ):
+                ).filter(slot__day__name=context['day']):
                     row['rooms'][session.room.name] = session
 
                 row['rooms'] = sorted(row['rooms'].iteritems())

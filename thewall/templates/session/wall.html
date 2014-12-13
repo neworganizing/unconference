@@ -13,8 +13,8 @@
 	{% for row in wall %}
 	<tr>
 		<th class="first-colummn">
-			{{ row.slot.start_time|truncatechars:5 }}
-			{{ row.slot.end_time|truncatechars:5 }}
+			{{ row.slot.start_time|date:'H:i' }}
+			{{ row.slot.end_time|date:'H:i' }}
 		</th>
 		{% for room, session in row.rooms %}
 			{% if session %}
