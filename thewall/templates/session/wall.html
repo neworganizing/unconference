@@ -11,8 +11,9 @@
 	</tr>
 
 	{% for row in wall %}
-	<tr>
+	<tr class="row {{ row.slot.day.name }}">
 		<th class="first-colummn">
+			{{ row.slot.day.name }}<br>
 			{{ row.slot.start_time|date:'H:i' }}
 			{{ row.slot.end_time|date:'H:i' }}
 		</th>

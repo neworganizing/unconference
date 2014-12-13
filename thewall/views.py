@@ -439,6 +439,7 @@ class SessionView(TemplateView):
     def index(self, request, context):
         context['view'] = self.request.GET.get('view', None)
         context['day'] = self.request.GET.get('day', None)
+        context['now'] = self.request.GET.get('now', None)
 
         if not request.user.is_authenticated():
             context['form'] = ParticipantForm()
@@ -474,6 +475,10 @@ class SessionView(TemplateView):
             )
             slots = Slot.objects.filter(day__in=context['days'])
 
+            now = context.get('now')
+            if not now:
+                now = time.strftime("%H:%M")
+
             # Construct wall
             context['wall'] = list()
 
@@ -485,10 +490,17 @@ class SessionView(TemplateView):
                 for room in context['rooms']:
                     row['rooms'][room.name] = None
 
-                for session in slot.session_set.filter(
-                    unconference__slug=context['unconf']
-                ).filter(slot__day__name=context['day']):
-                    row['rooms'][session.room.name] = session
+                if context['day']:
+                    for session in slot.session_set.filter(
+                        unconference__slug=context['unconf']
+                    ).filter(slot__day__name=context['day']
+                    ).filter(slot__end_time__gte=now):
+                        row['rooms'][session.room.name] = session
+                else:
+                    for session in slot.session_set.filter(
+                        unconference__slug=context['unconf']
+                    ):
+                        row['rooms'][session.room.name] = session
 
                 row['rooms'] = sorted(row['rooms'].iteritems())
 

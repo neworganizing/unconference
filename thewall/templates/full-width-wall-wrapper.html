@@ -24,6 +24,15 @@
     {% block content %}
     {% endblock content %}
 </div>
+{% if day %}
+<script type="text/javascript">
+  var day = "{{ day }}";
+  if (day) {
+    $("tr.row").hide();
+    $(".{{ day }}").show();
+  }
+</script>
+{% endif %}
 <script src="{{ STATIC_URL }}thewall/js/plugins.js"></script>
 <script src="{{ STATIC_URL }}thewall/js/script.js"></script>
 {% if GA_ID %}
