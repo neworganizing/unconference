@@ -249,7 +249,7 @@ class Session(models.Model):
                 for index, presenter in enumerate(self.presenters.all()):
                     session_info["presenters"].append({
                         "attendeenumber": presenter.attendeenumber,
-                        "name": "{0}{1}".format(presenter.user.first_name, presenter.user.last_name),
+                        "name": "{0} {1}".format(presenter.user.first_name, presenter.user.last_name),
                         "organization": presenter.organization
                     })
 

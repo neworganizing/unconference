@@ -473,11 +473,13 @@ class SessionView(TemplateView):
             context['rooms'] = Room.objects.filter(
                 venue__unconference__slug=context['unconf']
             )
-            slots = Slot.objects.filter(day__in=context['days'])
 
             now = context.get('now')
             if not now:
                 now = time.strftime("%H:%M")
+
+            slots = Slot.objects.filter(day__in=context['days']).filter(
+                end_time__gte=now)
 
             # Construct wall
             context['wall'] = list()
@@ -493,8 +495,7 @@ class SessionView(TemplateView):
                 if context['day']:
                     for session in slot.session_set.filter(
                         unconference__slug=context['unconf']
-                    ).filter(slot__day__name=context['day']
-                    ).filter(slot__end_time__gte=now):
+                    ).filter(slot__day__name=context['day']):
                         row['rooms'][session.room.name] = session
                 else:
                     for session in slot.session_set.filter(
